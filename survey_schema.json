@@ -1,0 +1,673 @@
+{
+  "metadata": {
+    "title_ko": "2025년 의료해외진출 현황조사",
+    "version": "1.0.0",
+    "created": "2025-10-28",
+    "language": "ko",
+    "privacy_notice": "모든 응답은 통계법 제33조·제34조에 따라 비밀이 보장됩니다.",
+    "reward": "모든 필수항목 응답 시 스타벅스 2만원권 (예산 소진 시까지 선착순)"
+  },
+  "types": {
+    "single_choice": {
+      "storage": "string"
+    },
+    "multi_choice": {
+      "storage": "string[]"
+    },
+    "rank_choice": {
+      "storage": "number[]",
+      "notes": "각 항목에 1..N 순위를 배정"
+    },
+    "text": {
+      "storage": "string"
+    },
+    "textarea": {
+      "storage": "string"
+    },
+    "group": {
+      "storage": "object"
+    }
+  },
+  "sections": [
+    {
+      "id": "intro",
+      "title": "응답자 기초정보",
+      "required": true,
+      "questions": [
+        {
+          "id": "name",
+          "label": "성명",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "position",
+          "label": "직위",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "contact_tel",
+          "label": "연락처 Tel.",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "contact_mobile",
+          "label": "연락처 Mobile.",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "contact_email",
+          "label": "이메일",
+          "type": "text",
+          "required": true,
+          "validation": {
+            "format": "email"
+          }
+        },
+        {
+          "id": "address",
+          "label": "주소",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "A",
+      "title": "의료 해외진출 기본정보",
+      "required": true,
+      "questions": [
+        {
+          "id": "A1",
+          "label": "구분",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            {
+              "value": "의료기관"
+            },
+            {
+              "value": "회사(MSO 등)"
+            }
+          ]
+        },
+        {
+          "id": "A2_group",
+          "label": "의료기관 정보",
+          "type": "group",
+          "show_if": {
+            "A1": "의료기관"
+          },
+          "questions": [
+            {
+              "id": "A2_org_name",
+              "label": "의료기관명",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "A2_org_type",
+              "label": "의료기관 구분",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                {
+                  "value": "의원"
+                },
+                {
+                  "value": "치과의원"
+                },
+                {
+                  "value": "한의원"
+                },
+                {
+                  "value": "조산원"
+                },
+                {
+                  "value": "병원"
+                },
+                {
+                  "value": "치과병원"
+                },
+                {
+                  "value": "한방병원"
+                },
+                {
+                  "value": "요양병원"
+                },
+                {
+                  "value": "종합병원(100~300병상)"
+                },
+                {
+                  "value": "종합병원(300병상 초과)"
+                },
+                {
+                  "value": "상급종합병원"
+                }
+              ]
+            },
+            {
+              "id": "A2_found_type",
+              "label": "의료기관 설립구분",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                {
+                  "value": "국공립"
+                },
+                {
+                  "value": "법인"
+                },
+                {
+                  "value": "소비자생활협동조합"
+                },
+                {
+                  "value": "사회적협동조합"
+                },
+                {
+                  "value": "개인"
+                },
+                {
+                  "value": "군병원"
+                },
+                {
+                  "value": "기타"
+                }
+              ]
+            },
+            {
+              "id": "A2_legal_subtype",
+              "label": "법인 유형",
+              "type": "single_choice",
+              "required": true,
+              "show_if": {
+                "A2_found_type": "법인"
+              },
+              "options": [
+                {
+                  "value": "학교법인"
+                },
+                {
+                  "value": "특수법인"
+                },
+                {
+                  "value": "종교법인"
+                },
+                {
+                  "value": "사회복지법인"
+                },
+                {
+                  "value": "사단법인"
+                },
+                {
+                  "value": "재단법인"
+                },
+                {
+                  "value": "회사법인"
+                },
+                {
+                  "value": "의료법인"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "A3_group",
+          "label": "회사 정보",
+          "type": "group",
+          "show_if": {
+            "A1": "회사(MSO 등)"
+          },
+          "questions": [
+            {
+              "id": "A3_company_name",
+              "label": "회사명",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "A3_company_type",
+              "label": "구분",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                {
+                  "value": "MSO(병원경영지원회사)"
+                },
+                {
+                  "value": "의료기기"
+                },
+                {
+                  "value": "의약품"
+                },
+                {
+                  "value": "기타"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "title": "의료 해외진출 사업 세부정보",
+      "required": true,
+      "questions": [
+        {
+          "id": "B1",
+          "label": "진출 시기/단계",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            {
+              "value": "2016.6 이전 진출"
+            },
+            {
+              "value": "2016.6 이후 진출"
+            },
+            {
+              "value": "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
+            },
+            {
+              "value": "진출 기획/발굴 단계(시장조사 등)"
+            },
+            {
+              "value": "기타"
+            }
+          ]
+        },
+        {
+          "id": "B2",
+          "label": "해외진출 대상국",
+          "type": "text",
+          "required": true,
+          "help": "쉼표로 구분된 국가 목록 (예: 베트남, UAE)"
+        },
+        {
+          "id": "B3",
+          "label": "진출 목적",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            {
+              "value": "국내 경쟁 심화"
+            },
+            {
+              "value": "해외 파트너의 요청"
+            },
+            {
+              "value": "외국인환자 유치를 위한 거점 활용"
+            },
+            {
+              "value": "선교 및 자선활동의 목적"
+            },
+            {
+              "value": "기타"
+            }
+          ]
+        },
+        {
+          "id": "B4",
+          "label": "의료해외진출 구분",
+          "type": "multi_choice",
+          "required": true,
+          "options": [
+            {
+              "value": "개설·운영(신설)"
+            },
+            {
+              "value": "개설·운영(인수합병)"
+            },
+            {
+              "value": "수탁운영"
+            },
+            {
+              "value": "운영컨설팅"
+            },
+            {
+              "value": "종사자 파견"
+            },
+            {
+              "value": "의료기술 이전"
+            },
+            {
+              "value": "정보시스템 이전"
+            },
+            {
+              "value": "국외 의료서비스 제공 위한 의약품 제공"
+            },
+            {
+              "value": "국외 의료서비스 제공 위한 의료기기 등 제공"
+            },
+            {
+              "value": "의료인 교육(외국의료인 국내연수)"
+            },
+            {
+              "value": "의료인 교육(국내의료진 해외 방문연수)"
+            },
+            {
+              "value": "그 외 국제의료사업"
+            }
+          ]
+        },
+        {
+          "id": "B5_1_1",
+          "label": "(B1=①②③) 의료 해외진출 사업명",
+          "type": "text",
+          "required": true,
+          "show_if_any": {
+            "B1": [
+              "2016.6 이전 진출",
+              "2016.6 이후 진출",
+              "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
+            ]
+          }
+        },
+        {
+          "id": "B5_1_1_1",
+          "label": "(B1=①②③) 의료 해외진출 신고 의무 인지 여부",
+          "type": "single_choice",
+          "required": true,
+          "show_if_any": {
+            "B1": [
+              "2016.6 이전 진출",
+              "2016.6 이후 진출",
+              "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
+            ]
+          },
+          "options": [
+            {
+              "value": "예"
+            },
+            {
+              "value": "아니오"
+            }
+          ]
+        },
+        {
+          "id": "B5_2",
+          "label": "(B1=④⑤) 의료 해외진출 신고 의무 인지 여부",
+          "type": "single_choice",
+          "required": true,
+          "show_if_any": {
+            "B1": [
+              "진출 기획/발굴 단계(시장조사 등)",
+              "기타"
+            ]
+          },
+          "options": [
+            {
+              "value": "예"
+            },
+            {
+              "value": "아니오"
+            }
+          ]
+        },
+        {
+          "id": "B6",
+          "label": "진출 진료과",
+          "type": "multi_choice",
+          "required": false,
+          "options": [
+            {
+              "value": "건강검진"
+            },
+            {
+              "value": "내과"
+            },
+            {
+              "value": "소아청소년과"
+            },
+            {
+              "value": "신경(외)과"
+            },
+            {
+              "value": "피부·성형"
+            },
+            {
+              "value": "정형외과"
+            },
+            {
+              "value": "산부인과"
+            },
+            {
+              "value": "안과"
+            },
+            {
+              "value": "이비인후과"
+            },
+            {
+              "value": "비뇨기과"
+            },
+            {
+              "value": "재활의학과"
+            },
+            {
+              "value": "가정의학과"
+            },
+            {
+              "value": "마취통증의학과"
+            },
+            {
+              "value": "영상의학과"
+            },
+            {
+              "value": "진단검사의학과"
+            },
+            {
+              "value": "한방"
+            },
+            {
+              "value": "치과"
+            },
+            {
+              "value": "일반외과"
+            },
+            {
+              "value": "정신과"
+            },
+            {
+              "value": "기타"
+            }
+          ],
+          "notes": "의료인 교육/정보시스템 이전 등 진료과 비적용 시 '기타'에 기입"
+        },
+        {
+          "id": "B7",
+          "label": "의료 해외진출 증빙자료 존재 여부",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            {
+              "value": "네"
+            },
+            {
+              "value": "아니오"
+            }
+          ],
+          "help": "예: 개설허가증, 법인설립 확인증, 운영컨설팅 계약서, 연수 수료증 등"
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "title": "의료 해외진출 정책 요구도",
+      "required": true,
+      "questions": [
+        {
+          "id": "C1",
+          "label": "사업 추진 시 가장 큰 어려움 (1~9 순위)",
+          "type": "rank_choice",
+          "required": true,
+          "options": [
+            "자금 조달의 어려움",
+            "수익 예측의 불확실성",
+            "현지(해외) 정보 부족",
+            "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치",
+            "불안정한 현지(해외) 정치·법·제도",
+            "의료 해외진출 관련 전문인력 부족",
+            "현지(해외) 전문인력 고용의 어려움",
+            "인허가, 면허 등 현지(해외) 법·제도 규제",
+            "현지 네트워크 부재",
+            "기타"
+          ],
+          "scoring": {
+            "weights_desc": "1위=9점, 2위=8점 ... 9위=1점",
+            "weights": [
+              9,
+              8,
+              7,
+              6,
+              5,
+              4,
+              3,
+              2,
+              1
+            ]
+          }
+        },
+        {
+          "id": "C2",
+          "label": "정부 지원 필요 항목 (1~8 순위)",
+          "type": "rank_choice",
+          "required": true,
+          "options": [
+            "현지 문화·법·정책·동향 등 유관 정보 지원",
+            "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
+            "현지 파트너 발굴 및 검증 지원",
+            "의료 해외진출 관련 전문인력 역량강화를 위한 교육",
+            "의료 해외진출 사업 수행을 위한 컨설팅 지원",
+            "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
+            "기 진출 의료기관 선도사례 및 진출 전략 공유",
+            "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
+            "기타"
+          ],
+          "scoring": {
+            "weights_desc": "1위=8점, 2위=7점 ... 8위=1점",
+            "weights": [
+              8,
+              7,
+              6,
+              5,
+              4,
+              3,
+              2,
+              1
+            ]
+          }
+        },
+        {
+          "id": "C3",
+          "label": "정부 지원 외 중요 과제",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            "진출 기관 및 예정기관 간의 네트워크 구축",
+            "성공사례 및 실패사례 공유",
+            "선진국의 진출사례 공유",
+            "의료 해외진출 및 신고제도 홍보",
+            "인력 매칭을 위한 플랫폼 운영",
+            "기타"
+          ]
+        },
+        {
+          "id": "C4",
+          "label": "KOHES 포털 인지 여부",
+          "type": "single_choice",
+          "required": true,
+          "options": [
+            "방문한 적 있다.",
+            "방문한 적은 없지만, 들어본 적 있다.",
+            "들어본 적 없다."
+          ]
+        },
+        {
+          "id": "C5",
+          "label": "정부에 바라는 추가 지원사항",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "validation_global": [
+    {
+      "rule": "at_least_one_of",
+      "params": {
+        "fields": [
+          "contact_tel",
+          "contact_mobile",
+          "contact_email"
+        ]
+      }
+    },
+    {
+      "rule": "when",
+      "params": {
+        "if": {
+          "A1": "의료기관"
+        },
+        "then_required": [
+          "A2_group"
+        ]
+      }
+    },
+    {
+      "rule": "when",
+      "params": {
+        "if": {
+          "A1": "회사(MSO 등)"
+        },
+        "then_required": [
+          "A3_group"
+        ]
+      }
+    },
+    {
+      "rule": "when_any",
+      "params": {
+        "if_any": {
+          "B1": [
+            "2016.6 이전 진출",
+            "2016.6 이후 진출",
+            "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
+          ],
+          "then_required": [
+            "B5_1_1",
+            "B5_1_1_1"
+          ]
+        }
+      }
+    },
+    {
+      "rule": "when_any",
+      "params": {
+        "if_any": {
+          "B1": [
+            "진출 기획/발굴 단계(시장조사 등)",
+            "기타"
+          ],
+          "then_required": [
+            "B5_2"
+          ]
+        }
+      }
+    }
+  ],
+  "export": {
+    "csv": {
+      "delimiter": ",",
+      "array_sep": "; "
+    },
+    "json": {
+      "indent": 2,
+      "encoding": "utf-8"
+    }
+  }
+}

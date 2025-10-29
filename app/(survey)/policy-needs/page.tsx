@@ -15,9 +15,11 @@ export default function PolicyNeedsPage() {
 
   // C1: 어려움 순위 (9개)
   const [difficultiesRank, setDifficultiesRank] = useState<string[]>([])
+  const [difficultiesOther, setDifficultiesOther] = useState("")
 
   // C2: 지원 필요 순위 (8개)
   const [supportNeedsRank, setSupportNeedsRank] = useState<string[]>([])
+  const [supportNeedsOther, setSupportNeedsOther] = useState("")
 
   // C3: 희망 지원 사업
   const [desiredSupport, setDesiredSupport] = useState("")
@@ -90,7 +92,7 @@ export default function PolicyNeedsPage() {
         {/* C1: 어려움 순위 */}
         <QuestionRankChoice
           id="difficulties-rank"
-          label="의료 해외진출 사업 추진 시, 가장 큰 어려움을 순서대로 선택해주세요"
+          label="의료 해외진출 사업 추진 시, 가장 큰 어려움을 순서대로 선택해주세요."
           required={true}
           maxRanks={9}
           options={[
@@ -116,12 +118,14 @@ export default function PolicyNeedsPage() {
           ]}
           value={difficultiesRank}
           onChange={setDifficultiesRank}
+          otherValue={difficultiesOther}
+          onOtherChange={setDifficultiesOther}
         />
 
         {/* C2: 지원 필요 순위 */}
         <QuestionRankChoice
           id="support-needs-rank"
-          label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해주세요"
+          label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해주세요."
           required={true}
           maxRanks={8}
           options={[
@@ -158,6 +162,8 @@ export default function PolicyNeedsPage() {
           ]}
           value={supportNeedsRank}
           onChange={setSupportNeedsRank}
+          otherValue={supportNeedsOther}
+          onOtherChange={setSupportNeedsOther}
         />
 
         {/* C3: 희망 지원 사업 */}
@@ -201,9 +207,9 @@ export default function PolicyNeedsPage() {
           label="정부는 의료 해외진출에 대한 정보 등을 공유하기 위해 의료해외진출 종합정보포털(KOHES)을 운영하고 있습니다. 해당 KOHES 포털을 방문하시거나 들어보신 적이 있으십니까?"
           required={true}
           options={[
-            { value: "방문", label: "방문한 적이 있다" },
-            { value: "들어봄", label: "들어본 적이 있다" },
-            { value: "모름", label: "잘 모른다" },
+            { value: "방문", label: "방문한 적이 있다." },
+            { value: "들어봄", label: "방문한 적은 없지만, 들어본 적 있다." },
+            { value: "없다", label: "들어본 적 없다." },
           ]}
           value={awareness}
           onChange={setAwareness}

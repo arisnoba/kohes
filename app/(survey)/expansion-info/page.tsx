@@ -100,7 +100,7 @@ export default function ExpansionInfoPage() {
 
   return (
     <SurveyLayout currentStep={2} totalSteps={5} onBack={handleBack} showBackButton={true}>
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Section Title */}
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 2</div>
@@ -177,25 +177,23 @@ export default function ExpansionInfoPage() {
 
             {/* 법인 유형 (show_if 설립=법인) */}
             {foundationType === "법인" && (
-              <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-4">
-                <QuestionSingleChoice
-                  id="legal-type"
-                  label="법인 유형"
-                  required={true}
-                  options={[
-                    { value: "학교", label: "학교법인" },
-                    { value: "특수", label: "특수법인" },
-                    { value: "종교", label: "종교법인" },
-                    { value: "사회복지", label: "사회복지법인" },
-                    { value: "사단", label: "사단법인" },
-                    { value: "재단", label: "재단법인" },
-                    { value: "회사", label: "회사법인" },
-                    { value: "의료법인", label: "의료법인" },
-                  ]}
-                  value={legalType}
-                  onChange={setLegalType}
-                />
-              </div>
+              <QuestionSingleChoice
+                id="legal-type"
+                label="법인 유형"
+                required={true}
+                options={[
+                  { value: "학교", label: "학교법인" },
+                  { value: "특수", label: "특수법인" },
+                  { value: "종교", label: "종교법인" },
+                  { value: "사회복지", label: "사회복지법인" },
+                  { value: "사단", label: "사단법인" },
+                  { value: "재단", label: "재단법인" },
+                  { value: "회사", label: "회사법인" },
+                  { value: "의료법인", label: "의료법인" },
+                ]}
+                value={legalType}
+                onChange={setLegalType}
+              />
             )}
           </div>
         )}

@@ -59,11 +59,11 @@ export function QuestionMultiChoice({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <label className="block text-2xl font-semibold text-gray-900 md:text-3xl leading-normal">
+        <label className="block text-2xl font-semibold text-gray-900 md:text-3xl leading-snug">
           {label}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
         <p className="mt-2 text-sm text-gray-500">복수 선택 가능</p>
       </div>

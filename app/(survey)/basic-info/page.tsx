@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { Info } from "lucide-react"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { NavigationButton } from "@/components/survey/NavigationButton"
@@ -102,9 +103,10 @@ export default function BasicInfoPage() {
           <p className="mt-2 text-sm text-gray-500">귀하의 기본 정보를 입력해주세요</p>
         </div>
         {/* Privacy Notice */}
-        <div className="rounded-lg bg-blue-50 p-4">
+        <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-4">
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
           <p className="text-sm text-blue-900">
-            📌 입력하신 정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 통계법에 따라 비밀이
+            입력하신 정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 통계법에 따라 비밀이
             보장됩니다.
           </p>
         </div>
@@ -135,7 +137,7 @@ export default function BasicInfoPage() {
             label="전화번호"
             type="tel"
             placeholder="02-1234-5678"
-            required={false}
+            required={true}
             value={formData.tel}
             onChange={(value) => handleChange("tel", value)}
           />
@@ -164,7 +166,7 @@ export default function BasicInfoPage() {
             id="address"
             label="주소"
             placeholder="예: 서울특별시 강남구 테헤란로 123"
-            required={false}
+            required={true}
             value={formData.address}
             onChange={(value) => handleChange("address", value)}
           />

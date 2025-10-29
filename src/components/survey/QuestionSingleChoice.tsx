@@ -54,10 +54,10 @@ export function QuestionSingleChoice({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <sup className="ml-0.5 text-red-500">*</sup>}
       </label>
 
       <div className="space-y-2">

@@ -31,9 +31,9 @@ export function QuestionText({
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-2xl font-semibold text-gray-900 leading-normal">
+      <label htmlFor={id} className="block text-2xl font-semibold text-gray-900 leading-snug">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <sup className="ml-0.5 text-red-500">*</sup>}
       </label>
 
       <input

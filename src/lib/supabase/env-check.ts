@@ -4,8 +4,8 @@
  */
 
 export function checkSupabaseEnv() {
-  // 프로덕션 환경에서는 체크하지 않음
-  if (process.env.NODE_ENV === "production") {
+  // 프로덕션 환경이거나 브라우저 환경에서는 체크하지 않음
+  if (process.env.NODE_ENV === "production" || typeof window !== "undefined") {
     return true
   }
 
@@ -14,14 +14,14 @@ export function checkSupabaseEnv() {
   const missingVars = requiredEnvVars.filter((varName) => !process.env[varName])
 
   if (missingVars.length > 0) {
-    console.error("❌ Supabase 환경변수가 설정되지 않았습니다:")
+    console.warn("⚠️  Supabase 환경변수가 설정되지 않았습니다:")
     missingVars.forEach((varName) => {
-      console.error(`   - ${varName}`)
+      console.warn(`   - ${varName}`)
     })
-    console.error("\n📝 설정 방법:")
-    console.error("   1. .env.local 파일을 열어주세요")
-    console.error("   2. Supabase 대시보드 (https://app.supabase.com)에서 API 키를 복사하세요")
-    console.error("   3. 자세한 내용은 README.md를 참고하세요\n")
+    console.warn("\n📝 설정 방법:")
+    console.warn("   1. .env.local 파일을 열어주세요")
+    console.warn("   2. Supabase 대시보드 (https://app.supabase.com)에서 API 키를 복사하세요")
+    console.warn("   3. 자세한 내용은 README.md를 참고하세요\n")
     return false
   }
 
@@ -47,15 +47,16 @@ export function checkSupabaseEnv() {
 
 // 서버 사이드에서 Service Role Key도 확인
 export function checkSupabaseServerEnv() {
-  if (process.env.NODE_ENV === "production") {
+  // 프로덕션 환경이거나 브라우저 환경에서는 체크하지 않음
+  if (process.env.NODE_ENV === "production" || typeof window !== "undefined") {
     return true
   }
 
   const serverEnvVar = "SUPABASE_SERVICE_ROLE_KEY"
 
   if (!process.env[serverEnvVar]) {
-    console.error(`❌ ${serverEnvVar}가 설정되지 않았습니다`)
-    console.error("   이 키는 서버 사이드 작업 (관리자 기능)에 필요합니다\n")
+    console.warn(`⚠️  ${serverEnvVar}가 설정되지 않았습니다`)
+    console.warn("   이 키는 서버 사이드 작업 (관리자 기능)에 필요합니다\n")
     return false
   }
 

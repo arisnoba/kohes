@@ -1,13 +1,7 @@
 "use client"
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  type ReactNode
-} from "react"
+import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react"
+import { submitSurveyResponse } from "@/lib/supabase/responses"
 
 export interface BasicInfoState {
   name: string
@@ -64,7 +58,7 @@ const baseSurveyData: SurveyData = {
     tel: "",
     mobile: "",
     email: "",
-    address: ""
+    address: "",
   },
   expansionInfo: {
     orgType: "",
@@ -73,7 +67,7 @@ const baseSurveyData: SurveyData = {
     foundationType: "",
     legalType: "",
     companyName: "",
-    companyCategory: ""
+    companyCategory: "",
   },
   projectDetails: {
     expansionTiming: "",
@@ -84,7 +78,7 @@ const baseSurveyData: SurveyData = {
     reportingAwareness1: "",
     reportingAwareness2: "",
     departments: [],
-    hasEvidence: ""
+    hasEvidence: "",
   },
   policyNeeds: {
     difficultiesRank: [],
@@ -93,8 +87,8 @@ const baseSurveyData: SurveyData = {
     supportNeedsOther: "",
     desiredSupport: "",
     awareness: "",
-    additionalComments: ""
-  }
+    additionalComments: "",
+  },
 }
 
 function createSurveyData(partial: Partial<SurveyData> = {}): SurveyData {
@@ -102,7 +96,7 @@ function createSurveyData(partial: Partial<SurveyData> = {}): SurveyData {
     basicInfo: { ...baseSurveyData.basicInfo, ...partial.basicInfo },
     expansionInfo: { ...baseSurveyData.expansionInfo, ...partial.expansionInfo },
     projectDetails: { ...baseSurveyData.projectDetails, ...partial.projectDetails },
-    policyNeeds: { ...baseSurveyData.policyNeeds, ...partial.policyNeeds }
+    policyNeeds: { ...baseSurveyData.policyNeeds, ...partial.policyNeeds },
   }
 }
 
@@ -125,8 +119,8 @@ function surveyReducer(state: SurveyData, action: SurveyAction): SurveyData {
         ...state,
         [action.section]: {
           ...currentSection,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       }
     }
     case "replace": {
@@ -144,6 +138,7 @@ export interface SurveyContextValue {
   data: SurveyData
   updateSection: <K extends keyof SurveyData>(section: K, payload: Partial<SurveyData[K]>) => void
   resetSurvey: () => void
+  submitSurvey: () => Promise<{ success: boolean; error: string | null; id: string | null }>
 }
 
 const SurveyContext = createContext<SurveyContextValue | undefined>(undefined)
@@ -181,7 +176,17 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
       updateSection: (section, payload) => {
         dispatch({ type: "update", section, payload })
       },
-      resetSurvey: () => dispatch({ type: "reset" })
+      resetSurvey: () => dispatch({ type: "reset" }),
+      submitSurvey: async () => {
+        const result = await submitSurveyResponse(state)
+        if (result.success) {
+          // 제출 성공 시 sessionStorage 정리
+          if (typeof window !== "undefined") {
+            window.sessionStorage.removeItem(STORAGE_KEY)
+          }
+        }
+        return result
+      },
     }
   }, [state])
 

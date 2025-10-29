@@ -46,7 +46,7 @@ pnpm install
 
 ### 2. 환경 변수 설정
 
-`.env.local` 파일이 이미 생성되어 있습니다. 다음 단계를 따라 설정하세요:
+`.env.local` 파일을 생성하고 다음 내용을 입력하세요:
 
 1. [Supabase 대시보드](https://app.supabase.com)에 로그인
 2. 프로젝트 선택 → Settings → API 메뉴로 이동
@@ -64,7 +64,25 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - `SUPABASE_SERVICE_ROLE_KEY`는 서버에서만 사용하며 절대 클라이언트에 노출하지 마세요
 - `.env.local` 파일은 `.gitignore`에 포함되어 있어 Git에 추적되지 않습니다
 
-### 3. 개발 서버 실행
+📘 **Supabase 상세 설정**: [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) 참고
+
+### 3. 데이터베이스 마이그레이션
+
+```bash
+# Supabase 로컬 인스턴스 시작
+pnpm supabase:start
+
+# 마이그레이션 적용
+pnpm supabase:db:push
+```
+
+### 4. 관리자 계정 생성
+
+관리자 페이지에 접근하려면 Supabase Auth 사용자를 생성해야 합니다:
+
+📘 **인증 설정 가이드**: [AUTH_SETUP.md](./AUTH_SETUP.md) 참고
+
+### 5. 개발 서버 실행
 
 ```bash
 pnpm dev
@@ -104,24 +122,35 @@ pnpm supabase:db:push
 
 ### 설문 기능
 
-- 조건부 질문 분기
-- 다양한 입력 타입 지원 (단일/다중 선택, 순위 선택, 텍스트, 텍스트 영역)
-- 실시간 유효성 검사
-- 모바일 우선 반응형 디자인
+- ✅ 조건부 질문 분기
+- ✅ 다양한 입력 타입 지원 (단일/다중 선택, 순위 선택, 텍스트, 텍스트 영역)
+- ✅ 실시간 유효성 검사
+- ✅ 모바일 우선 반응형 디자인
+- ✅ 진행 상황 자동 저장
 
 ### 관리자 기능
 
-- 관리자 로그인 (인증 필요)
-- 설문 응답 현황 대시보드
-- CSV/JSON 데이터 내보내기
-- PII 데이터 분리 관리
+- ✅ 관리자 로그인 (Supabase Auth)
+- ✅ Row Level Security (RLS) 기반 데이터 보호
+- ✅ 설문 응답 현황 대시보드
+- ✅ 응답 데이터 조회 및 관리
+- ✅ CSV/JSON 데이터 내보내기 (예정)
+- ✅ PII 데이터 분리 저장
 
 ## 보안
 
 - 통계법 제33조·제34조 준수
 - PII 데이터 분리 저장
+- Row Level Security (RLS) 기반 접근 제어
+- 인증된 사용자만 데이터 조회 가능
 - 파일 업로드 암호화 (AES-256)
 - 최소 권한 원칙 적용
+
+## 문서
+
+- [PRD.md](./PRD.md) - 제품 요구사항 문서
+- [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) - Supabase 설정 가이드
+- [AUTH_SETUP.md](./AUTH_SETUP.md) - 관리자 인증 설정 가이드
 
 ## 라이선스
 

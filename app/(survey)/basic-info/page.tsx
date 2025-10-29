@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Info } from "lucide-react"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
@@ -14,6 +14,7 @@ export default function BasicInfoPage() {
   const { data, updateSection } = useSurveyForm()
   const { basicInfo } = data
   const [skipValidation, setSkipValidation] = useState(false)
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const handleChange = (field: keyof typeof basicInfo, value: string) => {
     updateSection("basicInfo", { [field]: value })
@@ -27,7 +28,7 @@ export default function BasicInfoPage() {
       tel: "02-1234-5678",
       mobile: "010-1234-5678",
       email: "test@example.com",
-      address: "서울특별시 강남구 테헤란로 123"
+      address: "서울특별시 강남구 테헤란로 123",
     })
   }
 
@@ -76,13 +77,17 @@ export default function BasicInfoPage() {
     router.push("/intro")
   }
 
-  const isFormValid =
-    skipValidation ||
-    (basicInfo.name.trim() &&
-      basicInfo.position.trim() &&
-      basicInfo.tel.trim() &&
-      basicInfo.mobile.trim() &&
-      basicInfo.email.trim())
+  // 클라이언트에서만 폼 유효성 검사 (hydration 불일치 방지)
+  useEffect(() => {
+    const valid =
+      skipValidation ||
+      (basicInfo.name.trim() !== "" &&
+        basicInfo.position.trim() !== "" &&
+        basicInfo.tel.trim() !== "" &&
+        basicInfo.mobile.trim() !== "" &&
+        basicInfo.email.trim() !== "")
+    setIsFormValid(valid)
+  }, [basicInfo, skipValidation])
 
   return (
     <SurveyLayout currentStep={1} totalSteps={5} onBack={handleBack} showBackButton={true}>
@@ -95,7 +100,8 @@ export default function BasicInfoPage() {
         <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-4">
           <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
           <p className="text-sm text-blue-900">
-            입력하신 정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 통계법에 따라 비밀이 보장됩니다.
+            입력하신 정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 통계법에 따라 비밀이
+            보장됩니다.
           </p>
         </div>
 

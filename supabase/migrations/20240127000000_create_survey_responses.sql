@@ -1,7 +1,6 @@
-create extension if not exists "uuid-ossp";
-
+-- PostgreSQL 13+에서는 gen_random_uuid()를 기본 제공
 create table if not exists public.survey_responses (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   submitted_at timestamptz not null default timezone('utc', now()),
   respondent_name text,
   organization_name text,

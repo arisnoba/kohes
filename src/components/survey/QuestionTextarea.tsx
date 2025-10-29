@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState } from "react"
 
 interface QuestionTextareaProps {
   id: string
@@ -17,7 +17,7 @@ export function QuestionTextarea({
   label,
   placeholder,
   required = false,
-  value = '',
+  value = "",
   onChange,
   rows = 5,
 }: QuestionTextareaProps) {
@@ -31,7 +31,7 @@ export function QuestionTextarea({
 
   return (
     <div className="space-y-4">
-      <label htmlFor={id} className="block text-2xl font-semibold text-gray-900">
+      <label htmlFor={id} className="block text-2xl font-semibold text-gray-900 leading-normal">
         {label}
         {required && <span className="ml-1 text-red-500">*</span>}
       </label>

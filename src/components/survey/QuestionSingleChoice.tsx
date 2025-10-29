@@ -55,7 +55,7 @@ export function QuestionSingleChoice({
 
   return (
     <div className="space-y-6">
-      <label className="block text-2xl font-semibold text-gray-900">
+      <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
         {label}
         {required && <span className="ml-1 text-red-500">*</span>}
       </label>
@@ -70,7 +70,7 @@ export function QuestionSingleChoice({
               <button
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className={`w-full rounded-lg border-2 px-6 py-4 text-left text-base transition-all ${
+                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
                   isSelected
                     ? "border-blue-600 bg-blue-50 text-blue-900"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
@@ -93,7 +93,7 @@ export function QuestionSingleChoice({
 
                 {/* 기타 입력 필드 - 버튼 내부 */}
                 {isOtherOption && isSelected && (
-                  <div className="mt-4 pt-4 border-t border-blue-300">
+                  <div className="mt-4 pt-2 border-blue-300">
                     <input
                       type="text"
                       value={otherText}

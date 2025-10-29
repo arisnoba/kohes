@@ -1,0 +1,7 @@
+- Install deps: `pnpm install`
+- Dev server: `pnpm dev`
+- Build & serve: `pnpm build` then `pnpm start`
+- Lint & format: `pnpm lint`, followed by `pnpm format` if needed
+- Tests: `pnpm test`
+- Supabase lifecycle: `pnpm supabase:start`, `pnpm supabase db push`
+- Tailwind/shadcn baseline already configured; keep generated exports out of VCS.

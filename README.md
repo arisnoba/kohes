@@ -46,13 +46,23 @@ pnpm install
 
 ### 2. 환경 변수 설정
 
-`.env.local` 파일을 생성하고 다음 변수를 설정하세요:
+`.env.local` 파일이 이미 생성되어 있습니다. 다음 단계를 따라 설정하세요:
+
+1. [Supabase 대시보드](https://app.supabase.com)에 로그인
+2. 프로젝트 선택 → Settings → API 메뉴로 이동
+3. `.env.local` 파일에 다음 값을 입력:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
+
+⚠️ **보안 주의사항**:
+
+- `NEXT_PUBLIC_*` 접두사가 있는 변수는 클라이언트에 노출됩니다
+- `SUPABASE_SERVICE_ROLE_KEY`는 서버에서만 사용하며 절대 클라이언트에 노출하지 마세요
+- `.env.local` 파일은 `.gitignore`에 포함되어 있어 Git에 추적되지 않습니다
 
 ### 3. 개발 서버 실행
 
@@ -93,12 +103,14 @@ pnpm supabase:db:push
 ## 기능
 
 ### 설문 기능
+
 - 조건부 질문 분기
 - 다양한 입력 타입 지원 (단일/다중 선택, 순위 선택, 텍스트, 텍스트 영역)
 - 실시간 유효성 검사
 - 모바일 우선 반응형 디자인
 
 ### 관리자 기능
+
 - 관리자 로그인 (인증 필요)
 - 설문 응답 현황 대시보드
 - CSV/JSON 데이터 내보내기
@@ -114,4 +126,3 @@ pnpm supabase:db:push
 ## 라이선스
 
 MIT
-

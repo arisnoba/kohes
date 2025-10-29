@@ -1,0 +1,4 @@
+- After changes, run `pnpm lint` and address issues; re-run `pnpm format` if Prettier suggests fixes.
+- Execute `pnpm test` (or targeted suites) and capture relevant output.
+- For Supabase changes, apply with `pnpm supabase db push` and ensure migrations succeed.
+- Provide short summary of impacted admin/survey routes and mention any auth or export implications.

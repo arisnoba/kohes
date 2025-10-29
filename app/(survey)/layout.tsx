@@ -1,8 +1,11 @@
+import type { ReactNode } from "react"
+
+import { SurveyProvider } from "@/components/survey/SurveyProvider"
+
 export default function SurveyLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
-  return <>{children}</>
+  return <SurveyProvider>{children}</SurveyProvider>
 }
-

@@ -1,0 +1,5 @@
+- Language: TypeScript across Next.js app with App Router.
+- Formatting: 2-space indentation enforced via Prettier; ESLint uses next/core-web-vitals.
+- Naming: React components in PascalCase, hooks/utilities in camelCase, survey IDs like A1 or B5_1_1.
+- Tailwind classes ordered layout → spacing → typography; shared helpers live under src/lib.
+- Comments kept in English; admin and survey layouts stay distinct. Korean labels stored UTF-8 when needed.

@@ -1,0 +1,3 @@
+- Purpose: Next.js 14 App Router app for the 2025 medical overseas expansion survey, delivering both participant flows and an admin portal per PRD.md.
+- Core stack: TypeScript, Next.js 14, Tailwind CSS with shadcn/ui, Supabase backend, React Hook Form with Zod for validation.
+- Key assets: survey_schema.json drives questionnaire logic; PRD.md captures functional requirements; Supabase directory holds DB migrations/policies.

@@ -7,69 +7,86 @@ import { QuestionText } from "@/components/survey/QuestionText"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { NavigationButton } from "@/components/survey/NavigationButton"
 import { DevTools } from "@/components/survey/DevTools"
+import { useSurveyForm } from "@/components/survey/SurveyProvider"
 
 export default function ExpansionInfoPage() {
   const router = useRouter()
+  const { data, updateSection } = useSurveyForm()
+  const { expansionInfo } = data
   const [skipValidation, setSkipValidation] = useState(false)
 
-  // A1: 구분
-  const [orgType, setOrgType] = useState("")
+  const handleOrgTypeChange = (value: string) => {
+    if (value === "의료기관") {
+      updateSection("expansionInfo", {
+        orgType: value,
+        companyName: "",
+        companyCategory: ""
+      })
+    } else if (value === "회사") {
+      updateSection("expansionInfo", {
+        orgType: value,
+        medicalOrgName: "",
+        medicalOrgCategory: "",
+        foundationType: "",
+        legalType: ""
+      })
+    } else {
+      updateSection("expansionInfo", { orgType: value })
+    }
+  }
 
-  // A2: 의료기관 그룹
-  const [medicalOrgName, setMedicalOrgName] = useState("")
-  const [medicalOrgCategory, setMedicalOrgCategory] = useState("")
-  const [foundationType, setFoundationType] = useState("")
-  const [legalType, setLegalType] = useState("")
+  const handleFoundationTypeChange = (value: string) => {
+    updateSection("expansionInfo", {
+      foundationType: value,
+      ...(value === "법인" ? {} : { legalType: "" })
+    })
+  }
 
-  // A3: 회사 그룹
-  const [companyName, setCompanyName] = useState("")
-  const [companyCategory, setCompanyCategory] = useState("")
-
-  // 개발자 도구: 자동 채우기
   const handleAutoFill = () => {
-    setOrgType("의료기관")
-    setMedicalOrgName("서울대학교병원")
-    setMedicalOrgCategory("상급종합병원")
-    setFoundationType("법인")
-    setLegalType("의료법인")
+    updateSection("expansionInfo", {
+      orgType: "의료기관",
+      medicalOrgName: "서울대학교병원",
+      medicalOrgCategory: "상급종합병원",
+      foundationType: "법인",
+      legalType: "의료법인",
+      companyName: "",
+      companyCategory: ""
+    })
   }
 
   const validateForm = () => {
     if (skipValidation) return true
 
-    if (!orgType) {
+    if (!expansionInfo.orgType) {
       alert("기관 구분을 선택해주세요.")
       return false
     }
 
-    // A1이 의료기관인 경우
-    if (orgType === "의료기관") {
-      if (!medicalOrgName.trim()) {
+    if (expansionInfo.orgType === "의료기관") {
+      if (!expansionInfo.medicalOrgName.trim()) {
         alert("의료기관명을 입력해주세요.")
         return false
       }
-      if (!medicalOrgCategory) {
+      if (!expansionInfo.medicalOrgCategory) {
         alert("의료기관 구분을 선택해주세요.")
         return false
       }
-      if (!foundationType) {
+      if (!expansionInfo.foundationType) {
         alert("설립구분을 선택해주세요.")
         return false
       }
-      // 설립구분이 법인인 경우 법인 유형 필수
-      if (foundationType === "법인" && !legalType) {
+      if (expansionInfo.foundationType === "법인" && !expansionInfo.legalType) {
         alert("법인 유형을 선택해주세요.")
         return false
       }
     }
 
-    // A1이 회사인 경우
-    if (orgType === "회사") {
-      if (!companyName.trim()) {
+    if (expansionInfo.orgType === "회사") {
+      if (!expansionInfo.companyName.trim()) {
         alert("회사명을 입력해주세요.")
         return false
       }
-      if (!companyCategory) {
+      if (!expansionInfo.companyCategory) {
         alert("회사 구분을 선택해주세요.")
         return false
       }
@@ -90,39 +107,38 @@ export default function ExpansionInfoPage() {
 
   const isFormValid =
     skipValidation ||
-    (orgType &&
-      ((orgType === "의료기관" &&
-        medicalOrgName.trim() &&
-        medicalOrgCategory &&
-        foundationType &&
-        (foundationType !== "법인" || legalType)) ||
-        (orgType === "회사" && companyName.trim() && companyCategory)))
+    (expansionInfo.orgType &&
+      ((expansionInfo.orgType === "의료기관" &&
+        expansionInfo.medicalOrgName.trim() &&
+        expansionInfo.medicalOrgCategory &&
+        expansionInfo.foundationType &&
+        (expansionInfo.foundationType !== "법인" || expansionInfo.legalType)) ||
+        (expansionInfo.orgType === "회사" &&
+          expansionInfo.companyName.trim() &&
+          expansionInfo.companyCategory)))
 
   return (
     <SurveyLayout currentStep={2} totalSteps={5} onBack={handleBack} showBackButton={true}>
       <div className="space-y-10">
-        {/* Section Title */}
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 2</div>
           <h2 className="text-xl font-bold text-gray-900">의료 해외진출 기본 정보</h2>
           <p className="mt-2 text-sm text-gray-500">귀하의 기관 정보를 입력해주세요</p>
         </div>
 
-        {/* A1: 구분 */}
         <QuestionSingleChoice
           id="org-type"
           label="귀하의 기관 구분은 무엇입니까?"
           required={true}
           options={[
             { value: "의료기관", label: "의료기관" },
-            { value: "회사", label: "회사 (MSO 등)" },
+            { value: "회사", label: "회사 (MSO 등)" }
           ]}
-          value={orgType}
-          onChange={setOrgType}
+          value={expansionInfo.orgType}
+          onChange={handleOrgTypeChange}
         />
 
-        {/* A2 그룹: 의료기관 (show_if A1=의료기관) */}
-        {orgType === "의료기관" && (
+        {expansionInfo.orgType === "의료기관" && (
           <div className="space-y-6 rounded-lg border-2 border-blue-200 bg-blue-50 p-6">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-blue-900">의료기관 정보</h3>
@@ -133,8 +149,10 @@ export default function ExpansionInfoPage() {
               label="의료기관명"
               placeholder="예: 서울대학교병원"
               required={true}
-              value={medicalOrgName}
-              onChange={setMedicalOrgName}
+              value={expansionInfo.medicalOrgName}
+              onChange={(value) =>
+                updateSection("expansionInfo", { medicalOrgName: value })
+              }
             />
 
             <QuestionSingleChoice
@@ -152,10 +170,12 @@ export default function ExpansionInfoPage() {
                 { value: "요양병원", label: "요양병원" },
                 { value: "종합병원(100~300)", label: "종합병원 (100~300병상)" },
                 { value: "종합병원(300+)", label: "종합병원 (300병상 이상)" },
-                { value: "상급종합병원", label: "상급종합병원" },
+                { value: "상급종합병원", label: "상급종합병원" }
               ]}
-              value={medicalOrgCategory}
-              onChange={setMedicalOrgCategory}
+              value={expansionInfo.medicalOrgCategory}
+              onChange={(value) =>
+                updateSection("expansionInfo", { medicalOrgCategory: value })
+              }
             />
 
             <QuestionSingleChoice
@@ -169,14 +189,13 @@ export default function ExpansionInfoPage() {
                 { value: "사회적협동조합", label: "사회적협동조합" },
                 { value: "개인", label: "개인" },
                 { value: "군병원", label: "군병원" },
-                { value: "기타", label: "기타" },
+                { value: "기타", label: "기타" }
               ]}
-              value={foundationType}
-              onChange={setFoundationType}
+              value={expansionInfo.foundationType}
+              onChange={handleFoundationTypeChange}
             />
 
-            {/* 법인 유형 (show_if 설립=법인) */}
-            {foundationType === "법인" && (
+            {expansionInfo.foundationType === "법인" && (
               <QuestionSingleChoice
                 id="legal-type"
                 label="법인 유형"
@@ -189,48 +208,48 @@ export default function ExpansionInfoPage() {
                   { value: "사단", label: "사단법인" },
                   { value: "재단", label: "재단법인" },
                   { value: "회사", label: "회사법인" },
-                  { value: "의료법인", label: "의료법인" },
+                  { value: "의료법인", label: "의료법인" }
                 ]}
-                value={legalType}
-                onChange={setLegalType}
+                value={expansionInfo.legalType}
+                onChange={(value) => updateSection("expansionInfo", { legalType: value })}
               />
             )}
           </div>
         )}
 
-        {/* A3 그룹: 회사 (show_if A1=회사) */}
-        {orgType === "회사" && (
-          <div className="space-y-6 rounded-lg border-2 border-green-200 bg-green-50 p-6">
+        {expansionInfo.orgType === "회사" && (
+          <div className="space-y-6 rounded-lg border-2 border-emerald-200 bg-emerald-50 p-6">
             <div className="mb-4">
-              <h3 className="text-lg font-semibold text-green-900">회사 정보</h3>
+              <h3 className="text-lg font-semibold text-emerald-900">회사 정보</h3>
             </div>
 
             <QuestionText
               id="company-name"
               label="회사명"
-              placeholder="예: ㈜헬스케어코리아"
+              placeholder="예: K-MSO"
               required={true}
-              value={companyName}
-              onChange={setCompanyName}
+              value={expansionInfo.companyName}
+              onChange={(value) => updateSection("expansionInfo", { companyName: value })}
             />
 
             <QuestionSingleChoice
               id="company-category"
-              label="구분"
+              label="회사 구분"
               required={true}
               options={[
-                { value: "MSO", label: "MSO (병원경영지원회사)" },
+                { value: "MSO", label: "MSO(병원경영지원회사)" },
                 { value: "의료기기", label: "의료기기" },
                 { value: "의약품", label: "의약품" },
-                { value: "기타", label: "기타" },
+                { value: "기타", label: "기타" }
               ]}
-              value={companyCategory}
-              onChange={setCompanyCategory}
+              value={expansionInfo.companyCategory}
+              onChange={(value) =>
+                updateSection("expansionInfo", { companyCategory: value })
+              }
             />
           </div>
         )}
 
-        {/* Navigation */}
         <div className="mt-8">
           <NavigationButton onClick={handleNext} disabled={!isFormValid}>
             다음
@@ -238,7 +257,6 @@ export default function ExpansionInfoPage() {
         </div>
       </div>
 
-      {/* 개발자 도구 */}
       <DevTools onAutoFill={handleAutoFill} onSkipValidation={setSkipValidation} />
     </SurveyLayout>
   )

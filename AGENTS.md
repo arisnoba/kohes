@@ -1,5 +1,10 @@
 # Repository Guidelines
 
+# Project Instructions
+## Generate Commit Message
+- Use Korean
+- Follow Conventional Commits format (feat, fix, chore, etc.)
+
 ## Project Structure & Module Organization
 Use `PRD.md` as the product blueprint and `survey_schema.json` as the single source for questionnaire logic. Keep survey routes in `app/(survey)` and admin code in `app/(admin)`, with authentication handled in `app/(admin)/login` and protected dashboards in `app/(admin)/dashboard`. House shared UI, validation, and Supabase helpers in `src/lib`, store database artefacts in `supabase/`, and ignore generated CSV/JSON exports.
 

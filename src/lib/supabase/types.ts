@@ -1,6 +1,3 @@
-// Supabase database types will be generated here
-// Run: supabase gen types typescript --local > src/lib/supabase/types.ts
-
 export type Json =
   | string
   | number
@@ -14,29 +11,48 @@ export interface Database {
     Tables: {
       survey_responses: {
         Row: {
-          id: string
           created_at: string
-          updated_at: string
-          response_data: Json
-          pii_data: Json | null
+          id: string
           is_completed: boolean
+          organization_name: string | null
+          pii_data: Json | null
+          respondent_name: string | null
+          response_data: Json
+          reward_note: string | null
+          reward_sent_at: string | null
+          reward_status: "발송 대기" | "정보 확인 중" | "발송 완료"
+          submitted_at: string
+          updated_at: string
         }
         Insert: {
-          id?: string
           created_at?: string
-          updated_at?: string
-          response_data: Json
-          pii_data?: Json | null
+          id?: string
           is_completed?: boolean
+          organization_name?: string | null
+          pii_data?: Json | null
+          respondent_name?: string | null
+          response_data: Json
+          reward_note?: string | null
+          reward_sent_at?: string | null
+          reward_status?: "발송 대기" | "정보 확인 중" | "발송 완료"
+          submitted_at?: string
+          updated_at?: string
         }
         Update: {
-          id?: string
           created_at?: string
-          updated_at?: string
-          response_data?: Json
-          pii_data?: Json | null
+          id?: string
           is_completed?: boolean
+          organization_name?: string | null
+          pii_data?: Json | null
+          respondent_name?: string | null
+          response_data?: Json
+          reward_note?: string | null
+          reward_sent_at?: string | null
+          reward_status?: "발송 대기" | "정보 확인 중" | "발송 완료"
+          submitted_at?: string
+          updated_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
@@ -48,6 +64,8 @@ export interface Database {
     Enums: {
       [_ in never]: never
     }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }
-

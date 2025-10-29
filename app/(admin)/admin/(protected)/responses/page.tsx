@@ -1,3 +1,5 @@
+import { fetchSurveyResponses, isMissingTableError } from "@/lib/supabase/responses"
+import type { RewardStatus } from "@/lib/supabase/responses"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -5,59 +7,59 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table"
 
-interface AdminResponseRow {
-  id: string
-  respondent: string
-  organization: string
-  rewardStatus: "발송 완료" | "발송 대기" | "정보 확인 중"
-  rewardSentAt?: Date
-  submittedAt: Date
-}
-
 const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
-  year: "2-digit",
+  year: "numeric",
   month: "2-digit",
   day: "2-digit",
   hour: "2-digit",
-  minute: "2-digit",
+  minute: "2-digit"
 })
 
-const MOCK_RESPONSES: AdminResponseRow[] = Array.from({ length: 24 }).map((_, index) => {
-  const submittedAt = new Date()
-  submittedAt.setMinutes(submittedAt.getMinutes() - index * 19)
+export default async function ResponsesPage() {
+  const { responses, error } = await fetchSurveyResponses()
 
-  let rewardStatus: AdminResponseRow["rewardStatus"] = "발송 완료"
-  let rewardSentAt: Date | undefined = new Date(submittedAt.getTime() + 15 * 60 * 1000)
-
-  if (index % 4 === 0) {
-    rewardStatus = "발송 대기"
-    rewardSentAt = undefined
-  } else if (index % 4 === 1) {
-    rewardStatus = "정보 확인 중"
-    rewardSentAt = undefined
+  if (isMissingTableError(error)) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
+          <p className="font-semibold">survey_responses 테이블을 찾을 수 없습니다.</p>
+          <p className="mt-2">Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.</p>
+          <ol className="mt-3 list-decimal space-y-2 pl-5">
+            <li>
+              `supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.
+            </li>
+            <li>`pnpm supabase db push` 명령으로 마이그레이션을 적용합니다.</li>
+            <li>필요 시 `pnpm supabase:start`로 로컬 Supabase를 먼저 실행합니다.</li>
+          </ol>
+        </div>
+      </div>
+    )
   }
 
-  return {
-    id: `RESP-${202500 + index}`,
-    respondent: `응답자 ${index + 1}`,
-    organization: index % 3 === 0 ? "서울의료원" : index % 3 === 1 ? "K-MSO" : "해외진출지원단",
-    rewardStatus,
-    rewardSentAt,
-    submittedAt,
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
+        <div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-sm text-destructive">
+          <p className="font-semibold">Supabase에서 데이터를 가져오는 중 오류가 발생했습니다.</p>
+          <p className="mt-2">{error.message}</p>
+        </div>
+      </div>
+    )
   }
-})
 
-export default function ResponsesPage() {
+  const hasResponses = responses.length > 0
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
         <p className="text-sm text-muted-foreground">
-          실제 응답 데이터가 연동되기 전까지는 모의 데이터가 표시됩니다. 리워드 발송 현황 중심으로
-          컬럼이 구성되어 있습니다.
+          Supabase `survey_responses` 테이블과 연결되어 리워드 발송 현황을 확인할 수 있습니다.
         </p>
       </div>
 
@@ -71,40 +73,57 @@ export default function ResponsesPage() {
               <TableHead className="min-w-[160px]">제출 시간</TableHead>
               <TableHead className="w-[140px]">리워드 상태</TableHead>
               <TableHead className="w-[160px]">리워드 발송일</TableHead>
+              <TableHead>메모</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {MOCK_RESPONSES.map((response) => (
-              <TableRow key={response.id}>
-                <TableCell className="font-medium text-foreground">{response.id}</TableCell>
-                <TableCell>{response.respondent}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {response.organization}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {DATE_FORMATTER.format(response.submittedAt)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusToVariant(response.rewardStatus)}>
-                    {response.rewardStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {response.rewardSentAt ? DATE_FORMATTER.format(response.rewardSentAt) : "-"}
+            {hasResponses ? (
+              responses.map((response) => (
+                <TableRow key={response.id}>
+                  <TableCell className="font-medium text-foreground">{response.id}</TableCell>
+                  <TableCell>{response.respondentName ?? "-"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {response.organizationName ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatDate(response.submittedAt)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusToVariant(response.rewardStatus)}>
+                      {response.rewardStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {response.rewardSentAt ? formatDate(response.rewardSentAt) : "-"}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {response.rewardNote ?? "-"}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                  아직 저장된 응답이 없습니다. 설문 제출 후 이곳에 최신 응답이 표시됩니다.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
       <p className="text-xs text-muted-foreground">
-        ※ 페이지네이션과 검색은 실제 데이터 연동 시 Supabase 쿼리에 맞춰 확장하세요.
+        ※ 테이블 구조는 `supabase/migrations/20240127000000_create_survey_responses.sql`에서 확인할 수 있습니다.
       </p>
     </div>
   )
 }
 
-function statusToVariant(status: AdminResponseRow["rewardStatus"]) {
+function formatDate(value: string | null) {
+  if (!value) return "-"
+  return DATE_FORMATTER.format(new Date(value))
+}
+
+function statusToVariant(status: RewardStatus) {
   switch (status) {
     case "발송 완료":
       return "default" as const

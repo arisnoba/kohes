@@ -99,7 +99,7 @@ export default function IntroPage() {
         </div>
 
         {/* Start Button */}
-        <div className="sticky bottom-6">
+        <div className="mt-8">
           <NavigationButton onClick={handleStart}>설문 시작하기</NavigationButton>
         </div>
       </div>

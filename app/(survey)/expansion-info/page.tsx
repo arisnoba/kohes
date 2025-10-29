@@ -233,7 +233,7 @@ export default function ExpansionInfoPage() {
         )}
 
         {/* Navigation */}
-        <div className="sticky bottom-6">
+        <div className="mt-8">
           <NavigationButton onClick={handleNext} disabled={!isFormValid}>
             다음
           </NavigationButton>

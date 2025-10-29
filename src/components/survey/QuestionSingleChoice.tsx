@@ -53,10 +53,6 @@ export function QuestionSingleChoice({
     onOtherChange?.(newValue)
   }
 
-  // "기타" 옵션이 있는지 확인
-  const hasOtherOption = options.some((opt) => opt.value === "기타")
-  const isOtherSelected = selectedValue === "기타"
-
   return (
     <div className="space-y-6">
       <label className="block text-2xl font-semibold text-gray-900">
@@ -65,46 +61,53 @@ export function QuestionSingleChoice({
       </label>
 
       <div className="space-y-2">
-        {options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => handleSelect(option.value)}
-            className={`w-full rounded-lg border-2 px-6 py-4 text-left text-base transition-all ${
-              selectedValue === option.value
-                ? "border-blue-600 bg-blue-50 text-blue-900"
-                : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`h-5 w-5 rounded-full border-2 transition-all ${
-                  selectedValue === option.value ? "border-blue-600 bg-blue-600" : "border-gray-300"
+        {options.map((option) => {
+          const isOtherOption = option.value === "기타"
+          const isSelected = selectedValue === option.value
+
+          return (
+            <div key={option.value}>
+              <button
+                type="button"
+                onClick={() => handleSelect(option.value)}
+                className={`w-full rounded-lg border-2 px-6 py-4 text-left text-base transition-all ${
+                  isSelected
+                    ? "border-blue-600 bg-blue-50 text-blue-900"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {selectedValue === option.value && (
-                  <div className="flex h-full items-center justify-center">
-                    <div className="h-2 w-2 rounded-full bg-white" />
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`h-5 w-5 rounded-full border-2 transition-all ${
+                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                    }`}
+                  >
+                    {isSelected && (
+                      <div className="flex h-full items-center justify-center">
+                        <div className="h-2 w-2 rounded-full bg-white" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-medium">{option.label}</span>
+                </div>
+
+                {/* 기타 입력 필드 - 버튼 내부 */}
+                {isOtherOption && isSelected && (
+                  <div className="mt-4 pt-4 border-t border-blue-300">
+                    <input
+                      type="text"
+                      value={otherText}
+                      onChange={handleOtherChange}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder="기타 내용을 입력해주세요"
+                      className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
+                    />
                   </div>
                 )}
-              </div>
-              <span className="font-medium">{option.label}</span>
+              </button>
             </div>
-          </button>
-        ))}
-
-        {/* 기타 입력 필드 */}
-        {hasOtherOption && isOtherSelected && (
-          <div className="ml-8 mt-3 rounded-lg border-2 border-blue-300 bg-blue-50 p-4">
-            <input
-              type="text"
-              value={otherText}
-              onChange={handleOtherChange}
-              placeholder="기타 내용을 입력해주세요"
-              className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
-            />
-          </div>
-        )}
+          )
+        })}
       </div>
     </div>
   )

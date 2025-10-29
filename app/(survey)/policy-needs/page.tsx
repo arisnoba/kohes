@@ -58,7 +58,7 @@ export default function PolicyNeedsPage() {
         />
 
         {/* Navigation */}
-        <div className="sticky bottom-6">
+        <div className="mt-8">
           <NavigationButton
             onClick={handleNext}
             disabled={!awareness}

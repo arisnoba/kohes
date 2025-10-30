@@ -33,7 +33,7 @@ export function createSupabaseClient() {
   )
 }
 
-// For server-side usage
+// For server-side usage with Service Role Key (관리자 작업용)
 export function createSupabaseServerClient() {
   // 서버 사이드에서 추가 환경변수 체크
   if (process.env.NODE_ENV === "development") {

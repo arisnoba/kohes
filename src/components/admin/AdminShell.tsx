@@ -8,6 +8,7 @@ import {
   FileSpreadsheet,
   LayoutDashboard,
   ListChecks,
+  Lock,
   LogOut,
   Menu,
   X,
@@ -48,6 +49,11 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/exports",
     label: "데이터 내보내기",
     icon: FileSpreadsheet,
+  },
+  {
+    href: "/admin/password",
+    label: "비밀번호 관리",
+    icon: Lock,
   },
 ]
 

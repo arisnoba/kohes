@@ -101,46 +101,47 @@ export function QuestionRankChoice({
           const isOtherOption = option.value === "기타"
 
           return (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => handleSelect(option.value)}
-              disabled={rankedItems.length >= maxRanks && !selected}
-              className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all disabled:cursor-not-allowed disabled:opacity-50 ${selected
-                  ? "border-blue-600 bg-blue-50 text-blue-900"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+            <div key={option.value}>
+              <button
+                type="button"
+                onClick={() => handleSelect(option.value)}
+                disabled={rankedItems.length >= maxRanks && !selected}
+                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+                  selected
+                    ? "border-blue-600 bg-blue-50 text-blue-900"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                 }`}
-            >
-              <div className="flex items-center gap-3">
-                {rankNumbers.length > 0 && (
-                  <div className="flex gap-1">
-                    {rankNumbers.map((rank, idx) => (
-                      <span
-                        key={idx}
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
-                      >
-                        {rank}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <span className="font-medium">{option.label}</span>
-              </div>
+              >
+                <div className="flex items-center gap-3">
+                  {rankNumbers.length > 0 && (
+                    <div className="flex gap-1">
+                      {rankNumbers.map((rank, idx) => (
+                        <span
+                          key={idx}
+                          className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white"
+                        >
+                          {rank}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <span className="font-medium">{option.label}</span>
+                </div>
+              </button>
 
-              {/* 기타 입력 필드 - 버튼 내부 */}
+              {/* 기타 입력 필드 - 버튼 외부 */}
               {isOtherOption && selected && (
-                <div className="mt-4 pt-2 border-blue-300">
+                <div className="mt-2 rounded-lg border-2 border-blue-300 bg-blue-50 px-4 py-3">
                   <input
                     type="text"
                     value={otherText}
                     onChange={handleOtherChange}
-                    onClick={(e) => e.stopPropagation()}
                     placeholder="기타 내용을 입력해주세요"
                     className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
                   />
                 </div>
               )}
-            </button>
+            </div>
           )
         })}
       </div>

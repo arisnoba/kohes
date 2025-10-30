@@ -54,12 +54,83 @@ export interface Database {
         }
         Relationships: []
       }
+      export_passwords: {
+        Row: {
+          id: string
+          password_hash: string
+          created_at: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          password_hash: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          password_hash?: string
+          created_at?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      export_logs: {
+        Row: {
+          id: string
+          user_id: string
+          export_type: "all" | "response" | "pii"
+          export_format: "csv" | "json"
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          export_type: "all" | "response" | "pii"
+          export_format: "csv" | "json"
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          export_type?: "all" | "response" | "pii"
+          export_format?: "csv" | "json"
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      verify_export_password: {
+        Args: { input_password: string }
+        Returns: boolean
+      }
+      update_export_password: {
+        Args: { old_password: string; new_password: string; user_id: string }
+        Returns: boolean
+      }
+      log_export: {
+        Args: {
+          p_user_id: string
+          p_export_type: "all" | "response" | "pii"
+          p_export_format: "csv" | "json"
+          p_ip_address?: string
+          p_user_agent?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

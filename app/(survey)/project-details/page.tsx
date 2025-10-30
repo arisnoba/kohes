@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
@@ -18,7 +19,7 @@ export default function ProjectDetailsPage() {
   const [showErrors, setShowErrors] = useState(false)
   const canAccess = useSurveyStepGuard("project-details")
 
-  useEffect(() => { }, [])
+  useEffect(() => {}, [])
 
   if (!canAccess) {
     return null
@@ -46,9 +47,11 @@ export default function ProjectDetailsPage() {
     setShowErrors(true)
 
     if (!projectDetails.expansionTiming) {
-      alert("진출 시기를 선택해주세요.")
+      toast.error("진출 시기를 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("expansion-timing")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("expansion-timing")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
@@ -64,15 +67,17 @@ export default function ProjectDetailsPage() {
     }
 
     if (!projectDetails.expansionReason) {
-      alert("진출 이유를 선택해주세요.")
+      toast.error("진출 이유를 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("expansion-reason")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("expansion-reason")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (projectDetails.services.length === 0) {
-      alert("제공하는 서비스를 하나 이상 선택해주세요.")
+      toast.error("제공하는 서비스를 하나 이상 선택해주세요.")
       setTimeout(() => {
         document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
@@ -90,34 +95,42 @@ export default function ProjectDetailsPage() {
         return
       }
       if (!projectDetails.reportingAwareness1) {
-        alert("신고 의무 인지 여부를 선택해주세요.")
+        toast.error("신고 의무 인지 여부를 선택해주세요.")
         setTimeout(() => {
-          document.getElementById("reporting-awareness-1")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          document
+            .getElementById("reporting-awareness-1")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" })
         }, 100)
         return
       }
     }
 
     if (needsReportingAwareness2 && !projectDetails.reportingAwareness2) {
-      alert("신고 의무 인지 여부를 선택해주세요.")
+      toast.error("신고 의무 인지 여부를 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("reporting-awareness-2")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("reporting-awareness-2")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (projectDetails.departments.length === 0) {
-      alert("진출 진료과를 하나 이상 선택해주세요.")
+      toast.error("진출 진료과를 하나 이상 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("departments")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("departments")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (!projectDetails.hasEvidence) {
-      alert("증빙 자료 존재 여부를 선택해주세요.")
+      toast.error("증빙 자료 존재 여부를 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("has-evidence")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("has-evidence")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
@@ -212,7 +225,11 @@ export default function ProjectDetailsPage() {
           value={projectDetails.targetCountries}
           onChange={(value) => updateSection("projectDetails", { targetCountries: value })}
           validate={validateTargetCountries}
-          error={showErrors ? validateTargetCountries(projectDetails.targetCountries) || undefined : undefined}
+          error={
+            showErrors
+              ? validateTargetCountries(projectDetails.targetCountries) || undefined
+              : undefined
+          }
         />
 
         <QuestionSingleChoice
@@ -269,7 +286,11 @@ export default function ProjectDetailsPage() {
               value={projectDetails.projectName}
               onChange={(value) => updateSection("projectDetails", { projectName: value })}
               validate={validateProjectName}
-              error={showErrors ? validateProjectName(projectDetails.projectName) || undefined : undefined}
+              error={
+                showErrors
+                  ? validateProjectName(projectDetails.projectName) || undefined
+                  : undefined
+              }
             />
 
             <QuestionSingleChoice
@@ -368,9 +389,7 @@ export default function ProjectDetailsPage() {
         />
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext}>
-            다음
-          </NavigationButton>
+          <NavigationButton onClick={handleNext}>다음</NavigationButton>
         </div>
       </div>
     </SurveyLayout>

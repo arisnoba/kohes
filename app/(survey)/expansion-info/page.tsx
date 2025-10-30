@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
@@ -68,7 +69,7 @@ export default function ExpansionInfoPage() {
     // 기관 구분 체크
     if (!expansionInfo.orgType) {
       setShowErrors(true)
-      alert("기관 구분을 선택해주세요.")
+      toast.error("기관 구분을 선택해주세요.")
       setTimeout(() => {
         document.getElementById("org-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
@@ -79,7 +80,11 @@ export default function ExpansionInfoPage() {
     if (expansionInfo.orgType === "의료기관") {
       const medicalOrgNameError = validateMedicalOrgName(expansionInfo.medicalOrgName)
 
-      if (medicalOrgNameError || !expansionInfo.medicalOrgCategory || !expansionInfo.foundationType) {
+      if (
+        medicalOrgNameError ||
+        !expansionInfo.medicalOrgCategory ||
+        !expansionInfo.foundationType
+      ) {
         setShowErrors(true)
 
         if (medicalOrgNameError) {
@@ -89,24 +94,29 @@ export default function ExpansionInfoPage() {
             element?.scrollIntoView({ behavior: "smooth", block: "center" })
           }, 100)
         } else if (!expansionInfo.medicalOrgCategory) {
-          alert("의료기관의 유형을 선택해주세요.")
-          console.log("g")
+          toast.error("의료기관의 유형을 선택해주세요.")
           setTimeout(() => {
-            document.getElementById("medical-org-category")?.scrollIntoView({ behavior: "smooth", block: "center" })
+            document
+              .getElementById("medical-org-category")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" })
           }, 100)
         } else if (!expansionInfo.foundationType) {
-          alert("의료기관의 설립유형을 선택해주세요.")
+          toast.error("의료기관의 설립유형을 선택해주세요.")
           setTimeout(() => {
-            document.getElementById("foundation-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+            document
+              .getElementById("foundation-type")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" })
           }, 100)
         }
         return
       }
 
       if (expansionInfo.foundationType === "법인" && !expansionInfo.legalType) {
-        alert("법인 유형을 선택해주세요.")
+        toast.error("법인 유형을 선택해주세요.")
         setTimeout(() => {
-          document.getElementById("legal-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          document
+            .getElementById("legal-type")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" })
         }, 100)
         return
       }
@@ -126,9 +136,11 @@ export default function ExpansionInfoPage() {
             element?.scrollIntoView({ behavior: "smooth", block: "center" })
           }, 100)
         } else if (!expansionInfo.companyCategory) {
-          alert("회사 구분을 선택해주세요.")
+          toast.error("회사 구분을 선택해주세요.")
           setTimeout(() => {
-            document.getElementById("company-category")?.scrollIntoView({ behavior: "smooth", block: "center" })
+            document
+              .getElementById("company-category")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" })
           }, 100)
         }
         return
@@ -177,7 +189,11 @@ export default function ExpansionInfoPage() {
               value={expansionInfo.medicalOrgName}
               onChange={(value) => updateSection("expansionInfo", { medicalOrgName: value })}
               validate={validateMedicalOrgName}
-              error={showErrors ? validateMedicalOrgName(expansionInfo.medicalOrgName) || undefined : undefined}
+              error={
+                showErrors
+                  ? validateMedicalOrgName(expansionInfo.medicalOrgName) || undefined
+                  : undefined
+              }
             />
 
             <QuestionSingleChoice
@@ -255,7 +271,9 @@ export default function ExpansionInfoPage() {
               value={expansionInfo.companyName}
               onChange={(value) => updateSection("expansionInfo", { companyName: value })}
               validate={validateCompanyName}
-              error={showErrors ? validateCompanyName(expansionInfo.companyName) || undefined : undefined}
+              error={
+                showErrors ? validateCompanyName(expansionInfo.companyName) || undefined : undefined
+              }
             />
 
             <QuestionSingleChoice
@@ -275,9 +293,7 @@ export default function ExpansionInfoPage() {
         )}
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext}>
-            다음
-          </NavigationButton>
+          <NavigationButton onClick={handleNext}>다음</NavigationButton>
         </div>
       </div>
     </SurveyLayout>

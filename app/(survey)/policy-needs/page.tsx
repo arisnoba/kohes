@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { QuestionRankChoice } from "@/components/survey/QuestionRankChoice"
@@ -21,33 +22,41 @@ export default function PolicyNeedsPage() {
 
   const handleNext = () => {
     if (policyNeeds.difficultiesRank.length !== 9) {
-      alert("어려움 순위 9개 항목을 순서대로 선택해주세요")
+      toast.error("어려움 순위 9개 항목을 순서대로 선택해주세요")
       setTimeout(() => {
-        document.getElementById("difficulties-rank")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("difficulties-rank")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (policyNeeds.supportNeedsRank.length !== 8) {
-      alert("지원 필요 순위 8개 항목을 순서대로 선택해주세요")
+      toast.error("지원 필요 순위 8개 항목을 순서대로 선택해주세요")
       setTimeout(() => {
-        document.getElementById("support-needs-rank")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("support-needs-rank")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (!policyNeeds.desiredSupport) {
-      alert("희망하는 지원 사업을 선택해주세요.")
+      toast.error("희망하는 지원 사업을 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("desired-support")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("desired-support")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
 
     if (!policyNeeds.awareness) {
-      alert("KOHES 인지도를 선택해주세요.")
+      toast.error("KOHES 인지도를 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("awareness")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document
+          .getElementById("awareness")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 100)
       return
     }
@@ -182,9 +191,12 @@ export default function PolicyNeedsPage() {
           label="KOHES(한국보건산업진흥원) 인지도를 선택해주세요."
           required={true}
           options={[
-            { value: "방문", label: "방문한 적 있다." },
-            { value: "들어봄", label: "방문한 적은 없지만, 들어본 적 있다." },
-            { value: "모름", label: "들어본 적 없다." },
+            { value: "방문한 적 있다.", label: "방문한 적 있다." },
+            {
+              value: "방문한 적은 없지만, 들어본 적 있다.",
+              label: "방문한 적은 없지만, 들어본 적 있다.",
+            },
+            { value: "들어본 적 없다.", label: "들어본 적 없다." },
           ]}
           value={policyNeeds.awareness}
           onChange={(value) => updateSection("policyNeeds", { awareness: value })}
@@ -199,9 +211,7 @@ export default function PolicyNeedsPage() {
         />
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext}>
-            제출
-          </NavigationButton>
+          <NavigationButton onClick={handleNext}>제출</NavigationButton>
         </div>
       </div>
     </SurveyLayout>

@@ -69,7 +69,7 @@ export function ResponseRow({ response, order }: ResponseRowProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">전체 응답 내용</h3>
-                <p className="text-xs text-red-500">민감 정보는 마스킹 처리됩니다.</p>
+                {/* <p className="text-xs text-red-500">민감 정보는 마스킹 처리됩니다.</p> */}
               </div>
               <div className="rounded-lg border bg-background p-4">
                 <ResponseDetailView response={response} />

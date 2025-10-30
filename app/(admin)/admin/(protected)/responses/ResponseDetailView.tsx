@@ -1,4 +1,18 @@
+import type { ReactNode } from "react"
+
 import type { AdminResponseSummary } from "@/lib/supabase/responses"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
+import { Lock } from "lucide-react"
+
+const DATETIME_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+})
 
 interface ResponseDetailViewProps {
   response: AdminResponseSummary
@@ -11,184 +25,207 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     return <div className="text-sm text-muted-foreground">응답 데이터가 없습니다.</div>
   }
 
+  const basicInfo = {
+    name: maskPII(piiData, "name"),
+    position: extractValue(responseData, ["basicInfo", "position"]),
+    tel: maskPII(piiData, "tel"),
+    mobile: maskPII(piiData, "mobile"),
+    email: maskPII(piiData, "email"),
+    address: maskPII(piiData, "address"),
+  }
+
+  const expansionInfo = {
+    orgType: extractValue(responseData, ["expansionInfo", "orgType"]),
+    medicalOrgName: extractValue(responseData, ["expansionInfo", "medicalOrgName"]),
+    medicalOrgCategory: extractValue(responseData, ["expansionInfo", "medicalOrgCategory"]),
+    foundationType: extractValue(responseData, ["expansionInfo", "foundationType"]),
+    legalType: extractValue(responseData, ["expansionInfo", "legalType"]),
+    companyName: extractValue(responseData, ["expansionInfo", "companyName"]),
+    companyCategory: extractValue(responseData, ["expansionInfo", "companyCategory"]),
+  }
+
+  const projectDetails = {
+    expansionTiming: extractValue(responseData, ["projectDetails", "expansionTiming"]),
+    targetCountries: extractArray(responseData, ["projectDetails", "targetCountries"]),
+    expansionReason: extractValue(responseData, ["projectDetails", "expansionReason"]),
+    services: extractArray(responseData, ["projectDetails", "services"]),
+    projectName: extractValue(responseData, ["projectDetails", "projectName"]),
+    reportingAwareness1: extractValue(responseData, ["projectDetails", "reportingAwareness1"]),
+    reportingAwareness2: extractValue(responseData, ["projectDetails", "reportingAwareness2"]),
+    departments: extractArray(responseData, ["projectDetails", "departments"]),
+    hasEvidence: extractValue(responseData, ["projectDetails", "hasEvidence"]),
+  }
+
+  const policyNeeds = {
+    difficultiesRank: extractArray(responseData, ["policyNeeds", "difficultiesRank"]),
+    difficultiesOther: extractValue(responseData, ["policyNeeds", "difficultiesOther"]),
+    supportNeedsRank: extractArray(responseData, ["policyNeeds", "supportNeedsRank"]),
+    supportNeedsOther: extractValue(responseData, ["policyNeeds", "supportNeedsOther"]),
+    desiredSupport: extractValue(responseData, ["policyNeeds", "desiredSupport"]),
+    awareness: extractValue(responseData, ["policyNeeds", "awareness"]),
+    additionalComments: extractValue(responseData, ["policyNeeds", "additionalComments"]),
+  }
+
+  const hasExpansionInfo = Object.values(expansionInfo).some((value) => Boolean(value))
+  const hasProjectDetails =
+    projectDetails.targetCountries.length > 0 ||
+    projectDetails.services.length > 0 ||
+    projectDetails.departments.length > 0 ||
+    Boolean(
+      projectDetails.expansionTiming ||
+        projectDetails.expansionReason ||
+        projectDetails.projectName ||
+        projectDetails.reportingAwareness1 ||
+        projectDetails.reportingAwareness2 ||
+        projectDetails.hasEvidence
+    )
+  const hasPolicyNeeds =
+    policyNeeds.difficultiesRank.length > 0 ||
+    policyNeeds.supportNeedsRank.length > 0 ||
+    Boolean(
+      policyNeeds.difficultiesOther ||
+        policyNeeds.supportNeedsOther ||
+        policyNeeds.desiredSupport ||
+        policyNeeds.awareness ||
+        policyNeeds.additionalComments
+    )
+
   return (
-    <div className="space-y-6">
-      {/* Basic Info Section */}
-      <section className="space-y-3">
-        <h4 className="text-sm font-semibold">기본 정보</h4>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <DetailItem label="성명" value={maskPII(piiData, "name")} sensitive />
-          <DetailItem label="직책" value={extractValue(responseData, ["basicInfo", "position"])} />
-          <DetailItem label="연락처 (Tel)" value={maskPII(piiData, "tel")} sensitive />
-          <DetailItem label="연락처 (Mobile)" value={maskPII(piiData, "mobile")} sensitive />
-          <DetailItem label="이메일" value={maskPII(piiData, "email")} sensitive />
-          <DetailItem label="주소" value={maskPII(piiData, "address")} sensitive />
-        </div>
-      </section>
+    <div className="space-y-8">
+      {/* <DetailSection title="응답 요약">
+        <DetailItem label="응답 ID" value={response.id} />
+        <DetailItem label="소속" value={response.organizationName} />
+        <DetailItem label="기관 유형" value={response.orgType} />
+        <DetailItem label="진출 시기" value={response.expansionTiming} />
+        <DetailItem label="제출 일시" value={formatDateValue(response.submittedAt)} />
+      </DetailSection> */}
 
-      {/* Expansion Info Section */}
-      {responseData.expansionInfo != null && (
-        <section className="space-y-3">
-          <h4 className="text-sm font-semibold">A. 기관 유형</h4>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <DetailItem
-              label="A1. 기관 유형"
-              value={extractValue(responseData, ["expansionInfo", "orgType"])}
-            />
-            {extractValue(responseData, ["expansionInfo", "medicalOrgName"]) && (
-              <>
-                <DetailItem
-                  label="A2. 의료기관명"
-                  value={extractValue(responseData, ["expansionInfo", "medicalOrgName"])}
-                />
-                <DetailItem
-                  label="A2. 의료기관 종류"
-                  value={extractValue(responseData, ["expansionInfo", "medicalOrgCategory"])}
-                />
-                <DetailItem
-                  label="A2. 설립 형태"
-                  value={extractValue(responseData, ["expansionInfo", "foundationType"])}
-                />
-                {extractValue(responseData, ["expansionInfo", "legalType"]) && (
-                  <DetailItem
-                    label="A2. 법인 유형"
-                    value={extractValue(responseData, ["expansionInfo", "legalType"])}
-                  />
-                )}
-              </>
-            )}
-            {extractValue(responseData, ["expansionInfo", "companyName"]) && (
-              <>
-                <DetailItem
-                  label="A3. 회사명"
-                  value={extractValue(responseData, ["expansionInfo", "companyName"])}
-                />
-                <DetailItem
-                  label="A3. 회사 유형"
-                  value={extractValue(responseData, ["expansionInfo", "companyCategory"])}
-                />
-              </>
-            )}
-          </div>
-        </section>
-      )}
+      <DetailSection title="기본 정보" description="민감 정보는 잠금 아이콘으로 표시됩니다.">
+        <DetailItem label="성명" value={basicInfo.name} sensitive />
+        <DetailItem label="직책" value={basicInfo.position} />
+        <DetailItem label="전화번호" value={basicInfo.tel} sensitive />
+        <DetailItem label="휴대전화" value={basicInfo.mobile} sensitive />
+        <DetailItem label="이메일" value={basicInfo.email} sensitive />
+        <DetailItem label="주소" value={basicInfo.address} sensitive span />
+      </DetailSection>
 
-      {/* Project Details Section */}
-      {responseData.projectDetails != null && (
-        <section className="space-y-3">
-          <h4 className="text-sm font-semibold">B. 프로젝트 세부사항</h4>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <DetailItem
-              label="B1. 진출 시기"
-              value={extractValue(responseData, ["projectDetails", "expansionTiming"])}
-            />
-            <DetailItem
-              label="B2. 진출 국가"
-              value={extractArray(responseData, ["projectDetails", "targetCountries"])}
-            />
-            <DetailItem
-              label="B3. 진출 이유"
-              value={extractValue(responseData, ["projectDetails", "expansionReason"])}
-            />
-            <DetailItem
-              label="B4. 서비스 유형"
-              value={extractArray(responseData, ["projectDetails", "services"])}
-            />
-            {extractValue(responseData, ["projectDetails", "projectName"]) && (
-              <>
-                <DetailItem
-                  label="B5. 프로젝트명"
-                  value={extractValue(responseData, ["projectDetails", "projectName"])}
-                />
-                <DetailItem
-                  label="B5. 보고 여부 인지"
-                  value={extractValue(responseData, ["projectDetails", "reportingAwareness1"])}
-                />
-              </>
-            )}
-            {extractValue(responseData, ["projectDetails", "reportingAwareness2"]) && (
-              <DetailItem
-                label="B5. 보고 의무 인지"
-                value={extractValue(responseData, ["projectDetails", "reportingAwareness2"])}
-              />
-            )}
-            <DetailItem
-              label="B6. 진출 진료과"
-              value={extractArray(responseData, ["projectDetails", "departments"])}
-            />
-            <DetailItem
-              label="B7. 증빙자료 보유"
-              value={extractValue(responseData, ["projectDetails", "hasEvidence"])}
-            />
-          </div>
-        </section>
-      )}
+      {hasExpansionInfo ? (
+        <DetailSection title="A. 기관 유형">
+          <DetailItem label="기관 유형" value={expansionInfo.orgType} />
+          <DetailItem label="회사명" value={expansionInfo.companyName} />
+          <DetailItem label="회사 구분" value={expansionInfo.companyCategory} />
+          <DetailItem label="의료기관명" value={expansionInfo.medicalOrgName} />
+          <DetailItem label="의료기관 구분" value={expansionInfo.medicalOrgCategory} />
+          <DetailItem label="설립 구분" value={expansionInfo.foundationType} />
+          <DetailItem label="법인 유형" value={expansionInfo.legalType} />
+        </DetailSection>
+      ) : null}
 
-      {/* Policy Needs Section */}
-      {responseData.policyNeeds != null && (
-        <section className="space-y-3">
-          <h4 className="text-sm font-semibold">C. 정책 수요</h4>
-          <div className="space-y-3">
-            <DetailItem
-              label="C1. 어려움 순위"
-              value={extractArray(responseData, ["policyNeeds", "difficultiesRank"])}
-            />
-            {extractValue(responseData, ["policyNeeds", "difficultiesOther"]) && (
-              <DetailItem
-                label="C1. 기타 어려움"
-                value={extractValue(responseData, ["policyNeeds", "difficultiesOther"])}
-              />
-            )}
-            <DetailItem
-              label="C2. 지원 필요 순위"
-              value={extractArray(responseData, ["policyNeeds", "supportNeedsRank"])}
-            />
-            {extractValue(responseData, ["policyNeeds", "supportNeedsOther"]) && (
-              <DetailItem
-                label="C2. 기타 지원 필요"
-                value={extractValue(responseData, ["policyNeeds", "supportNeedsOther"])}
-              />
-            )}
-            <DetailItem
-              label="C3. 희망 지원 사업"
-              value={extractValue(responseData, ["policyNeeds", "desiredSupport"])}
-            />
-            <DetailItem
-              label="C4. KOHES 포털 인지"
-              value={extractValue(responseData, ["policyNeeds", "awareness"])}
-            />
-            {extractValue(responseData, ["policyNeeds", "additionalComments"]) && (
-              <DetailItem
-                label="C5. 추가 의견"
-                value={extractValue(responseData, ["policyNeeds", "additionalComments"])}
-                className="sm:col-span-2"
-              />
-            )}
-          </div>
-        </section>
-      )}
+      {hasProjectDetails ? (
+        <DetailSection title="B. 프로젝트 세부사항">
+          <DetailItem label="진출 시기" value={projectDetails.expansionTiming} />
+          <DetailItem label="진출 이유" value={projectDetails.expansionReason} />
+          <DetailItem
+            label="진출 국가"
+            values={projectDetails.targetCountries}
+            span={projectDetails.targetCountries.length > 2}
+          />
+          <DetailItem
+            label="제공 서비스"
+            values={projectDetails.services}
+            span={projectDetails.services.length > 2}
+          />
+          <DetailItem label="프로젝트명" value={projectDetails.projectName} span />
+          <DetailItem
+            label="신고 의무 인지 (진출 완료)"
+            value={projectDetails.reportingAwareness1}
+          />
+          <DetailItem
+            label="신고 의무 인지 (기획 단계)"
+            value={projectDetails.reportingAwareness2}
+          />
+          <DetailItem
+            label="관련 부처"
+            values={projectDetails.departments}
+            span={projectDetails.departments.length > 2}
+          />
+          <DetailItem label="증빙 자료 보유" value={projectDetails.hasEvidence} />
+        </DetailSection>
+      ) : null}
+
+      {hasPolicyNeeds ? (
+        <DetailSection title="C. 정책 수요">
+          <DetailItem label="어려움 순위" values={policyNeeds.difficultiesRank} span />
+          <DetailItem label="기타 어려움" value={policyNeeds.difficultiesOther} span />
+          <DetailItem label="지원 필요 순위" values={policyNeeds.supportNeedsRank} span />
+          <DetailItem label="기타 지원 필요" value={policyNeeds.supportNeedsOther} span />
+          <DetailItem label="희망 지원 사업" value={policyNeeds.desiredSupport} />
+          <DetailItem label="KOHES 인지" value={policyNeeds.awareness} />
+          <DetailItem label="추가 의견" value={policyNeeds.additionalComments} span />
+        </DetailSection>
+      ) : null}
+    </div>
+  )
+}
+
+interface DetailSectionProps {
+  title: string
+  description?: string
+  children: ReactNode
+}
+
+function DetailSection({ title, description, children }: DetailSectionProps) {
+  return (
+    <div className="bg-muted/10">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+      </div>
+      <Separator className="my-4" />
+      <dl className="grid gap-4 sm:grid-cols-2">{children}</dl>
     </div>
   )
 }
 
 interface DetailItemProps {
   label: string
-  value: string | null
+  value?: string | null
+  values?: string[]
   sensitive?: boolean
-  className?: string
+  span?: boolean
 }
 
-function DetailItem({ label, value, sensitive, className }: DetailItemProps) {
+function DetailItem({ label, value, values, sensitive = false, span = false }: DetailItemProps) {
+  const hasValues = Array.isArray(values) && values.length > 0
+  const displayValue = value ?? "-"
+  const isEmpty = !value && !hasValues
+
   return (
-    <div className={className}>
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-1 text-sm">
+    <div className={cn("min-w-0 space-y-1", span ? "sm:col-span-2" : undefined)}>
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dd>
         {sensitive ? (
-          <span className="inline-flex items-center gap-1 text-amber-700">
-            <span className="text-xs">🔒</span> {value || "-"}
+          <span className="inline-flex items-center gap-1 text-sm text-foreground">
+            <Lock className="h-3.5 w-3.5 text-amber-600" strokeWidth={1.75} />
+            <span className={isEmpty ? "text-muted-foreground" : undefined}>{displayValue}</span>
           </span>
+        ) : hasValues ? (
+          <div className="flex flex-wrap gap-2">
+            {values!.map((item, index) => (
+              <Badge key={`${item}-${index}`} variant="secondary" className="whitespace-nowrap">
+                {item}
+              </Badge>
+            ))}
+          </div>
         ) : (
-          value || "-"
+          <span
+            className={cn(
+              "text-base font-medium",
+              isEmpty ? "text-muted-foreground" : "text-foreground"
+            )}
+          >
+            {displayValue}
+          </span>
         )}
       </dd>
     </div>
@@ -207,36 +244,42 @@ function extractValue(data: Record<string, unknown>, path: string[]): string | n
   }
 
   if (typeof current === "string") {
-    return current.trim() || null
+    const trimmed = current.trim()
+    return trimmed.length ? trimmed : null
   }
 
   return null
 }
 
-function extractArray(data: Record<string, unknown>, path: string[]): string | null {
+function extractArray(data: Record<string, unknown>, path: string[]): string[] {
   let current: unknown = data
 
   for (const segment of path) {
     if (!current || typeof current !== "object") {
-      return null
+      return []
     }
 
     current = (current as Record<string, unknown>)[segment]
   }
 
   if (Array.isArray(current)) {
-    const filtered = current
-      .map((item) => (typeof item === "string" ? item.trim() : ""))
+    return current
+      .map((item) => {
+        if (typeof item === "string") return item.trim()
+        if (typeof item === "number" || typeof item === "boolean") return String(item)
+        return ""
+      })
       .filter((item) => item.length > 0)
-    return filtered.length > 0 ? filtered.join(", ") : null
   }
 
   if (typeof current === "string") {
-    const trimmed = current.trim()
-    return trimmed.length > 0 ? trimmed : null
+    return current
+      .split(/[;,\n]/)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0)
   }
 
-  return null
+  return []
 }
 
 function maskPII(piiData: Record<string, unknown> | null, field: string): string | null {
@@ -250,7 +293,6 @@ function maskPII(piiData: Record<string, unknown> | null, field: string): string
     return null
   }
 
-  // Mask sensitive data partially
   if (field === "email") {
     const [local, domain] = value.split("@")
     if (!local || !domain) return value
@@ -259,29 +301,35 @@ function maskPII(piiData: Record<string, unknown> | null, field: string): string
   }
 
   if (field === "tel" || field === "mobile") {
-    // Mask middle digits: 010-****-5678
-    const parts = value.replace(/[^0-9]/g, "")
-    if (parts.length < 8) return "****"
-    return `${parts.slice(0, 3)}-****-${parts.slice(-4)}`
+    const digits = value.replace(/[^0-9]/g, "")
+    if (digits.length < 8) return "****"
+    return `${digits.slice(0, 3)}-****-${digits.slice(-4)}`
   }
 
   if (field === "address") {
-    // Show only first part of address
     const parts = value.split(" ")
-    if (parts.length <= 2) return parts[0] + " ***"
+    if (parts.length <= 2) return `${parts[0] ?? ""} ***`.trim()
     return `${parts[0]} ${parts[1]} ***`
   }
 
-  // For name, mask middle character
   if (value.length === 2) {
-    return value[0] + "*"
+    return `${value[0]}*`
   }
   if (value.length === 3) {
-    return value[0] + "*" + value[2]
+    return `${value[0]}*${value[2]}`
   }
   if (value.length > 3) {
-    return value[0] + "**" + value.slice(-1)
+    return `${value[0]}**${value.slice(-1)}`
   }
 
   return value
+}
+
+function formatDateValue(value: string | null) {
+  if (!value) return null
+  try {
+    return DATETIME_FORMATTER.format(new Date(value))
+  } catch (error) {
+    return value
+  }
 }

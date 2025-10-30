@@ -24,8 +24,10 @@ export interface ExpansionInfoState {
 
 export interface ProjectDetailsState {
   expansionTiming: string
+  expansionTimingOther: string
   targetCountries: string
   expansionReason: string
+  expansionReasonOther: string
   services: string[]
   servicesOther: string
   projectName: string
@@ -74,8 +76,10 @@ const baseSurveyData: SurveyData = {
   },
   projectDetails: {
     expansionTiming: "",
+    expansionTimingOther: "",
     targetCountries: "",
     expansionReason: "",
+    expansionReasonOther: "",
     services: [],
     servicesOther: "",
     projectName: "",

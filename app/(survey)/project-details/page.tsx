@@ -215,6 +215,8 @@ export default function ProjectDetailsPage() {
 
             updateSection("projectDetails", payload)
           }}
+          otherValue={projectDetails.expansionTimingOther}
+          onOtherChange={(value) => updateSection("projectDetails", { expansionTimingOther: value })}
         />
 
         <QuestionText
@@ -248,6 +250,8 @@ export default function ProjectDetailsPage() {
           ]}
           value={projectDetails.expansionReason}
           onChange={(value) => updateSection("projectDetails", { expansionReason: value })}
+          otherValue={projectDetails.expansionReasonOther}
+          onOtherChange={(value) => updateSection("projectDetails", { expansionReasonOther: value })}
         />
 
         <QuestionMultiChoice

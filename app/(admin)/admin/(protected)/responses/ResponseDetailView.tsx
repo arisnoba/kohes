@@ -46,8 +46,10 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
 
   const projectDetails = {
     expansionTiming: extractValue(responseData, ["projectDetails", "expansionTiming"]),
+    expansionTimingOther: extractValue(responseData, ["projectDetails", "expansionTimingOther"]),
     targetCountries: extractArray(responseData, ["projectDetails", "targetCountries"]),
     expansionReason: extractValue(responseData, ["projectDetails", "expansionReason"]),
+    expansionReasonOther: extractValue(responseData, ["projectDetails", "expansionReasonOther"]),
     services: extractArray(responseData, ["projectDetails", "services"]),
     servicesOther: extractValue(responseData, ["projectDetails", "servicesOther"]),
     projectName: extractValue(responseData, ["projectDetails", "projectName"]),
@@ -77,6 +79,14 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     policyNeeds.supportNeedsRank,
     policyNeeds.supportNeedsOther
   )
+  const expansionTimingDisplay = decorateSingleOption(
+    projectDetails.expansionTiming,
+    projectDetails.expansionTimingOther
+  )
+  const expansionReasonDisplay = decorateSingleOption(
+    projectDetails.expansionReason,
+    projectDetails.expansionReasonOther
+  )
   const servicesDisplay = decorateOptionsWithOther(
     projectDetails.services,
     projectDetails.servicesOther
@@ -85,19 +95,19 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     projectDetails.departments,
     projectDetails.departmentsOther
   )
-  const desiredSupportDisplay = policyNeeds.desiredSupport
-    ? decorateOptionsWithOther([policyNeeds.desiredSupport], policyNeeds.desiredSupportOther)[0]
-    : null
+  const desiredSupportDisplay = decorateSingleOption(
+    policyNeeds.desiredSupport,
+    policyNeeds.desiredSupportOther
+  )
 
   const hasExpansionInfo = Object.values(expansionInfo).some((value) => Boolean(value))
   const hasProjectDetails =
+    Boolean(expansionTimingDisplay || expansionReasonDisplay) ||
     projectDetails.targetCountries.length > 0 ||
     servicesDisplay.length > 0 ||
     departmentsDisplay.length > 0 ||
     Boolean(
-      projectDetails.expansionTiming ||
-        projectDetails.expansionReason ||
-        projectDetails.projectName ||
+      projectDetails.projectName ||
         projectDetails.reportingAwareness1 ||
         projectDetails.reportingAwareness2 ||
         projectDetails.hasEvidence
@@ -108,14 +118,14 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     Boolean(desiredSupportDisplay || policyNeeds.awareness || policyNeeds.additionalComments)
 
   return (
-    <div className="space-y-8">
-      <DetailSection title="응답 요약">
+    <div className="space-y-14">
+      {/* <DetailSection title="응답 요약">
         <DetailItem label="응답 ID" value={response.id} />
         <DetailItem label="소속" value={response.organizationName} />
         <DetailItem label="기관 유형" value={response.orgType} />
         <DetailItem label="진출 시기" value={response.expansionTiming} />
         <DetailItem label="제출 일시" value={formatDateValue(response.submittedAt)} />
-      </DetailSection>
+      </DetailSection> */}
 
       <DetailSection title="기본 정보" description="민감 정보는 잠금 아이콘으로 표시됩니다.">
         <DetailItem label="성명" value={basicInfo.name} sensitive />
@@ -140,8 +150,8 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
 
       {hasProjectDetails ? (
         <DetailSection title="B. 프로젝트 세부사항">
-          <DetailItem label="진출 시기" value={projectDetails.expansionTiming} />
-          <DetailItem label="진출 이유" value={projectDetails.expansionReason} />
+          <DetailItem label="진출 시기" value={expansionTimingDisplay} />
+          <DetailItem label="진출 이유" value={expansionReasonDisplay} />
           <DetailItem
             label="진출 국가"
             values={projectDetails.targetCountries}
@@ -191,9 +201,9 @@ interface DetailSectionProps {
 
 function DetailSection({ title, description, children }: DetailSectionProps) {
   return (
-    <div className="rounded-lg border bg-muted/10 p-5 shadow-sm">
+    <div className="bg-muted/10">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+        <h4 className="text-base font-bold text-foreground">{title}</h4>
         {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
       </div>
       <Separator className="my-4" />
@@ -373,4 +383,21 @@ function decorateOptionsWithOther(values: string[], other: string | null): strin
   }
 
   return decorated.filter((item) => item.length > 0)
+}
+
+function decorateSingleOption(value: string | null, other: string | null): string | null {
+  if (!value) return other?.trim() ?? null
+
+  const trimmedValue = value.trim()
+  const trimmedOther = other?.trim()
+
+  if (trimmedValue === "기타" && trimmedOther) {
+    return `기타 : ${trimmedOther}`
+  }
+
+  if (trimmedOther && trimmedOther.length > 0) {
+    return trimmedOther
+  }
+
+  return trimmedValue.length > 0 ? trimmedValue : null
 }

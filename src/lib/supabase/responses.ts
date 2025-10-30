@@ -1,57 +1,226 @@
 import type { PostgrestError } from "@supabase/supabase-js"
 
 import { createSupabaseServerClient } from "@/lib/supabase/client"
-import type { Database } from "@/lib/supabase/types"
 import type { SurveyData } from "@/components/survey/SurveyProvider"
 
-export type RewardStatus = Database["public"]["Tables"]["survey_responses"]["Row"]["reward_status"]
+const ADMIN_SELECT_COLUMNS = "id, respondent_name, organization_name, submitted_at, response_data, pii_data"
 
 export interface AdminResponseSummary {
   id: string
   respondentName: string | null
   organizationName: string | null
-  rewardStatus: RewardStatus
-  rewardSentAt: string | null
   submittedAt: string
-  rewardNote: string | null
+  orgType: string | null
+  expansionTiming: string | null
+  responseData: Record<string, unknown> | null
+  piiData: Record<string, unknown> | null
 }
 
 interface FetchResult {
   responses: AdminResponseSummary[]
+  totalCount: number
   error: PostgrestError | null
 }
 
-export async function fetchSurveyResponses(limit = 200): Promise<FetchResult> {
-  const supabase = createSupabaseServerClient()
+const PAGE_SIZE = 500
 
-  const { data, error } = await supabase
-    .from("survey_responses")
-    .select(
-      "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note"
-    )
-    .order("submitted_at", { ascending: false })
-    .limit(limit)
+export async function fetchSurveyResponses(): Promise<FetchResult> {
+  const result = await fetchSurveyRows(ADMIN_SELECT_COLUMNS, mapAdminResponseSummary)
+  return { responses: result.items, totalCount: result.totalCount, error: result.error }
+}
 
-  if (error) {
-    return { responses: [], error }
+interface PaginatedAdminResponseResult extends FetchResult {
+  page: number
+  pageSize: number
+}
+
+export async function fetchSurveyResponsesPage({
+  page = 1,
+  pageSize = 20,
+}: {
+  page?: number
+  pageSize?: number
+} = {}): Promise<PaginatedAdminResponseResult> {
+  const normalizedPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1
+  const normalizedPageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.min(Math.floor(pageSize), PAGE_SIZE) : 20
+  const from = (normalizedPage - 1) * normalizedPageSize
+  const to = from + normalizedPageSize - 1
+
+  const pageResult = await fetchAdminPageRange(ADMIN_SELECT_COLUMNS, from, to)
+
+  if (pageResult.error) {
+    return {
+      responses: [],
+      totalCount: 0,
+      page: normalizedPage,
+      pageSize: normalizedPageSize,
+      error: pageResult.error,
+    }
   }
 
-  const responses: AdminResponseSummary[] = (data ?? []).map((item) => ({
-    id: item.id,
-    respondentName: item.respondent_name,
-    organizationName: item.organization_name,
-    rewardStatus: item.reward_status,
-    rewardSentAt: item.reward_sent_at,
-    submittedAt: item.submitted_at,
-    rewardNote: item.reward_note,
-  }))
+  const result = buildPaginatedResult(pageResult, normalizedPage, normalizedPageSize)
+  return resolvePaginatedResult(result)
+}
 
-  return { responses, error: null }
+export interface SurveyResponseRecord {
+  id: string
+  submittedAt: string
+  responseData: Record<string, unknown> | null
+  piiData: Record<string, unknown> | null
+}
+
+interface PayloadFetchResult {
+  entries: SurveyResponseRecord[]
+  totalCount: number
+  error: PostgrestError | null
+}
+
+export async function fetchSurveyResponsePayloads(): Promise<PayloadFetchResult> {
+  const { items, totalCount, error } = await fetchSurveyRows(
+    "id, submitted_at, response_data, pii_data",
+    (item) => ({
+      id: item.id as string,
+      submittedAt: item.submitted_at as string,
+      responseData: (item.response_data as Record<string, unknown> | null) ?? null,
+      piiData: (item.pii_data as Record<string, unknown> | null) ?? null,
+    })
+  )
+
+  return { entries: items, totalCount, error }
+}
+
+interface PaginatedResult<T> {
+  items: T[]
+  totalCount: number
+  error: PostgrestError | null
+}
+
+async function fetchSurveyRows<T>(
+  selectColumns: string,
+  mapFn: (item: Record<string, unknown>) => T
+): Promise<PaginatedResult<T>> {
+  const supabase = createSupabaseServerClient()
+  const rows: T[] = []
+  let from = 0
+  let totalCount = 0
+
+  while (true) {
+    const to = from + PAGE_SIZE - 1
+    const { data, error, count } = await supabase
+      .from("survey_responses")
+      .select(selectColumns, from === 0 ? { count: "exact" } : undefined)
+      .order("submitted_at", { ascending: false })
+      .range(from, to)
+
+    if (error) {
+      return { items: [], totalCount: 0, error }
+    }
+
+    if (from === 0 && typeof count === "number") {
+      totalCount = count
+    }
+
+    if (!data || data.length === 0) {
+      break
+    }
+
+    rows.push(...data.map((item) => mapFn(item as unknown as Record<string, unknown>)))
+
+    if (data.length < PAGE_SIZE) {
+      break
+    }
+
+    from += PAGE_SIZE
+  }
+
+  if (totalCount === 0) {
+    totalCount = rows.length
+  }
+
+  return { items: rows, totalCount, error: null }
+}
+
+function mapAdminResponseSummary(item: Record<string, unknown>): AdminResponseSummary {
+  const responseData = (item.response_data as Record<string, unknown> | null) ?? null
+  const piiData = (item.pii_data as Record<string, unknown> | null) ?? null
+
+  let orgType: string | null = null
+  if (responseData?.expansionInfo && typeof responseData.expansionInfo === "object") {
+    const expansionInfo = responseData.expansionInfo as Record<string, unknown>
+    orgType = typeof expansionInfo.orgType === "string" ? expansionInfo.orgType : null
+  }
+
+  let expansionTiming: string | null = null
+  if (responseData?.projectDetails && typeof responseData.projectDetails === "object") {
+    const projectDetails = responseData.projectDetails as Record<string, unknown>
+    expansionTiming =
+      typeof projectDetails.expansionTiming === "string" ? projectDetails.expansionTiming : null
+  }
+
+  return {
+    id: item.id as string,
+    respondentName: (item.respondent_name as string | null) ?? null,
+    organizationName: (item.organization_name as string | null) ?? null,
+    submittedAt: item.submitted_at as string,
+    orgType,
+    expansionTiming,
+    responseData,
+    piiData,
+  }
 }
 
 export function isMissingTableError(error: PostgrestError | null): boolean {
   if (!error) return false
   return error.code === "42P01" // undefined_table
+}
+interface AdminPageRangeResult {
+  data: Record<string, unknown>[] | null
+  count: number | null
+  error: PostgrestError | null
+}
+
+async function fetchAdminPageRange(selectColumns: string, from: number, to: number): Promise<AdminPageRangeResult> {
+  const supabase = createSupabaseServerClient()
+  const { data, error, count } = await supabase
+    .from("survey_responses")
+    .select(selectColumns, { count: "exact" })
+    .order("submitted_at", { ascending: false })
+    .range(from, to)
+
+  return {
+    data: (data as Record<string, unknown>[] | null) ?? null,
+    count: count ?? null,
+    error,
+  }
+}
+
+function buildPaginatedResult(
+  pageResult: AdminPageRangeResult,
+  page: number,
+  pageSize: number
+): PaginatedAdminResponseResult {
+  const responses: AdminResponseSummary[] = (pageResult.data ?? []).map((item) =>
+    mapAdminResponseSummary(item)
+  )
+  const totalCount = typeof pageResult.count === "number" ? pageResult.count : responses.length
+  return {
+    responses,
+    totalCount,
+    page,
+    pageSize,
+    error: null,
+  }
+}
+
+async function resolvePaginatedResult(result: PaginatedAdminResponseResult): Promise<PaginatedAdminResponseResult> {
+  if (result.totalCount > 0) {
+    const maxPage = Math.max(1, Math.ceil(result.totalCount / result.pageSize))
+    if (result.page > maxPage) {
+      return fetchSurveyResponsesPage({ page: maxPage, pageSize: result.pageSize })
+    }
+  }
+
+  return result
 }
 
 /**

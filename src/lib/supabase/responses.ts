@@ -49,6 +49,41 @@ export async function fetchSurveyResponses(limit = 200): Promise<FetchResult> {
   return { responses, error: null }
 }
 
+export interface SurveyResponseRecord {
+  id: string
+  submittedAt: string
+  responseData: Record<string, unknown> | null
+  piiData: Record<string, unknown> | null
+}
+
+interface PayloadFetchResult {
+  entries: SurveyResponseRecord[]
+  error: PostgrestError | null
+}
+
+export async function fetchSurveyResponsePayloads(limit = 500): Promise<PayloadFetchResult> {
+  const supabase = createSupabaseServerClient()
+
+  const { data, error } = await supabase
+    .from("survey_responses")
+    .select("id, submitted_at, response_data, pii_data")
+    .order("submitted_at", { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    return { entries: [], error }
+  }
+
+  const entries: SurveyResponseRecord[] = (data ?? []).map((item) => ({
+    id: item.id,
+    submittedAt: item.submitted_at,
+    responseData: (item.response_data as Record<string, unknown> | null) ?? null,
+    piiData: (item.pii_data as Record<string, unknown> | null) ?? null,
+  }))
+
+  return { entries, error: null }
+}
+
 export function isMissingTableError(error: PostgrestError | null): boolean {
   if (!error) return false
   return error.code === "42P01" // undefined_table

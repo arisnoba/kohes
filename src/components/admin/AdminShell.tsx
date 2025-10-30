@@ -106,16 +106,16 @@ export function AdminShell({ children }: AdminShellProps) {
     <div className="relative min-h-screen bg-muted/40 md:flex">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-72 border-r bg-background px-6 py-6 shadow-sm transition-transform duration-200 md:sticky md:top-0 md:flex md:h-screen md:w-64 md:translate-x-0 md:flex-col md:overflow-y-auto md:shadow-none",
+          "fixed inset-y-0 left-0 z-40 w-72 border-r bg-background px-4 py-4 shadow-sm transition-transform duration-200 md:sticky md:top-0 md:flex md:h-screen md:w-64 md:translate-x-0 md:flex-col md:overflow-y-auto md:shadow-none",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Kohes Admin
+            <span className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Kohes Survey Admin
             </span>
-            <h1 className="text-lg font-bold">관리자 콘솔</h1>
+            {/* <h1 className="text-lg font-bold">관리자 콘솔</h1> */}
           </div>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={closeSidebar}>
             <X className="h-4 w-4" />
@@ -213,7 +213,7 @@ export function AdminShell({ children }: AdminShellProps) {
         </header>
 
         <main className="min-h-[calc(100vh-4rem)] bg-muted/40 px-4 py-8 md:px-8">
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
     </div>

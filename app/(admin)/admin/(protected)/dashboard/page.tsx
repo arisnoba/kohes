@@ -109,8 +109,8 @@ export default async function DashboardPage() {
               <TableHead className="w-[90px]">필수</TableHead>
               <TableHead className="w-[120px] text-right">응답 수</TableHead>
               <TableHead className="min-w-[280px]">주요 응답 요약</TableHead>
-              <TableHead className="min-w-[220px]">선택지 요약</TableHead>
-              <TableHead className="min-w-[220px]">출현 조건</TableHead>
+              {/* <TableHead className="min-w-[220px]">선택지 요약</TableHead> */}
+              {/* <TableHead className="min-w-[220px]">출현 조건</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -180,12 +180,12 @@ export default async function DashboardPage() {
                       <TableCell className="align-top">
                         {renderResponseSummary(question, stats)}
                       </TableCell>
-                      <TableCell className="align-top text-sm text-muted-foreground">
+                      {/* <TableCell className="align-top text-sm text-muted-foreground">
                         {formatOptionPreview(question)}
-                      </TableCell>
-                      <TableCell className="align-top text-sm text-muted-foreground">
+                      </TableCell> */}
+                      {/* <TableCell className="align-top text-sm text-muted-foreground">
                         {formatCondition(question)}
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   )
                 })}

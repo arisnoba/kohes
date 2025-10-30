@@ -99,10 +99,44 @@ const COUNTRIES = [
   "사우디아라비아",
 ]
 
-const FIRST_NAMES = ["김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권"]
+const FIRST_NAMES = [
+  "김",
+  "이",
+  "박",
+  "최",
+  "정",
+  "강",
+  "조",
+  "윤",
+  "장",
+  "임",
+  "한",
+  "오",
+  "서",
+  "신",
+  "권",
+]
 const LAST_NAMES = [
-  "민수", "영희", "철수", "지영", "현우", "수진", "준호", "미라", "승호", "은영",
-  "태준", "서연", "재현", "하은", "동현", "유진", "상훈", "나영", "정훈", "다은"
+  "민수",
+  "영희",
+  "철수",
+  "지영",
+  "현우",
+  "수진",
+  "준호",
+  "미라",
+  "승호",
+  "은영",
+  "태준",
+  "서연",
+  "재현",
+  "하은",
+  "동현",
+  "유진",
+  "상훈",
+  "나영",
+  "정훈",
+  "다은",
 ]
 
 // ============================================================
@@ -176,8 +210,17 @@ function generateSurveyResponse() {
 
   // Basic Info
   const position = randomElement([
-    "원장", "병원장", "진료부장", "국제진료센터장", "경영기획실장",
-    "대표이사", "부사장", "이사", "부장", "팀장", "과장"
+    "원장",
+    "병원장",
+    "진료부장",
+    "국제진료센터장",
+    "경영기획실장",
+    "대표이사",
+    "부사장",
+    "이사",
+    "부장",
+    "팀장",
+    "과장",
   ])
 
   // A. 기관 유형
@@ -194,13 +237,38 @@ function generateSurveyResponse() {
   if (isHospital) {
     medicalOrgName = randomElement(MEDICAL_INSTITUTIONS)
     medicalOrgCategory = randomElement([
-      "의원", "치과의원", "한의원", "병원", "치과병원", "한방병원", "요양병원",
-      "종합병원(100~300병상)", "종합병원(300병상 초과)", "상급종합병원"
+      "의원",
+      "치과의원",
+      "한의원",
+      "병원",
+      "치과병원",
+      "한방병원",
+      "요양병원",
+      "종합병원(100~300병상)",
+      "종합병원(300병상 초과)",
+      "상급종합병원",
     ])
-    foundationType = randomElement(["국공립", "법인", "소비자생활협동조합", "사회적협동조합", "개인", "군병원", "기타"])
+    foundationType = randomElement([
+      "국공립",
+      "법인",
+      "소비자생활협동조합",
+      "사회적협동조합",
+      "개인",
+      "군병원",
+      "기타",
+    ])
 
     if (foundationType === "법인") {
-      legalType = randomElement(["학교법인", "특수법인", "종교법인", "사회복지법인", "사단법인", "재단법인", "회사법인", "의료법인"])
+      legalType = randomElement([
+        "학교법인",
+        "특수법인",
+        "종교법인",
+        "사회복지법인",
+        "사단법인",
+        "재단법인",
+        "회사법인",
+        "의료법인",
+      ])
     }
   } else {
     companyName = randomElement(COMPANY_NAMES)
@@ -229,18 +297,19 @@ function generateSurveyResponse() {
     "2016.6 이후 진출",
     "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)",
     "진출 기획/발굴 단계(시장조사 등)",
-    "기타"
+    "기타",
   ]
   const expansionTiming = randomElement(expansionTimingOptions)
 
-  const targetCountries = randomElements(COUNTRIES, 1, 3).join(", ")
+  const targetCountriesArray = randomElements(COUNTRIES, 1, 3)
+  const targetCountries = targetCountriesArray.join(", ")
 
   const expansionReason = randomElement([
     "국내 경쟁 심화",
     "해외 파트너의 요청",
     "외국인환자 유치를 위한 거점 활용",
     "선교 및 자선활동의 목적",
-    "기타"
+    "기타",
   ])
 
   const servicesOptions = [
@@ -274,7 +343,7 @@ function generateSurveyResponse() {
   ].includes(expansionTiming)
 
   if (isProgressed) {
-    projectDetails.projectName = `${randomElement(targetCountries)} ${randomElement(["메디컬센터", "병원", "클리닉", "진료소"])} 프로젝트`
+    projectDetails.projectName = `${randomElement(targetCountriesArray)} ${randomElement(["메디컬센터", "병원", "클리닉", "진료소"])} 프로젝트`
     projectDetails.reportingAwareness1 = randomElement(["예", "아니오"])
   } else {
     projectDetails.reportingAwareness2 = randomElement(["예", "아니오"])
@@ -282,9 +351,26 @@ function generateSurveyResponse() {
 
   // B6: 진출 진료과 (medical specialties)
   const specialtiesOptions = [
-    "건강검진", "내과", "소아청소년과", "신경(외)과", "피부·성형", "정형외과",
-    "산부인과", "안과", "이비인후과", "비뇨기과", "재활의학과", "가정의학과",
-    "마취통증의학과", "영상의학과", "진단검사의학과", "한방", "치과", "일반외과", "정신과", "기타"
+    "건강검진",
+    "내과",
+    "소아청소년과",
+    "신경(외)과",
+    "피부·성형",
+    "정형외과",
+    "산부인과",
+    "안과",
+    "이비인후과",
+    "비뇨기과",
+    "재활의학과",
+    "가정의학과",
+    "마취통증의학과",
+    "영상의학과",
+    "진단검사의학과",
+    "한방",
+    "치과",
+    "일반외과",
+    "정신과",
+    "기타",
   ]
   projectDetails.departments = randomElements(specialtiesOptions, 1, 3)
 
@@ -322,18 +408,19 @@ function generateSurveyResponse() {
     "선진국의 진출사례 공유",
     "의료 해외진출 및 신고제도 홍보",
     "인력 매칭을 위한 플랫폼 운영",
-    "기타"
+    "기타",
   ])
 
   const awareness = randomElement([
     "방문한 적 있다.",
     "방문한 적은 없지만, 들어본 적 있다.",
-    "들어본 적 없다."
+    "들어본 적 없다.",
   ])
 
-  const additionalComments = Math.random() > 0.7
-    ? `${randomElement(["정부의", "정책적", "체계적인", "실질적인", "맞춤형"])} 지원이 필요합니다.`
-    : ""
+  const additionalComments =
+    Math.random() > 0.7
+      ? `${randomElement(["정부의", "정책적", "체계적인", "실질적인", "맞춤형"])} 지원이 필요합니다.`
+      : ""
 
   const policyNeeds: any = {
     difficultiesRank,

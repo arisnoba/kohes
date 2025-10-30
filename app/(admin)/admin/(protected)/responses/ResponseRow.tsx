@@ -14,17 +14,22 @@ const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
   hour: "2-digit",
   minute: "2-digit",
 })
+const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 
 interface ResponseRowProps {
   response: AdminResponseSummary
+  order: number
 }
 
-export function ResponseRow({ response }: ResponseRowProps) {
+export function ResponseRow({ response, order }: ResponseRowProps) {
   const [expanded, setExpanded] = useState(false)
 
   return (
     <>
       <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => setExpanded(!expanded)}>
+        <TableCell className="text-center text-xs text-muted-foreground">
+          {NUMBER_FORMATTER.format(order)}
+        </TableCell>
         <TableCell className="text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <Button
@@ -56,7 +61,7 @@ export function ResponseRow({ response }: ResponseRowProps) {
 
       {expanded && (
         <TableRow>
-          <TableCell colSpan={6} className="bg-muted/30 p-6">
+          <TableCell colSpan={7} className="bg-muted/30 p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold">전체 응답 내용</h3>

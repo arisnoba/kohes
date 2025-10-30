@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactNode } from "react"
 import { Check } from "lucide-react"
 
 interface QuestionMultiChoiceProps {
   id: string
   label: string
+  /** label 아래에 표시될 설명 (JSX 또는 HTML 문자열 지원) */
+  description?: ReactNode | string
   options: { value: string; label: string }[]
   required?: boolean
   value?: string[]
@@ -17,6 +19,7 @@ interface QuestionMultiChoiceProps {
 export function QuestionMultiChoice({
   id,
   label,
+  description,
   options,
   required = false,
   value = [],
@@ -65,6 +68,15 @@ export function QuestionMultiChoice({
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
+        {description && (
+          <div className="mt-1 text-base leading-relaxed">
+            {typeof description === "string" ? (
+              <div dangerouslySetInnerHTML={{ __html: description }} />
+            ) : (
+              description
+            )}
+          </div>
+        )}
         <p className="mt-2 text-sm text-gray-500">복수 선택 가능</p>
       </div>
 

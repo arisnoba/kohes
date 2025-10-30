@@ -20,7 +20,7 @@ export default function ExpansionInfoPage() {
       updateSection("expansionInfo", {
         orgType: value,
         companyName: "",
-        companyCategory: ""
+        companyCategory: "",
       })
     } else if (value === "회사") {
       updateSection("expansionInfo", {
@@ -28,7 +28,7 @@ export default function ExpansionInfoPage() {
         medicalOrgName: "",
         medicalOrgCategory: "",
         foundationType: "",
-        legalType: ""
+        legalType: "",
       })
     } else {
       updateSection("expansionInfo", { orgType: value })
@@ -38,7 +38,7 @@ export default function ExpansionInfoPage() {
   const handleFoundationTypeChange = (value: string) => {
     updateSection("expansionInfo", {
       foundationType: value,
-      ...(value === "법인" ? {} : { legalType: "" })
+      ...(value === "법인" ? {} : { legalType: "" }),
     })
   }
 
@@ -50,7 +50,7 @@ export default function ExpansionInfoPage() {
       foundationType: "법인",
       legalType: "의료법인",
       companyName: "",
-      companyCategory: ""
+      companyCategory: "",
     })
   }
 
@@ -132,7 +132,7 @@ export default function ExpansionInfoPage() {
           required={true}
           options={[
             { value: "의료기관", label: "의료기관" },
-            { value: "회사", label: "회사 (MSO 등)" }
+            { value: "회사", label: "회사 (MSO 등)" },
           ]}
           value={expansionInfo.orgType}
           onChange={handleOrgTypeChange}
@@ -146,18 +146,16 @@ export default function ExpansionInfoPage() {
 
             <QuestionText
               id="medical-org-name"
-              label="의료기관명"
+              label="의료기관명을 입력해 주세요."
               placeholder="예: 서울대학교병원"
               required={true}
               value={expansionInfo.medicalOrgName}
-              onChange={(value) =>
-                updateSection("expansionInfo", { medicalOrgName: value })
-              }
+              onChange={(value) => updateSection("expansionInfo", { medicalOrgName: value })}
             />
 
             <QuestionSingleChoice
               id="medical-org-category"
-              label="의료기관 구분"
+              label="의료기관의 유형을 선택해 주세요."
               required={true}
               options={[
                 { value: "의원", label: "의원" },
@@ -170,17 +168,15 @@ export default function ExpansionInfoPage() {
                 { value: "요양병원", label: "요양병원" },
                 { value: "종합병원(100~300)", label: "종합병원 (100~300병상)" },
                 { value: "종합병원(300+)", label: "종합병원 (300병상 이상)" },
-                { value: "상급종합병원", label: "상급종합병원" }
+                { value: "상급종합병원", label: "상급종합병원" },
               ]}
               value={expansionInfo.medicalOrgCategory}
-              onChange={(value) =>
-                updateSection("expansionInfo", { medicalOrgCategory: value })
-              }
+              onChange={(value) => updateSection("expansionInfo", { medicalOrgCategory: value })}
             />
 
             <QuestionSingleChoice
               id="foundation-type"
-              label="설립구분"
+              label="의료기관의 설립 유형을 선택해 주세요."
               required={true}
               options={[
                 { value: "국공립", label: "국공립" },
@@ -189,10 +185,11 @@ export default function ExpansionInfoPage() {
                 { value: "사회적협동조합", label: "사회적협동조합" },
                 { value: "개인", label: "개인" },
                 { value: "군병원", label: "군병원" },
-                { value: "기타", label: "기타" }
+                { value: "기타", label: "기타" },
               ]}
               value={expansionInfo.foundationType}
               onChange={handleFoundationTypeChange}
+              disableOtherInput={true}
             />
 
             {expansionInfo.foundationType === "법인" && (
@@ -208,7 +205,7 @@ export default function ExpansionInfoPage() {
                   { value: "사단", label: "사단법인" },
                   { value: "재단", label: "재단법인" },
                   { value: "회사", label: "회사법인" },
-                  { value: "의료법인", label: "의료법인" }
+                  { value: "의료법인", label: "의료법인" },
                 ]}
                 value={expansionInfo.legalType}
                 onChange={(value) => updateSection("expansionInfo", { legalType: value })}
@@ -240,12 +237,10 @@ export default function ExpansionInfoPage() {
                 { value: "MSO", label: "MSO(병원경영지원회사)" },
                 { value: "의료기기", label: "의료기기" },
                 { value: "의약품", label: "의약품" },
-                { value: "기타", label: "기타" }
+                { value: "기타", label: "기타" },
               ]}
               value={expansionInfo.companyCategory}
-              onChange={(value) =>
-                updateSection("expansionInfo", { companyCategory: value })
-              }
+              onChange={(value) => updateSection("expansionInfo", { companyCategory: value })}
             />
           </div>
         )}

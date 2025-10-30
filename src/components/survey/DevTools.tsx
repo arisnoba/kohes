@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Settings, Zap, X, ChevronUp, ChevronDown } from "lucide-react"
 
 interface DevToolsProps {
@@ -9,8 +9,13 @@ interface DevToolsProps {
 }
 
 export function DevTools({ onAutoFill, onSkipValidation }: DevToolsProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [skipValidation, setSkipValidation] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
+  const [skipValidation, setSkipValidation] = useState(true)
+
+  // 컴포넌트 마운트 시 검증 스킵 상태를 부모 컴포넌트에 알림
+  useEffect(() => {
+    onSkipValidation?.(true)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // 프로덕션 환경에서는 렌더링하지 않음
   if (process.env.NODE_ENV === "production") {

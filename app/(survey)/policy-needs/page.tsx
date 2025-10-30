@@ -20,11 +20,14 @@ export default function PolicyNeedsPage() {
     updateSection("policyNeeds", {
       difficultiesRank: ["자금 조달의 어려움", "수익 예측의 불확실성", "해외 정보 부족"],
       difficultiesOther: "",
-      supportNeedsRank: ["현지 문화, 법, 정책, 동향 등 유관 정보 지원", "의료 해외진출 사업을 위한 대출 등 정책자금 지원"],
+      supportNeedsRank: [
+        "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
+        "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
+      ],
       supportNeedsOther: "",
       desiredSupport: "진출 기관 및 예정기관 간의 네트워크 구축",
       awareness: "방문",
-      additionalComments: "해외진출 지원 확대를 희망합니다."
+      additionalComments: "해외진출 지원 확대를 희망합니다.",
     })
   }
 
@@ -91,20 +94,20 @@ export default function PolicyNeedsPage() {
             { value: "해외 정보 부족", label: "현지(해외) 정보 부족" },
             {
               value: "파트너 신뢰 문제",
-              label: "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치"
+              label: "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치",
             },
             {
               value: "정치·법·제도",
-              label: "정권에 따라 변화하는 등 불안정한 현지(해외) 정치·법·제도"
+              label: "정권에 따라 변화하는 등 불안정한 현지(해외) 정치·법·제도",
             },
             { value: "전문 인력 부족", label: "의료 해외진출 관련 전문인력 부족" },
             { value: "현지 고용 어려움", label: "현지(해외) 전문인력 고용의 어려움" },
             {
               value: "인허가, 면허 등 현지(해외) 법·제도 규제",
-              label: "인허가, 면허 등 현지(해외) 법·제도 규제"
+              label: "인허가, 면허 등 현지(해외) 법·제도 규제",
             },
             { value: "네트워크 부재", label: "현지 네트워크 부재" },
-            { value: "기타", label: "기타" }
+            { value: "기타", label: "기타" },
           ]}
           value={policyNeeds.difficultiesRank}
           onChange={(values) => updateSection("policyNeeds", { difficultiesRank: values })}
@@ -120,34 +123,34 @@ export default function PolicyNeedsPage() {
           options={[
             {
               value: "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
-              label: "현지 문화, 법, 정책, 동향 등 유관 정보 지원"
+              label: "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
             },
             {
               value: "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
-              label: "의료 해외진출 사업을 위한 대출 등 정책자금 지원"
+              label: "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
             },
             {
               value: "현지 파트너 발굴 및 검증 지원",
-              label: "현지 파트너 발굴 및 검증 지원"
+              label: "현지 파트너 발굴 및 검증 지원",
             },
             {
               value: "의료 해외진출 관련 전문인력 역량강화를 위한 교육",
-              label: "의료 해외진출 관련 전문인력 역량강화를 위한 교육"
+              label: "의료 해외진출 관련 전문인력 역량강화를 위한 교육",
             },
             { value: "컨설팅 지원", label: "의료 해외진출 사업 수행을 위한 컨설팅 지원" },
             {
               value: "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
-              label: "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)"
+              label: "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
             },
             {
               value: "기 진출 의료기관 선도사례 및 진출 전략 공유",
-              label: "기 진출 의료기관 선도사례 및 진출 전략 공유"
+              label: "기 진출 의료기관 선도사례 및 진출 전략 공유",
             },
             {
               value: "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
-              label: "한국의료 브랜드(Medical Korea) 및 우수기술 홍보"
+              label: "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
             },
-            { value: "기타", label: "기타" }
+            { value: "기타", label: "기타" },
           ]}
           value={policyNeeds.supportNeedsRank}
           onChange={(values) => updateSection("policyNeeds", { supportNeedsRank: values })}
@@ -162,28 +165,28 @@ export default function PolicyNeedsPage() {
           options={[
             {
               value: "진출 기관 및 예정기관 간의 네트워크 구축",
-              label: "진출 기관 및 예정기관 간의 네트워크 구축"
+              label: "진출 기관 및 예정기관 간의 네트워크 구축",
             },
             {
               value: "성공/실패 사례 공유",
-              label: "성공/실패 사례 공유"
+              label: "성공/실패 사례 공유",
             },
             {
               value: "선진국 진출사례 공유",
-              label: "선진국 진출사례 공유"
+              label: "선진국 진출사례 공유",
             },
             {
               value: "의료 해외진출 및 신고제도 홍보",
-              label: "의료 해외진출 및 신고제도 홍보"
+              label: "의료 해외진출 및 신고제도 홍보",
             },
             {
               value: "인력 매칭을 위한 플랫폼 운영",
-              label: "인력 매칭을 위한 플랫폼 운영"
+              label: "인력 매칭을 위한 플랫폼 운영",
             },
             {
               value: "기타",
-              label: "기타"
-            }
+              label: "기타",
+            },
           ]}
           value={policyNeeds.desiredSupport}
           onChange={(value) => updateSection("policyNeeds", { desiredSupport: value })}
@@ -194,9 +197,9 @@ export default function PolicyNeedsPage() {
           label="KOHES(한국보건산업진흥원) 인지도를 선택해주세요."
           required={true}
           options={[
-            { value: "방문", label: "방문" },
-            { value: "들어봄", label: "들어봄" },
-            { value: "모름", label: "모름" }
+            { value: "방문", label: "방문한 적 있다." },
+            { value: "들어봄", label: "방문한 적은 없지만, 들어본 적 있다." },
+            { value: "모름", label: "들어본 적 없다." },
           ]}
           value={policyNeeds.awareness}
           onChange={(value) => updateSection("policyNeeds", { awareness: value })}

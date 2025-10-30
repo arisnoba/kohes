@@ -94,7 +94,7 @@ export default function BasicInfoPage() {
       <div className="space-y-8">
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 1</div>
-          <h2 className="text-xl font-bold text-gray-900">응답자 기초정보</h2>
+          <h2 className="text-2xl font-bold text-gray-900">응답자 기초정보</h2>
           <p className="mt-2 text-sm text-gray-500">귀하의 기본 정보를 입력해주세요</p>
         </div>
         <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-4">

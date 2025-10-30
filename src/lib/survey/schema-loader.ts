@@ -87,7 +87,7 @@ export function getSurveyQuestionSummaries(): SurveyQuestionSummary[] {
                 }
                 return undefined
               })
-              .filter((value): value is string => Boolean(value))
+              .filter((value: string | undefined): value is string => Boolean(value))
           : []
 
         const normalizedAncestors = ancestors.filter((item) => Boolean(item))

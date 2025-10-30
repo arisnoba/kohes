@@ -1,27 +1,33 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactNode } from "react"
 
 interface QuestionSingleChoiceProps {
   id: string
   label: string
+  /** label 아래에 표시될 설명 (JSX 또는 HTML 문자열 지원) */
+  description?: ReactNode | string
   options: { value: string; label: string }[]
   required?: boolean
   value?: string
   onChange?: (value: string) => void
   otherValue?: string
   onOtherChange?: (value: string) => void
+  /** "기타" 옵션 선택 시 추가 입력 필드를 표시하지 않음 */
+  disableOtherInput?: boolean
 }
 
 export function QuestionSingleChoice({
   id,
   label,
+  description,
   options,
   required = false,
   value = "",
   onChange,
   otherValue = "",
   onOtherChange,
+  disableOtherInput = false,
 }: QuestionSingleChoiceProps) {
   const [selectedValue, setSelectedValue] = useState(value)
   const [otherText, setOtherText] = useState(otherValue)
@@ -55,10 +61,21 @@ export function QuestionSingleChoice({
 
   return (
     <div className="space-y-4">
-      <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
-        {label}
-        {required && <sup className="ml-0.5 text-red-500">*</sup>}
-      </label>
+      <div>
+        <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
+          {label}
+          {required && <sup className="ml-0.5 text-red-500">*</sup>}
+        </label>
+        {description && (
+          <div className="mt-1 text-base leading-relaxed">
+            {typeof description === "string" ? (
+              <div dangerouslySetInnerHTML={{ __html: description }} />
+            ) : (
+              description
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="space-y-2">
         {options.map((option) => {
@@ -92,7 +109,7 @@ export function QuestionSingleChoice({
                 </div>
 
                 {/* 기타 입력 필드 - 버튼 내부 */}
-                {isOtherOption && isSelected && (
+                {isOtherOption && isSelected && !disableOtherInput && (
                   <div className="mt-4 pt-2 border-blue-300">
                     <input
                       type="text"

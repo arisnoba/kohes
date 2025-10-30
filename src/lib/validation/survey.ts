@@ -27,7 +27,7 @@ export function validateSurveyResponse(data: Record<string, unknown>): {
       const condition = rule.params.if
       const thenRequired = rule.params.then_required
 
-      if (Object.entries(condition).every(([key, value]) => data[key] === value)) {
+      if (condition && thenRequired && Object.entries(condition).every(([key, value]) => data[key] === value)) {
         for (const field of thenRequired) {
           if (!data[field]) {
             errors[field] = "필수 항목입니다"
@@ -38,11 +38,13 @@ export function validateSurveyResponse(data: Record<string, unknown>): {
       const condition = rule.params.if_any
       const thenRequired = rule.params.then_required
 
-      for (const [key, values] of Object.entries(condition)) {
-        if (Array.isArray(values) && values.includes(data[key])) {
-          for (const field of thenRequired) {
-            if (!data[field]) {
-              errors[field] = "필수 항목입니다"
+      if (condition && thenRequired) {
+        for (const [key, values] of Object.entries(condition)) {
+          if (Array.isArray(values) && values.includes(String(data[key]))) {
+            for (const field of thenRequired) {
+              if (!data[field]) {
+                errors[field] = "필수 항목입니다"
+              }
             }
           }
         }

@@ -4,16 +4,11 @@ import { createSupabaseServerClient } from "@/lib/supabase/client"
 import type { Database } from "@/lib/supabase/types"
 import type { SurveyData } from "@/components/survey/SurveyProvider"
 
-export type RewardStatus = Database["public"]["Tables"]["survey_responses"]["Row"]["reward_status"]
-
 export interface AdminResponseSummary {
   id: string
   respondentName: string | null
   organizationName: string | null
-  rewardStatus: RewardStatus
-  rewardSentAt: string | null
   submittedAt: string
-  rewardNote: string | null
   orgType: string | null // A1: 기관 유형
   expansionTiming: string | null // B1: 진출 시기
   responseData: Record<string, unknown> | null // 전체 응답 데이터 (expandable row용)
@@ -30,7 +25,7 @@ const PAGE_SIZE = 500
 
 export async function fetchSurveyResponses(): Promise<FetchResult> {
   const { items, totalCount, error } = await fetchSurveyRows(
-    "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note, response_data, pii_data",
+    "id, respondent_name, organization_name, submitted_at, response_data, pii_data",
     (item) => {
       const responseData = (item.response_data as Record<string, unknown> | null) ?? null
       const piiData = (item.pii_data as Record<string, unknown> | null) ?? null
@@ -54,10 +49,7 @@ export async function fetchSurveyResponses(): Promise<FetchResult> {
         id: item.id as string,
         respondentName: (item.respondent_name as string | null) ?? null,
         organizationName: (item.organization_name as string | null) ?? null,
-        rewardStatus: item.reward_status as RewardStatus,
-        rewardSentAt: (item.reward_sent_at as string | null) ?? null,
         submittedAt: item.submitted_at as string,
-        rewardNote: (item.reward_note as string | null) ?? null,
         orgType,
         expansionTiming,
         responseData,

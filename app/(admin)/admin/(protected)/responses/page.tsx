@@ -71,9 +71,6 @@ export default async function ResponsesPage() {
               <TableHead>기관 유형</TableHead>
               <TableHead>진출 시기</TableHead>
               <TableHead>제출 시간</TableHead>
-              <TableHead>리워드 상태</TableHead>
-              <TableHead>리워드 발송일</TableHead>
-              <TableHead>메모</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -81,7 +78,7 @@ export default async function ResponsesPage() {
               responses.map((response) => <ResponseRow key={response.id} response={response} />)
             ) : (
               <TableRow>
-                <TableCell colSpan={9} className="py-12 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={6} className="py-12 text-center text-sm text-muted-foreground">
                   아직 저장된 응답이 없습니다. 설문 제출 후 이곳에 최신 응답이 표시됩니다.
                 </TableCell>
               </TableRow>

@@ -27,10 +27,12 @@ export interface ProjectDetailsState {
   targetCountries: string
   expansionReason: string
   services: string[]
+  servicesOther: string
   projectName: string
   reportingAwareness1: string
   reportingAwareness2: string
   departments: string[]
+  departmentsOther: string
   hasEvidence: string
 }
 
@@ -40,6 +42,7 @@ export interface PolicyNeedsState {
   supportNeedsRank: string[]
   supportNeedsOther: string
   desiredSupport: string
+  desiredSupportOther: string
   awareness: string
   additionalComments: string
 }
@@ -74,10 +77,12 @@ const baseSurveyData: SurveyData = {
     targetCountries: "",
     expansionReason: "",
     services: [],
+    servicesOther: "",
     projectName: "",
     reportingAwareness1: "",
     reportingAwareness2: "",
     departments: [],
+    departmentsOther: "",
     hasEvidence: "",
   },
   policyNeeds: {
@@ -86,6 +91,7 @@ const baseSurveyData: SurveyData = {
     supportNeedsRank: [],
     supportNeedsOther: "",
     desiredSupport: "",
+    desiredSupportOther: "",
     awareness: "",
     additionalComments: "",
   },

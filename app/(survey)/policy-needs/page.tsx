@@ -184,6 +184,8 @@ export default function PolicyNeedsPage() {
           ]}
           value={policyNeeds.desiredSupport}
           onChange={(value) => updateSection("policyNeeds", { desiredSupport: value })}
+          otherValue={policyNeeds.desiredSupportOther}
+          onOtherChange={(value) => updateSection("policyNeeds", { desiredSupportOther: value })}
         />
 
         <QuestionSingleChoice

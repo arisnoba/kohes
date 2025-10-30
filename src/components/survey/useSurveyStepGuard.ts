@@ -45,15 +45,10 @@ const STEP_SEQUENCE: StepConfig[] = [
 
 export function useSurveyStepGuard(step: GuardStep) {
   const router = useRouter()
-  const { data, skipValidation } = useSurveyForm()
+  const { data } = useSurveyForm()
   const [isAccessible, setIsAccessible] = useState(false)
 
   useEffect(() => {
-    if (skipValidation) {
-      setIsAccessible(true)
-      return
-    }
-
     const currentIndex = STEP_SEQUENCE.findIndex((item) => item.id === step)
     if (currentIndex === -1) {
       setIsAccessible(true)
@@ -71,7 +66,7 @@ export function useSurveyStepGuard(step: GuardStep) {
     }
 
     setIsAccessible(true)
-  }, [data, router, skipValidation, step])
+  }, [data, router, step])
 
   return isAccessible
 }
@@ -160,4 +155,3 @@ function isPolicyNeedsComplete(data: SurveyData) {
 function isNonEmpty(value: string) {
   return value.trim().length > 0
 }
-

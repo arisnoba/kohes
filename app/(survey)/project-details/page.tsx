@@ -270,6 +270,8 @@ export default function ProjectDetailsPage() {
           ]}
           value={projectDetails.services}
           onChange={(values) => updateSection("projectDetails", { services: values })}
+          otherValue={projectDetails.servicesOther}
+          onOtherChange={(value) => updateSection("projectDetails", { servicesOther: value })}
         />
 
         {needsProjectInfo && (
@@ -357,6 +359,8 @@ export default function ProjectDetailsPage() {
           ]}
           value={projectDetails.departments}
           onChange={(values) => updateSection("projectDetails", { departments: values })}
+          otherValue={projectDetails.departmentsOther}
+          onOtherChange={(value) => updateSection("projectDetails", { departmentsOther: value })}
         />
 
         <QuestionSingleChoice

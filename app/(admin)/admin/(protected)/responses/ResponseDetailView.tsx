@@ -64,6 +64,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     supportNeedsRank: extractArray(responseData, ["policyNeeds", "supportNeedsRank"]),
     supportNeedsOther: extractValue(responseData, ["policyNeeds", "supportNeedsOther"]),
     desiredSupport: extractValue(responseData, ["policyNeeds", "desiredSupport"]),
+    desiredSupportOther: extractValue(responseData, ["policyNeeds", "desiredSupportOther"]),
     awareness: extractValue(responseData, ["policyNeeds", "awareness"]),
     additionalComments: extractValue(responseData, ["policyNeeds", "additionalComments"]),
   }
@@ -84,6 +85,9 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     projectDetails.departments,
     projectDetails.departmentsOther
   )
+  const desiredSupportDisplay = policyNeeds.desiredSupport
+    ? decorateOptionsWithOther([policyNeeds.desiredSupport], policyNeeds.desiredSupportOther)[0]
+    : null
 
   const hasExpansionInfo = Object.values(expansionInfo).some((value) => Boolean(value))
   const hasProjectDetails =
@@ -101,7 +105,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
   const hasPolicyNeeds =
     difficultiesRankDisplay.length > 0 ||
     supportNeedsDisplay.length > 0 ||
-    Boolean(policyNeeds.desiredSupport || policyNeeds.awareness || policyNeeds.additionalComments)
+    Boolean(desiredSupportDisplay || policyNeeds.awareness || policyNeeds.additionalComments)
 
   return (
     <div className="space-y-8">
@@ -170,7 +174,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
         <DetailSection title="C. 정책 수요">
           <DetailItem label="어려움 순위" values={difficultiesRankDisplay} span />
           <DetailItem label="지원 필요 순위" values={supportNeedsDisplay} span />
-          <DetailItem label="희망 지원 사업" value={policyNeeds.desiredSupport} />
+          <DetailItem label="희망 지원 사업" value={desiredSupportDisplay} />
           <DetailItem label="KOHES 인지" value={policyNeeds.awareness} />
           <DetailItem label="추가 의견" value={policyNeeds.additionalComments} span />
         </DetailSection>

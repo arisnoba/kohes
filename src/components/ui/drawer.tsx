@@ -47,7 +47,6 @@ const DrawerContent = React.forwardRef<
       <DrawerOverlay />
       <DrawerPrimitive.Content
         ref={ref}
-        direction={direction}
         className={cn(
           "fixed z-50 flex flex-col border bg-background transition-transform duration-300 ease-out",
           isRight && "inset-y-0 right-0 h-full w-full max-w-lg rounded-l-[10px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",

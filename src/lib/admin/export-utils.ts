@@ -39,6 +39,16 @@ const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
   C5: { source: "response", path: ["policyNeeds", "additionalComments"] },
 }
 
+const OTHER_FIELD_OVERRIDES: Record<string, string> = {
+  difficultiesRank: "difficultiesOther",
+  supportNeedsRank: "supportNeedsOther",
+  services: "servicesOther",
+  departments: "departmentsOther",
+  expansionTiming: "expansionTimingOther",
+  expansionReason: "expansionReasonOther",
+  desiredSupport: "desiredSupportOther",
+}
+
 interface ExportColumn {
   id: string
   label: string
@@ -167,9 +177,9 @@ function extractValue(
 
   // 배열 값 처리 (다중 선택, 순위 선택)
   if (Array.isArray(current)) {
-    const section = column.path[0] // "projectDetails", "policyNeeds" 등
+    const section = column.path[0]
     const field = column.path[column.path.length - 1]
-    const otherFieldName = `${field}Other`
+    const otherFieldName = OTHER_FIELD_OVERRIDES[field] ?? `${field}Other`
 
     // *Other 필드 값 추출
     const otherPath = [...column.path.slice(0, -1), otherFieldName]
@@ -194,7 +204,7 @@ function extractValue(
   if (typeof current === "string") {
     const section = column.path[0]
     const field = column.path[column.path.length - 1]
-    const otherFieldName = `${field}Other`
+    const otherFieldName = OTHER_FIELD_OVERRIDES[field] ?? `${field}Other`
 
     // *Other 필드 값 추출
     const otherPath = [...column.path.slice(0, -1), otherFieldName]

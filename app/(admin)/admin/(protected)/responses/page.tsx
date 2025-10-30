@@ -1,14 +1,11 @@
-import {
-  fetchSurveyResponsesPage,
-  isMissingTableError
-} from "@/lib/supabase/responses"
+import { fetchSurveyResponsesPage, isMissingTableError } from "@/lib/supabase/responses"
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table"
 import {
   Pagination,
@@ -17,12 +14,16 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from "@/components/ui/pagination"
 import { ResponseRow } from "./ResponseRow"
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 const PAGE_SIZE = 20
+
+// 캐싱 방지: 항상 최신 데이터를 가져오도록 강제
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 interface ResponsesPageProps {
   searchParams?: Record<string, string | string[]>
@@ -32,7 +33,7 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
   const currentPage = parsePage(searchParams?.page)
   const { responses, totalCount, page, pageSize, error } = await fetchSurveyResponsesPage({
     page: currentPage,
-    pageSize: PAGE_SIZE
+    pageSize: PAGE_SIZE,
   })
 
   if (isMissingTableError(error)) {
@@ -41,9 +42,13 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
         <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
           <p className="font-semibold">survey_responses 테이블을 찾을 수 없습니다.</p>
-          <p className="mt-2">Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.</p>
+          <p className="mt-2">
+            Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.
+          </p>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
-            <li>`supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.</li>
+            <li>
+              `supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.
+            </li>
             <li>`pnpm supabase db push` 명령으로 마이그레이션을 적용합니다.</li>
             <li>필요 시 `pnpm supabase:start`로 로컬 Supabase를 먼저 실행합니다.</li>
           </ol>
@@ -73,9 +78,7 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
-        <p className="text-sm text-muted-foreground">
-          Supabase `survey_responses` 테이블과 연결되어 리워드 발송 현황을 확인할 수 있습니다.
-        </p>
+        <p className="text-sm text-muted-foreground">인원별 응답 데이터를 확인할 수 있습니다.</p>
         <p className="text-xs text-muted-foreground">
           총 {NUMBER_FORMATTER.format(totalCount)}건의 응답이 저장되었습니다.
         </p>
@@ -156,10 +159,6 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
           </Pagination>
         </div>
       ) : null}
-
-      <p className="text-xs text-muted-foreground">
-        ※ 테이블 구조는 `supabase/migrations/20240127000000_create_survey_responses.sql`에서 확인할 수 있습니다.
-      </p>
     </div>
   )
 }

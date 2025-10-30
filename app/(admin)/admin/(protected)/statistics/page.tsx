@@ -1,12 +1,6 @@
-import { Fragment } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
+import { QuestionDataDrawer } from "@/components/admin/DataDrawer"
 import { getSurveyQuestionSummaries } from "@/lib/survey/schema-loader"
 import {
   aggregateSurveyResponses,
@@ -28,6 +22,10 @@ const PERCENT_FORMATTER = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 1,
   minimumFractionDigits: 0,
 })
+
+// 캐싱 방지: 항상 최신 데이터를 가져오도록 강제
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 export default async function StatisticsPage() {
   const allQuestions = getSurveyQuestionSummaries()
@@ -112,6 +110,7 @@ export default async function StatisticsPage() {
                   question={question}
                   stats={stats}
                   totalResponses={totalCount}
+                  entries={entries}
                 />
               )
             })}
@@ -154,9 +153,10 @@ interface QuestionStatCardProps {
   question: ReturnType<typeof getSurveyQuestionSummaries>[number]
   stats?: AggregatedQuestionStats
   totalResponses: number
+  entries: Awaited<ReturnType<typeof fetchSurveyResponsePayloads>>["entries"]
 }
 
-function QuestionStatCard({ question, stats, totalResponses }: QuestionStatCardProps) {
+function QuestionStatCard({ question, stats, totalResponses, entries }: QuestionStatCardProps) {
   const typeLabel = QUESTION_TYPE_LABELS[question.questionType] ?? question.questionType
   const hasStats = stats && stats.answeredCount > 0
   const isRankChoice = question.questionType === "rank_choice"
@@ -172,14 +172,16 @@ function QuestionStatCard({ question, stats, totalResponses }: QuestionStatCardP
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 space-y-1">
-            <CardTitle className="text-base">{question.questionLabel}</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-base">{question.questionLabel}</CardTitle>
+            </div>
             <CardDescription className="text-xs">{question.questionId}</CardDescription>
           </div>
           <Badge variant="outline" className="shrink-0">
             {typeLabel}
           </Badge>
         </div>
-        {question.help && <p className="text-xs text-muted-foreground">{question.help}</p>}
+        {/* {question.help && <p className="text-xs text-muted-foreground">{question.help}</p>} */}
         {scoringInfo?.weights_desc && (
           <div className="rounded-md bg-muted/40 p-2 text-xs text-muted-foreground">
             점수 계산: {scoringInfo.weights_desc}
@@ -221,6 +223,20 @@ function QuestionStatCard({ question, stats, totalResponses }: QuestionStatCardP
               question.questionType === "rank_choice") &&
               stats.optionStats.length > 0 && (
                 <div className="space-y-2">
+                  <div className="flex items-center justify-end">
+                    {/* 특정 문항에 drawer 버튼 표시 */}
+                    {(question.questionId === "A2_org_name" ||
+                      question.questionId === "A3_company_name" ||
+                      question.questionId === "B2" ||
+                      question.questionId === "B5_1_1" ||
+                      question.questionId === "C5") && (
+                      <QuestionDataDrawer
+                        entries={entries}
+                        questionId={question.questionId}
+                        questionLabel={question.questionLabel}
+                      />
+                    )}
+                  </div>
                   {stats.optionStats.map((option) => (
                     <OptionBar key={option.value} option={option} question={question} />
                   ))}
@@ -231,45 +247,29 @@ function QuestionStatCard({ question, stats, totalResponses }: QuestionStatCardP
             {(question.questionType === "text" || question.questionType === "textarea") &&
               stats.sampleValues.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">응답 예시</p>
-                  {/* B5_1_1의 경우 아코디언으로 모든 항목 표시 */}
-                  {question.questionId === "B5_1_1" && stats.optionStats.length > 0 ? (
-                    <Accordion>
-                      <AccordionItem value={`b5_1_1_${question.questionId}`}>
-                        <AccordionTrigger className="text-xs py-2">
-                          전체 응답 보기 ({stats.optionStats.length}개)
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2 max-h-[400px] overflow-y-auto rounded-md bg-muted/40 p-3">
-                            {stats.optionStats.map((option) => (
-                              <div
-                                key={option.value}
-                                className="flex items-start gap-2 py-2 border-b last:border-0"
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium text-foreground break-words">
-                                    {option.displayValue}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground mt-1">
-                                    {NUMBER_FORMATTER.format(option.count)}건 (
-                                    {formatPercentage(option.percentage)})
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  ) : (
-                    <div className="space-y-1 rounded-md bg-muted/40 p-3">
-                      {stats.sampleValues.map((sample, index) => (
-                        <div key={`${sample}-${index}`} className="text-xs text-muted-foreground">
-                          • {truncate(sample, 60)}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center justify-between">
+                    {/* <p className="text-xs font-medium text-muted-foreground">응답 예시</p> */}
+                    {/* 특정 문항에 drawer 버튼 표시 */}
+                    {(question.questionId === "A2_org_name" ||
+                      question.questionId === "A3_company_name" ||
+                      question.questionId === "B2" ||
+                      question.questionId === "B5_1_1" ||
+                      question.questionId === "C3" ||
+                      question.questionId === "C5") && (
+                      <QuestionDataDrawer
+                        entries={entries}
+                        questionId={question.questionId}
+                        questionLabel={question.questionLabel}
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-1 rounded-md bg-muted/40 p-3">
+                    {stats.sampleValues.map((sample, index) => (
+                      <div key={`${sample}-${index}`} className="text-xs text-muted-foreground">
+                        • {truncate(sample, 60)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

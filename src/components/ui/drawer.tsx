@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 
-import { cn } from "@/src/lib/utils"
+import { cn } from "@/lib/utils"
 
 const Drawer = ({
   shouldScaleBackground = true,
@@ -36,23 +36,36 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
-        className
-      )}
-      {...props}
-    >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-))
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & { direction?: "left" | "right" | "top" | "bottom" }
+>(({ className, children, direction, ...props }, ref) => {
+  const isRight = direction === "right"
+  const isLeft = direction === "left"
+  const isTop = direction === "top"
+  
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        direction={direction}
+        className={cn(
+          "fixed z-50 flex flex-col border bg-background transition-transform duration-300 ease-out",
+          isRight && "inset-y-0 right-0 h-full w-full max-w-lg rounded-l-[10px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+          isLeft && "inset-y-0 left-0 h-full w-full max-w-lg rounded-r-[10px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+          isTop && "inset-x-0 top-0 h-auto max-h-[90vh] rounded-b-[10px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+          !isRight && !isLeft && !isTop && "inset-x-0 bottom-0 h-auto max-h-[90vh] rounded-t-[10px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+          className
+        )}
+        {...props}
+      >
+        {!isRight && !isLeft && (
+          <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+        )}
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  )
+})
 DrawerContent.displayName = "DrawerContent"
 
 const DrawerHeader = ({

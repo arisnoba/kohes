@@ -8,11 +8,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
   const { responseData, piiData } = response
 
   if (!responseData) {
-    return (
-      <div className="text-sm text-muted-foreground">
-        응답 데이터가 없습니다.
-      </div>
-    )
+    return <div className="text-sm text-muted-foreground">응답 데이터가 없습니다.</div>
   }
 
   return (
@@ -22,10 +18,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
         <h4 className="text-sm font-semibold">기본 정보</h4>
         <div className="grid gap-3 sm:grid-cols-2">
           <DetailItem label="성명" value={maskPII(piiData, "name")} sensitive />
-          <DetailItem
-            label="직책"
-            value={extractValue(responseData, ["basicInfo", "position"])}
-          />
+          <DetailItem label="직책" value={extractValue(responseData, ["basicInfo", "position"])} />
           <DetailItem label="연락처 (Tel)" value={maskPII(piiData, "tel")} sensitive />
           <DetailItem label="연락처 (Mobile)" value={maskPII(piiData, "mobile")} sensitive />
           <DetailItem label="이메일" value={maskPII(piiData, "email")} sensitive />
@@ -34,7 +27,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       </section>
 
       {/* Expansion Info Section */}
-      {responseData.expansionInfo && (
+      {responseData.expansionInfo != null && (
         <section className="space-y-3">
           <h4 className="text-sm font-semibold">A. 기관 유형</h4>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -81,7 +74,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       )}
 
       {/* Project Details Section */}
-      {responseData.projectDetails && (
+      {responseData.projectDetails != null && (
         <section className="space-y-3">
           <h4 className="text-sm font-semibold">B. 프로젝트 세부사항</h4>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -120,7 +113,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
               />
             )}
             <DetailItem
-              label="B6. 관련 부처"
+              label="B6. 진출 진료과"
               value={extractArray(responseData, ["projectDetails", "departments"])}
             />
             <DetailItem
@@ -132,7 +125,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       )}
 
       {/* Policy Needs Section */}
-      {responseData.policyNeeds && (
+      {responseData.policyNeeds != null && (
         <section className="space-y-3">
           <h4 className="text-sm font-semibold">C. 정책 수요</h4>
           <div className="space-y-3">
@@ -291,9 +284,4 @@ function maskPII(piiData: Record<string, unknown> | null, field: string): string
   }
 
   return value
-}
-
-function formatDateValue(value: string | null) {
-  if (!value) return null
-  return DATETIME_FORMATTER.format(new Date(value))
 }

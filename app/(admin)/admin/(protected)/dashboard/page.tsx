@@ -34,6 +34,10 @@ const SCORE_FORMATTER = new Intl.NumberFormat("ko-KR", {
   minimumFractionDigits: 0,
 })
 
+// 캐싱 방지: 항상 최신 데이터를 가져오도록 강제
+export const dynamic = "force-dynamic"
+export const revalidate = 0
+
 export default async function DashboardPage() {
   const questionSummaries = getSurveyQuestionSummaries()
   const sections = groupBySection(questionSummaries)
@@ -81,9 +85,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold">설문 문항별 응답 관리</h2>
-        <p className="text-sm text-muted-foreground">
-          Supabase `survey_responses` 테이블과 연동되어 문항별 응답 분포를 확인할 수 있습니다.
-        </p>
+        <p className="text-sm text-muted-foreground">문항별 응답 분포를 확인할 수 있습니다.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

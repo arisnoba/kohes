@@ -10,14 +10,6 @@ CREATE TABLE IF NOT EXISTS export_passwords (
   updated_by UUID REFERENCES auth.users(id)
 );
 
--- 초기 비밀번호 설정 (기본값: 'export2025!@#')
--- 실제 운영에서는 반드시 변경하세요
-INSERT INTO export_passwords (password_hash, updated_by)
-VALUES (
-  encode(extensions.digest('export2025!@#'::bytea, 'sha256'::text), 'hex'),
-  NULL
-);
-
 -- 내보내기 감사 로그 테이블
 CREATE TABLE IF NOT EXISTS export_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

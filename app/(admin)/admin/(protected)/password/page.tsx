@@ -27,11 +27,13 @@ export default function PasswordManagementPage() {
   }
 
   const handleChangePassword = async () => {
-    const { oldPassword, newPassword, confirmPassword } = passwords
+    const oldPassword = passwords.oldPassword.trim()
+    const newPassword = passwords.newPassword.trim()
+    const confirmPassword = passwords.confirmPassword.trim()
 
     // 유효성 검사
-    if (!oldPassword || !newPassword || !confirmPassword) {
-      toast.error("모든 필드를 입력해주세요.")
+    if (!newPassword || !confirmPassword) {
+      toast.error("새 비밀번호와 확인 비밀번호를 입력해주세요.")
       return
     }
 
@@ -59,7 +61,7 @@ export default function PasswordManagementPage() {
 
       // 비밀번호 변경 함수 호출
       const { data: success, error } = await supabase.rpc("update_export_password", {
-        old_password: oldPassword,
+        old_password: oldPassword || null,
         new_password: newPassword,
         user_id: user.id,
       })
@@ -111,7 +113,7 @@ export default function PasswordManagementPage() {
         <CardContent className="space-y-4">
           {/* 현재 비밀번호 */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">현재 비밀번호</label>
+            <label className="text-sm font-medium">현재 비밀번호 (처음 설정하는 경우 비워두세요)</label>
             <div className="relative">
               <Input
                 type={showPasswords.old ? "text" : "password"}
@@ -229,8 +231,7 @@ export default function PasswordManagementPage() {
           <p>• 비밀번호는 최소 8자 이상으로 설정하세요.</p>
           <p>• 영문 대소문자, 숫자, 특수문자를 조합하여 사용하세요.</p>
           <p>• 다른 사람과 비밀번호를 공유하지 마세요.</p>
-          <p>• 비밀번호 변경 시 관련 담당자에게 별도로 전달해야 합니다.</p>
-          <p>• 초기 비밀번호는 &quot;export2025!@#&quot;이며 반드시 변경하세요.</p>
+          <p>• 비밀번호 변경 시 관련 담당자에게 안전한 채널로 전달하세요.</p>
         </CardContent>
       </Card>
     </div>

@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
   public: {
@@ -118,7 +112,7 @@ export interface Database {
         Returns: boolean
       }
       update_export_password: {
-        Args: { old_password: string; new_password: string; user_id: string }
+        Args: { old_password: string | null; new_password: string; user_id: string }
         Returns: boolean
       }
       log_export: {

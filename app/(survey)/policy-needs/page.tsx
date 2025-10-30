@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
@@ -9,12 +8,17 @@ import { QuestionTextarea } from "@/components/survey/QuestionTextarea"
 import { NavigationButton } from "@/components/survey/NavigationButton"
 import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
+import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function PolicyNeedsPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
   const { policyNeeds } = data
-  const [skipValidation, setSkipValidation] = useState(false)
+  const canAccess = useSurveyStepGuard("policy-needs")
+
+  if (!canAccess) {
+    return null
+  }
 
   const handleAutoFill = () => {
     updateSection("policyNeeds", {
@@ -79,7 +83,7 @@ export default function PolicyNeedsPage() {
       <div className="space-y-10">
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 4</div>
-          <h2 className="text-xl font-bold text-gray-900">의료 해외진출 정책 요구도</h2>
+          <h2 className="text-2xl font-bold text-gray-900">의료 해외진출 정책 요구도</h2>
           <p className="mt-2 text-sm text-gray-500">정책 지원에 대한 의견을 들려주세요</p>
         </div>
 
@@ -220,7 +224,11 @@ export default function PolicyNeedsPage() {
         </div>
       </div>
 
-      <DevTools onAutoFill={handleAutoFill} onSkipValidation={setSkipValidation} />
+      <DevTools
+        onAutoFill={handleAutoFill}
+        skipValidation={skipValidation}
+        onSkipValidationChange={setSkipValidation}
+      />
     </SurveyLayout>
   )
 }

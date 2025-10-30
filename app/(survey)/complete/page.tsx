@@ -4,15 +4,20 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle, Gift, Mail, Loader2, AlertCircle } from "lucide-react"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
+import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function CompletePage() {
   const router = useRouter()
   const { submitSurvey } = useSurveyForm()
+  const canAccess = useSurveyStepGuard("complete")
   const [status, setStatus] = useState<"submitting" | "success" | "error">("submitting")
   const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
-    // 페이지 로드 시 자동으로 제출
+    if (!canAccess) {
+      return
+    }
+
     const submit = async () => {
       try {
         const result = await submitSurvey()
@@ -31,7 +36,11 @@ export default function CompletePage() {
     }
 
     submit()
-  }, [submitSurvey])
+  }, [canAccess, submitSurvey])
+
+  if (!canAccess) {
+    return null
+  }
 
   // 제출 중 로딩 화면
   if (status === "submitting") {

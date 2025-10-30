@@ -1,21 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Settings, Zap, X, ChevronUp, ChevronDown } from "lucide-react"
 
 interface DevToolsProps {
   onAutoFill?: () => void
-  onSkipValidation?: (skip: boolean) => void
+  skipValidation?: boolean
+  onSkipValidationChange?: (skip: boolean) => void
 }
 
-export function DevTools({ onAutoFill, onSkipValidation }: DevToolsProps) {
+export function DevTools({ onAutoFill, skipValidation, onSkipValidationChange }: DevToolsProps) {
   const [isOpen, setIsOpen] = useState(true)
-  const [skipValidation, setSkipValidation] = useState(true)
+  const [internalSkipValidation, setInternalSkipValidation] = useState(
+    process.env.NODE_ENV !== "production"
+  )
 
-  // 컴포넌트 마운트 시 검증 스킵 상태를 부모 컴포넌트에 알림
+  const isControlled = typeof skipValidation === "boolean"
+  const effectiveSkipValidation = isControlled ? skipValidation : internalSkipValidation
+
   useEffect(() => {
-    onSkipValidation?.(true)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (isControlled) {
+      setInternalSkipValidation(skipValidation)
+    }
+  }, [isControlled, skipValidation])
 
   // 프로덕션 환경에서는 렌더링하지 않음
   if (process.env.NODE_ENV === "production") {
@@ -23,9 +30,11 @@ export function DevTools({ onAutoFill, onSkipValidation }: DevToolsProps) {
   }
 
   const handleSkipToggle = () => {
-    const newSkipState = !skipValidation
-    setSkipValidation(newSkipState)
-    onSkipValidation?.(newSkipState)
+    const newSkipState = !effectiveSkipValidation
+    if (!isControlled) {
+      setInternalSkipValidation(newSkipState)
+    }
+    onSkipValidationChange?.(newSkipState)
   }
 
   return (
@@ -61,19 +70,19 @@ export function DevTools({ onAutoFill, onSkipValidation }: DevToolsProps) {
             )}
 
             {/* Skip Validation Toggle */}
-            {onSkipValidation && (
+            {onSkipValidationChange && (
               <div className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3">
                 <span className="text-sm font-medium text-gray-700">검증 스킵</span>
                 <button
                   onClick={handleSkipToggle}
                   className={`relative h-6 w-11 rounded-full transition-colors ${
-                    skipValidation ? "bg-purple-600" : "bg-gray-300"
+                    effectiveSkipValidation ? "bg-purple-600" : "bg-gray-300"
                   }`}
                   aria-label="검증 스킵 토글"
                 >
                   <div
                     className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-                      skipValidation ? "translate-x-5" : "translate-x-0.5"
+                      effectiveSkipValidation ? "translate-x-5" : "translate-x-0.5"
                     }`}
                   />
                 </button>

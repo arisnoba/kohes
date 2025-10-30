@@ -11,9 +11,8 @@ import { useSurveyForm } from "@/components/survey/SurveyProvider"
 
 export default function BasicInfoPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
   const { basicInfo } = data
-  const [skipValidation, setSkipValidation] = useState(false)
   const [isFormValid, setIsFormValid] = useState(false)
 
   const handleChange = (field: keyof typeof basicInfo, value: string) => {
@@ -171,7 +170,11 @@ export default function BasicInfoPage() {
         </div>
       </div>
 
-      <DevTools onAutoFill={handleAutoFill} onSkipValidation={setSkipValidation} />
+      <DevTools
+        onAutoFill={handleAutoFill}
+        skipValidation={skipValidation}
+        onSkipValidationChange={setSkipValidation}
+      />
     </SurveyLayout>
   )
 }

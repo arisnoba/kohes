@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
@@ -10,12 +9,17 @@ import { NavigationButton } from "@/components/survey/NavigationButton"
 import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 import type { ProjectDetailsState } from "@/components/survey/SurveyProvider"
+import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ProjectDetailsPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
   const { projectDetails } = data
-  const [skipValidation, setSkipValidation] = useState(false)
+  const canAccess = useSurveyStepGuard("project-details")
+
+  if (!canAccess) {
+    return null
+  }
 
   const handleAutoFill = () => {
     updateSection("projectDetails", {
@@ -116,7 +120,7 @@ export default function ProjectDetailsPage() {
       <div className="space-y-8">
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 3</div>
-          <h2 className="text-xl font-bold text-gray-900">의료 해외진출 사업 세부정보</h2>
+          <h2 className="text-2xl font-bold text-gray-900">의료 해외진출 사업 세부정보</h2>
           <p className="mt-2 text-sm text-gray-500">
             아래는 의료 해외진출법에서 정의하고 있는 의료해외진출의 범위입니다.
           </p>
@@ -352,7 +356,11 @@ export default function ProjectDetailsPage() {
         </div>
       </div>
 
-      <DevTools onAutoFill={handleAutoFill} onSkipValidation={setSkipValidation} />
+      <DevTools
+        onAutoFill={handleAutoFill}
+        skipValidation={skipValidation}
+        onSkipValidationChange={setSkipValidation}
+      />
     </SurveyLayout>
   )
 }

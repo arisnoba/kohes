@@ -1,8 +1,9 @@
 -- Enable Row Level Security on survey_responses
 ALTER TABLE survey_responses ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if they exist
+-- Drop existing policies if they exist (모든 가능한 정책 이름 삭제)
 DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON survey_responses;
+DROP POLICY IF EXISTS "Enable insert for all users" ON survey_responses;
 DROP POLICY IF EXISTS "Enable read access for authenticated users only" ON survey_responses;
 DROP POLICY IF EXISTS "Enable update for authenticated users only" ON survey_responses;
 DROP POLICY IF EXISTS "Enable delete for authenticated users only" ON survey_responses;

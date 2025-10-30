@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
@@ -8,12 +7,17 @@ import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { NavigationButton } from "@/components/survey/NavigationButton"
 import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
+import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ExpansionInfoPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
   const { expansionInfo } = data
-  const [skipValidation, setSkipValidation] = useState(false)
+  const canAccess = useSurveyStepGuard("expansion-info")
+
+  if (!canAccess) {
+    return null
+  }
 
   const handleOrgTypeChange = (value: string) => {
     if (value === "의료기관") {
@@ -122,7 +126,7 @@ export default function ExpansionInfoPage() {
       <div className="space-y-10">
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 2</div>
-          <h2 className="text-xl font-bold text-gray-900">의료 해외진출 기본 정보</h2>
+          <h2 className="text-2xl font-bold text-gray-900">의료 해외진출 기본 정보</h2>
           <p className="mt-2 text-sm text-gray-500">귀하의 기관 정보를 입력해주세요</p>
         </div>
 
@@ -252,7 +256,11 @@ export default function ExpansionInfoPage() {
         </div>
       </div>
 
-      <DevTools onAutoFill={handleAutoFill} onSkipValidation={setSkipValidation} />
+      <DevTools
+        onAutoFill={handleAutoFill}
+        skipValidation={skipValidation}
+        onSkipValidationChange={setSkipValidation}
+      />
     </SurveyLayout>
   )
 }

@@ -1,24 +1,14 @@
 import type { PostgrestError } from "@supabase/supabase-js"
 
 import { createSupabaseServerClient } from "@/lib/supabase/client"
-import type { Database } from "@/lib/supabase/types"
 import type { SurveyData } from "@/components/survey/SurveyProvider"
 
-export type RewardStatus = Database["public"]["Tables"]["survey_responses"]["Row"]["reward_status"]
-
-const DEFAULT_REWARD_STATUS: RewardStatus = "발송 대기"
-const ADMIN_BASE_COLUMNS = "id, respondent_name, organization_name, submitted_at, response_data, pii_data"
-const ADMIN_REWARD_COLUMNS = "reward_status, reward_sent_at, reward_note"
-const ADMIN_PRIMARY_SELECT = `${ADMIN_BASE_COLUMNS}, ${ADMIN_REWARD_COLUMNS}`
-const MISSING_COLUMN_CODE = "42703"
+const ADMIN_SELECT_COLUMNS = "id, respondent_name, organization_name, submitted_at, response_data, pii_data"
 
 export interface AdminResponseSummary {
   id: string
   respondentName: string | null
   organizationName: string | null
-  rewardStatus: RewardStatus
-  rewardSentAt: string | null
-  rewardNote: string | null
   submittedAt: string
   orgType: string | null
   expansionTiming: string | null
@@ -35,18 +25,8 @@ interface FetchResult {
 const PAGE_SIZE = 500
 
 export async function fetchSurveyResponses(): Promise<FetchResult> {
-  const primary = await fetchSurveyRows(ADMIN_PRIMARY_SELECT, mapAdminResponseSummary)
-
-  if (primary.error) {
-    if (isMissingColumnError(primary.error)) {
-      const fallback = await fetchSurveyRows(ADMIN_BASE_COLUMNS, mapAdminResponseSummary)
-      return { responses: fallback.items, totalCount: fallback.totalCount, error: fallback.error }
-    }
-
-    return { responses: [], totalCount: 0, error: primary.error }
-  }
-
-  return { responses: primary.items, totalCount: primary.totalCount, error: null }
+  const result = await fetchSurveyRows(ADMIN_SELECT_COLUMNS, mapAdminResponseSummary)
+  return { responses: result.items, totalCount: result.totalCount, error: result.error }
 }
 
 interface PaginatedAdminResponseResult extends FetchResult {
@@ -66,35 +46,19 @@ export async function fetchSurveyResponsesPage({
   const from = (normalizedPage - 1) * normalizedPageSize
   const to = from + normalizedPageSize - 1
 
-  const adminPage = await fetchAdminPageRange(ADMIN_PRIMARY_SELECT, from, to)
+  const pageResult = await fetchAdminPageRange(ADMIN_SELECT_COLUMNS, from, to)
 
-  if (adminPage.error) {
-    if (isMissingColumnError(adminPage.error)) {
-      const fallbackPage = await fetchAdminPageRange(ADMIN_BASE_COLUMNS, from, to)
-      if (fallbackPage.error) {
-        return {
-          responses: [],
-          totalCount: 0,
-          page: normalizedPage,
-          pageSize: normalizedPageSize,
-          error: fallbackPage.error,
-        }
-      }
-
-      const result = buildPaginatedResult(fallbackPage, normalizedPage, normalizedPageSize)
-      return resolvePaginatedResult(result)
-    }
-
+  if (pageResult.error) {
     return {
       responses: [],
       totalCount: 0,
       page: normalizedPage,
       pageSize: normalizedPageSize,
-      error: adminPage.error,
+      error: pageResult.error,
     }
   }
 
-  const result = buildPaginatedResult(adminPage, normalizedPage, normalizedPageSize)
+  const result = buildPaginatedResult(pageResult, normalizedPage, normalizedPageSize)
   return resolvePaginatedResult(result)
 }
 
@@ -197,9 +161,6 @@ function mapAdminResponseSummary(item: Record<string, unknown>): AdminResponseSu
     id: item.id as string,
     respondentName: (item.respondent_name as string | null) ?? null,
     organizationName: (item.organization_name as string | null) ?? null,
-    rewardStatus: (item.reward_status as RewardStatus | undefined) ?? DEFAULT_REWARD_STATUS,
-    rewardSentAt: (item.reward_sent_at as string | null) ?? null,
-    rewardNote: (item.reward_note as string | null) ?? null,
     submittedAt: item.submitted_at as string,
     orgType,
     expansionTiming,
@@ -212,12 +173,6 @@ export function isMissingTableError(error: PostgrestError | null): boolean {
   if (!error) return false
   return error.code === "42P01" // undefined_table
 }
-
-function isMissingColumnError(error: PostgrestError | null): boolean {
-  if (!error) return false
-  return error.code === MISSING_COLUMN_CODE
-}
-
 interface AdminPageRangeResult {
   data: Record<string, unknown>[] | null
   count: number | null

@@ -1,13 +1,5 @@
 import type { AdminResponseSummary } from "@/lib/supabase/responses"
 
-const DATETIME_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit"
-})
-
 interface ResponseDetailViewProps {
   response: AdminResponseSummary
 }
@@ -25,18 +17,6 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
 
   return (
     <div className="space-y-6">
-      <section className="space-y-3">
-        <h4 className="text-sm font-semibold">리워드 관리</h4>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <DetailItem label="발송 상태" value={response.rewardStatus} />
-          <DetailItem
-            label="발송일"
-            value={formatDateValue(response.rewardSentAt)}
-          />
-          <DetailItem label="관리 메모" value={response.rewardNote} className="sm:col-span-2" />
-        </div>
-      </section>
-
       {/* Basic Info Section */}
       <section className="space-y-3">
         <h4 className="text-sm font-semibold">기본 정보</h4>
@@ -252,8 +232,15 @@ function extractArray(data: Record<string, unknown>, path: string[]): string | n
   }
 
   if (Array.isArray(current)) {
-    const filtered = current.filter((item) => typeof item === "string" && item.trim())
+    const filtered = current
+      .map((item) => (typeof item === "string" ? item.trim() : ""))
+      .filter((item) => item.length > 0)
     return filtered.length > 0 ? filtered.join(", ") : null
+  }
+
+  if (typeof current === "string") {
+    const trimmed = current.trim()
+    return trimmed.length > 0 ? trimmed : null
   }
 
   return null

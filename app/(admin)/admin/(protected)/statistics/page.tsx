@@ -1,6 +1,12 @@
 import { Fragment } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { getSurveyQuestionSummaries } from "@/lib/survey/schema-loader"
 import {
   aggregateSurveyResponses,
@@ -226,13 +232,44 @@ function QuestionStatCard({ question, stats, totalResponses }: QuestionStatCardP
               stats.sampleValues.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">응답 예시</p>
-                  <div className="space-y-1 rounded-md bg-muted/40 p-3">
-                    {stats.sampleValues.map((sample, index) => (
-                      <div key={`${sample}-${index}`} className="text-xs text-muted-foreground">
-                        • {truncate(sample, 60)}
-                      </div>
-                    ))}
-                  </div>
+                  {/* B5_1_1의 경우 아코디언으로 모든 항목 표시 */}
+                  {question.questionId === "B5_1_1" && stats.optionStats.length > 0 ? (
+                    <Accordion>
+                      <AccordionItem value={`b5_1_1_${question.questionId}`}>
+                        <AccordionTrigger className="text-xs py-2">
+                          전체 응답 보기 ({stats.optionStats.length}개)
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2 max-h-[400px] overflow-y-auto rounded-md bg-muted/40 p-3">
+                            {stats.optionStats.map((option) => (
+                              <div
+                                key={option.value}
+                                className="flex items-start gap-2 py-2 border-b last:border-0"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs font-medium text-foreground break-words">
+                                    {option.displayValue}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground mt-1">
+                                    {NUMBER_FORMATTER.format(option.count)}건 (
+                                    {formatPercentage(option.percentage)})
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : (
+                    <div className="space-y-1 rounded-md bg-muted/40 p-3">
+                      {stats.sampleValues.map((sample, index) => (
+                        <div key={`${sample}-${index}`} className="text-xs text-muted-foreground">
+                          • {truncate(sample, 60)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

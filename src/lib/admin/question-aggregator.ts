@@ -141,7 +141,8 @@ function accumulateQuestionStats(
   mapping: FieldMapping
 ): AggregatedQuestionStats {
   let answeredCount = 0
-  const isChoiceQuestion = question.questionType === "multi_choice" || question.questionType === "rank_choice"
+  const isChoiceQuestion =
+    question.questionType === "multi_choice" || question.questionType === "rank_choice"
   const counts = new Map<
     string,
     { count: number; display: string; totalScore?: number; rankSum?: number; rankDist?: number[] }
@@ -209,7 +210,12 @@ function accumulateQuestionStats(
       current.count += 1
       counts.set(value, current)
 
-      if (sampleValues.length < MAX_TEXT_SAMPLES && !sampleValues.includes(value)) {
+      // B5_1_1의 경우 모든 값을 수집 (아코디언 표시용)
+      if (question.questionId === "B5_1_1") {
+        if (!sampleValues.includes(value)) {
+          sampleValues.push(value)
+        }
+      } else if (sampleValues.length < MAX_TEXT_SAMPLES && !sampleValues.includes(value)) {
         sampleValues.push(value)
       }
     }
@@ -317,6 +323,19 @@ function normalizeToString(value: unknown): string | null {
 
   if (typeof value === "number" || typeof value === "boolean") {
     return String(value)
+  }
+
+  if (Array.isArray(value)) {
+    const flattened = value
+      .map((item) => {
+        if (typeof item === "string") return item.trim()
+        if (typeof item === "number" || typeof item === "boolean") return String(item)
+        return ""
+      })
+      .filter((item) => item.length > 0)
+
+    if (!flattened.length) return null
+    return flattened.join(", ")
   }
 
   return null

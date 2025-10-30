@@ -18,35 +18,27 @@ export interface AdminResponseSummary {
 
 interface FetchResult {
   responses: AdminResponseSummary[]
+  totalCount: number
   error: PostgrestError | null
 }
 
-export async function fetchSurveyResponses(limit = 200): Promise<FetchResult> {
-  const supabase = createSupabaseServerClient()
+const PAGE_SIZE = 500
 
-  const { data, error } = await supabase
-    .from("survey_responses")
-    .select(
-      "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note"
-    )
-    .order("submitted_at", { ascending: false })
-    .limit(limit)
+export async function fetchSurveyResponses(): Promise<FetchResult> {
+  const { items, totalCount, error } = await fetchSurveyRows(
+    "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note",
+    (item) => ({
+      id: item.id as string,
+      respondentName: (item.respondent_name as string | null) ?? null,
+      organizationName: (item.organization_name as string | null) ?? null,
+      rewardStatus: item.reward_status as RewardStatus,
+      rewardSentAt: (item.reward_sent_at as string | null) ?? null,
+      submittedAt: item.submitted_at as string,
+      rewardNote: (item.reward_note as string | null) ?? null,
+    })
+  )
 
-  if (error) {
-    return { responses: [], error }
-  }
-
-  const responses: AdminResponseSummary[] = (data ?? []).map((item) => ({
-    id: item.id,
-    respondentName: item.respondent_name,
-    organizationName: item.organization_name,
-    rewardStatus: item.reward_status,
-    rewardSentAt: item.reward_sent_at,
-    submittedAt: item.submitted_at,
-    rewardNote: item.reward_note,
-  }))
-
-  return { responses, error: null }
+  return { responses: items, totalCount, error }
 }
 
 export interface SurveyResponseRecord {
@@ -58,30 +50,73 @@ export interface SurveyResponseRecord {
 
 interface PayloadFetchResult {
   entries: SurveyResponseRecord[]
+  totalCount: number
   error: PostgrestError | null
 }
 
-export async function fetchSurveyResponsePayloads(limit = 500): Promise<PayloadFetchResult> {
+export async function fetchSurveyResponsePayloads(): Promise<PayloadFetchResult> {
+  const { items, totalCount, error } = await fetchSurveyRows(
+    "id, submitted_at, response_data, pii_data",
+    (item) => ({
+      id: item.id as string,
+      submittedAt: item.submitted_at as string,
+      responseData: (item.response_data as Record<string, unknown> | null) ?? null,
+      piiData: (item.pii_data as Record<string, unknown> | null) ?? null,
+    })
+  )
+
+  return { entries: items, totalCount, error }
+}
+
+interface PaginatedResult<T> {
+  items: T[]
+  totalCount: number
+  error: PostgrestError | null
+}
+
+async function fetchSurveyRows<T>(
+  selectColumns: string,
+  mapFn: (item: Record<string, unknown>) => T
+): Promise<PaginatedResult<T>> {
   const supabase = createSupabaseServerClient()
+  const rows: T[] = []
+  let from = 0
+  let totalCount = 0
 
-  const { data, error } = await supabase
-    .from("survey_responses")
-    .select("id, submitted_at, response_data, pii_data")
-    .order("submitted_at", { ascending: false })
-    .limit(limit)
+  while (true) {
+    const to = from + PAGE_SIZE - 1
+    const { data, error, count } = await supabase
+      .from("survey_responses")
+      .select(selectColumns, from === 0 ? { count: "exact" } : undefined)
+      .order("submitted_at", { ascending: false })
+      .range(from, to)
 
-  if (error) {
-    return { entries: [], error }
+    if (error) {
+      return { items: [], totalCount: 0, error }
+    }
+
+    if (from === 0 && typeof count === "number") {
+      totalCount = count
+    }
+
+    if (!data || data.length === 0) {
+      break
+    }
+
+    rows.push(...data.map((item) => mapFn(item as Record<string, unknown>)))
+
+    if (data.length < PAGE_SIZE) {
+      break
+    }
+
+    from += PAGE_SIZE
   }
 
-  const entries: SurveyResponseRecord[] = (data ?? []).map((item) => ({
-    id: item.id,
-    submittedAt: item.submitted_at,
-    responseData: (item.response_data as Record<string, unknown> | null) ?? null,
-    piiData: (item.pii_data as Record<string, unknown> | null) ?? null,
-  }))
+  if (totalCount === 0) {
+    totalCount = rows.length
+  }
 
-  return { entries, error: null }
+  return { items: rows, totalCount, error: null }
 }
 
 export function isMissingTableError(error: PostgrestError | null): boolean {

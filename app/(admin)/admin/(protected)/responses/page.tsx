@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table"
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
@@ -15,11 +15,13 @@ const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
   month: "2-digit",
   day: "2-digit",
   hour: "2-digit",
-  minute: "2-digit"
+  minute: "2-digit",
 })
 
+const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
+
 export default async function ResponsesPage() {
-  const { responses, error } = await fetchSurveyResponses()
+  const { responses, totalCount, error } = await fetchSurveyResponses()
 
   if (isMissingTableError(error)) {
     return (
@@ -27,7 +29,9 @@ export default async function ResponsesPage() {
         <h2 className="text-2xl font-bold">응답 데이터 목록</h2>
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
           <p className="font-semibold">survey_responses 테이블을 찾을 수 없습니다.</p>
-          <p className="mt-2">Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.</p>
+          <p className="mt-2">
+            Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.
+          </p>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
               `supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.
@@ -61,6 +65,9 @@ export default async function ResponsesPage() {
         <p className="text-sm text-muted-foreground">
           Supabase `survey_responses` 테이블과 연결되어 리워드 발송 현황을 확인할 수 있습니다.
         </p>
+        <p className="text-xs text-muted-foreground">
+          총 {NUMBER_FORMATTER.format(totalCount)}건의 응답이 저장되었습니다.
+        </p>
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-background shadow-sm">
@@ -68,11 +75,11 @@ export default async function ResponsesPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[160px]">응답 ID</TableHead>
-              <TableHead className="w-[160px]">응답자</TableHead>
-              <TableHead className="w-[200px]">소속</TableHead>
-              <TableHead className="min-w-[160px]">제출 시간</TableHead>
-              <TableHead className="w-[140px]">리워드 상태</TableHead>
-              <TableHead className="w-[160px]">리워드 발송일</TableHead>
+              <TableHead>응답자</TableHead>
+              <TableHead>소속</TableHead>
+              <TableHead>제출 시간</TableHead>
+              <TableHead>리워드 상태</TableHead>
+              <TableHead>리워드 발송일</TableHead>
               <TableHead>메모</TableHead>
             </TableRow>
           </TableHeader>
@@ -80,7 +87,7 @@ export default async function ResponsesPage() {
             {hasResponses ? (
               responses.map((response) => (
                 <TableRow key={response.id}>
-                  <TableCell className="font-medium text-foreground">{response.id}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{response.id}</TableCell>
                   <TableCell>{response.respondentName ?? "-"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {response.organizationName ?? "-"}
@@ -112,7 +119,8 @@ export default async function ResponsesPage() {
         </Table>
       </div>
       <p className="text-xs text-muted-foreground">
-        ※ 테이블 구조는 `supabase/migrations/20240127000000_create_survey_responses.sql`에서 확인할 수 있습니다.
+        ※ 테이블 구조는 `supabase/migrations/20240127000000_create_survey_responses.sql`에서 확인할
+        수 있습니다.
       </p>
     </div>
   )

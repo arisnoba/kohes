@@ -7,43 +7,37 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table"
-import {
-  type SurveyQuestionSummary,
-  getSurveyQuestionSummaries
-} from "@/lib/survey/schema-loader"
+import { type SurveyQuestionSummary, getSurveyQuestionSummaries } from "@/lib/survey/schema-loader"
 import {
   aggregateSurveyResponses,
-  type AggregatedQuestionStats
+  type AggregatedQuestionStats,
 } from "@/lib/admin/question-aggregator"
-import {
-  fetchSurveyResponsePayloads,
-  isMissingTableError
-} from "@/lib/supabase/responses"
+import { fetchSurveyResponsePayloads, isMissingTableError } from "@/lib/supabase/responses"
 
 const QUESTION_TYPE_LABELS: Record<string, string> = {
   text: "단답형",
   textarea: "서술형",
   single_choice: "단일 선택",
   multi_choice: "복수 선택",
-  rank_choice: "순위 선택"
+  rank_choice: "순위 선택",
 }
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 const PERCENT_FORMATTER = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 1,
-  minimumFractionDigits: 0
+  minimumFractionDigits: 0,
 })
 const SCORE_FORMATTER = new Intl.NumberFormat("ko-KR", {
   maximumFractionDigits: 1,
-  minimumFractionDigits: 0
+  minimumFractionDigits: 0,
 })
 
 export default async function DashboardPage() {
   const questionSummaries = getSurveyQuestionSummaries()
   const sections = groupBySection(questionSummaries)
-  const { entries, error } = await fetchSurveyResponsePayloads()
+  const { entries, totalCount, error } = await fetchSurveyResponsePayloads()
 
   if (isMissingTableError(error)) {
     return (
@@ -51,7 +45,9 @@ export default async function DashboardPage() {
         <h2 className="text-2xl font-bold">설문 문항별 응답 관리</h2>
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
           <p className="font-semibold">survey_responses 테이블을 찾을 수 없습니다.</p>
-          <p className="mt-2">Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.</p>
+          <p className="mt-2">
+            Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.
+          </p>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
               `supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.
@@ -77,7 +73,8 @@ export default async function DashboardPage() {
   }
 
   const aggregation = aggregateSurveyResponses(questionSummaries, entries)
-  const { totalResponses, statsByQuestion } = aggregation
+  const { statsByQuestion } = aggregation
+  const totalResponses = totalCount
   const hasResponses = totalResponses > 0
 
   return (
@@ -92,7 +89,9 @@ export default async function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border bg-background p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">총 설문 응답</p>
-          <p className="mt-1 text-2xl font-bold text-foreground">{NUMBER_FORMATTER.format(totalResponses)}건</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">
+            {NUMBER_FORMATTER.format(totalResponses)}건
+          </p>
           {!hasResponses ? (
             <p className="mt-2 text-xs text-muted-foreground">
               아직 제출된 응답이 없습니다. 새로운 응답이 저장되면 자동으로 통계가 채워집니다.
@@ -105,7 +104,7 @@ export default async function DashboardPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[320px]">문항</TableHead>
+              <TableHead className="w-[200px]">문항</TableHead>
               <TableHead className="w-[120px]">유형</TableHead>
               <TableHead className="w-[90px]">필수</TableHead>
               <TableHead className="w-[120px] text-right">응답 수</TableHead>
@@ -138,10 +137,14 @@ export default async function DashboardPage() {
                           </div>
                         ) : null}
                         {question.notes ? (
-                          <div className="text-xs text-muted-foreground">비고: {question.notes}</div>
+                          <div className="text-xs text-muted-foreground">
+                            비고: {question.notes}
+                          </div>
                         ) : null}
                         {question.help ? (
-                          <div className="text-xs text-muted-foreground">도움말: {question.help}</div>
+                          <div className="text-xs text-muted-foreground">
+                            도움말: {question.help}
+                          </div>
                         ) : null}
                       </TableCell>
                       <TableCell className="align-top text-sm text-muted-foreground">
@@ -193,7 +196,7 @@ export default async function DashboardPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        ※ 통계는 최신 {NUMBER_FORMATTER.format(entries.length)}건의 응답을 기준으로 계산됩니다.
+        ※ 통계는 최신 {NUMBER_FORMATTER.format(totalResponses)}건의 응답을 기준으로 계산됩니다.
       </p>
     </div>
   )
@@ -213,7 +216,7 @@ function groupBySection(summaries: SurveyQuestionSummary[]) {
       grouped.push({
         sectionId: summary.sectionId,
         sectionTitle: summary.sectionTitle,
-        questions: []
+        questions: [],
       })
     }
     const index = lookup.get(summary.sectionId) ?? 0
@@ -223,10 +226,7 @@ function groupBySection(summaries: SurveyQuestionSummary[]) {
   return grouped
 }
 
-function renderResponseSummary(
-  question: SurveyQuestionSummary,
-  stats?: AggregatedQuestionStats
-) {
+function renderResponseSummary(question: SurveyQuestionSummary, stats?: AggregatedQuestionStats) {
   if (!stats) {
     return <div className="text-sm text-muted-foreground">Supabase 매핑을 찾을 수 없습니다.</div>
   }
@@ -234,8 +234,8 @@ function renderResponseSummary(
   if (stats.isSensitive) {
     return (
       <div className="text-xs text-muted-foreground">
-        민감 정보 보호를 위해 집계 수치만 제공합니다. 총 {NUMBER_FORMATTER.format(stats.answeredCount)}건의 응답이
-        수집되었습니다.
+        민감 정보 보호를 위해 집계 수치만 제공합니다. 총{" "}
+        {NUMBER_FORMATTER.format(stats.answeredCount)}건의 응답이 수집되었습니다.
       </div>
     )
   }
@@ -349,9 +349,7 @@ function formatScore(value: number) {
 }
 
 function formatOtherTexts(values: string[]) {
-  return values
-    .map((value, index) => `${index + 1}. ${truncate(value)}`)
-    .join(" / ")
+  return values.map((value, index) => `${index + 1}. ${truncate(value)}`).join(" / ")
 }
 
 function truncate(value: string, max = 80) {

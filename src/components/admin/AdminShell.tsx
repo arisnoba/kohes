@@ -213,7 +213,7 @@ export function AdminShell({ children }: AdminShellProps) {
         </header>
 
         <main className="min-h-[calc(100vh-4rem)] bg-muted/40 px-4 py-8 md:px-8">
-          <div className="mx-auto w-full max-w-6xl">{children}</div>
+          <div className="mx-auto w-full ">{children}</div>
         </main>
       </div>
     </div>

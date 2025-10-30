@@ -1,6 +1,4 @@
 import { fetchSurveyResponses, isMissingTableError } from "@/lib/supabase/responses"
-import type { RewardStatus } from "@/lib/supabase/responses"
-import { Badge } from "@/components/ui/badge"
 import {
   Table,
   TableBody,
@@ -9,14 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-const DATE_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-})
+import { ResponseRow } from "./ResponseRow"
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 
@@ -77,6 +68,8 @@ export default async function ResponsesPage() {
               <TableHead className="w-[160px]">응답 ID</TableHead>
               <TableHead>응답자</TableHead>
               <TableHead>소속</TableHead>
+              <TableHead>기관 유형</TableHead>
+              <TableHead>진출 시기</TableHead>
               <TableHead>제출 시간</TableHead>
               <TableHead>리워드 상태</TableHead>
               <TableHead>리워드 발송일</TableHead>
@@ -85,32 +78,10 @@ export default async function ResponsesPage() {
           </TableHeader>
           <TableBody>
             {hasResponses ? (
-              responses.map((response) => (
-                <TableRow key={response.id}>
-                  <TableCell className="text-xs text-muted-foreground">{response.id}</TableCell>
-                  <TableCell>{response.respondentName ?? "-"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {response.organizationName ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(response.submittedAt)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={statusToVariant(response.rewardStatus)}>
-                      {response.rewardStatus}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {response.rewardSentAt ? formatDate(response.rewardSentAt) : "-"}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {response.rewardNote ?? "-"}
-                  </TableCell>
-                </TableRow>
-              ))
+              responses.map((response) => <ResponseRow key={response.id} response={response} />)
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="py-12 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={9} className="py-12 text-center text-sm text-muted-foreground">
                   아직 저장된 응답이 없습니다. 설문 제출 후 이곳에 최신 응답이 표시됩니다.
                 </TableCell>
               </TableRow>
@@ -124,22 +95,4 @@ export default async function ResponsesPage() {
       </p>
     </div>
   )
-}
-
-function formatDate(value: string | null) {
-  if (!value) return "-"
-  return DATE_FORMATTER.format(new Date(value))
-}
-
-function statusToVariant(status: RewardStatus) {
-  switch (status) {
-    case "발송 완료":
-      return "default" as const
-    case "발송 대기":
-      return "secondary" as const
-    case "정보 확인 중":
-      return "outline" as const
-    default:
-      return "secondary" as const
-  }
 }

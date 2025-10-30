@@ -3,7 +3,15 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { FileSpreadsheet, LayoutDashboard, ListChecks, LogOut, Menu, X } from "lucide-react"
+import {
+  BarChart3,
+  FileSpreadsheet,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -30,6 +38,11 @@ const NAV_ITEMS: NavItem[] = [
     href: "/admin/responses",
     label: "응답 데이터",
     icon: ListChecks,
+  },
+  {
+    href: "/admin/statistics",
+    label: "문항별 통계",
+    icon: BarChart3,
   },
   {
     href: "/admin/exports",
@@ -113,7 +126,7 @@ export function AdminShell({ children }: AdminShellProps) {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Kohes Survey Admin
+              Kohes Survey 2025
             </span>
             {/* <h1 className="text-lg font-bold">관리자 콘솔</h1> */}
           </div>

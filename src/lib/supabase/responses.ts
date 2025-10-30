@@ -14,6 +14,10 @@ export interface AdminResponseSummary {
   rewardSentAt: string | null
   submittedAt: string
   rewardNote: string | null
+  orgType: string | null // A1: 기관 유형
+  expansionTiming: string | null // B1: 진출 시기
+  responseData: Record<string, unknown> | null // 전체 응답 데이터 (expandable row용)
+  piiData: Record<string, unknown> | null // 전체 PII 데이터 (expandable row용)
 }
 
 interface FetchResult {
@@ -26,16 +30,40 @@ const PAGE_SIZE = 500
 
 export async function fetchSurveyResponses(): Promise<FetchResult> {
   const { items, totalCount, error } = await fetchSurveyRows(
-    "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note",
-    (item) => ({
-      id: item.id as string,
-      respondentName: (item.respondent_name as string | null) ?? null,
-      organizationName: (item.organization_name as string | null) ?? null,
-      rewardStatus: item.reward_status as RewardStatus,
-      rewardSentAt: (item.reward_sent_at as string | null) ?? null,
-      submittedAt: item.submitted_at as string,
-      rewardNote: (item.reward_note as string | null) ?? null,
-    })
+    "id, respondent_name, organization_name, reward_status, reward_sent_at, submitted_at, reward_note, response_data, pii_data",
+    (item) => {
+      const responseData = (item.response_data as Record<string, unknown> | null) ?? null
+      const piiData = (item.pii_data as Record<string, unknown> | null) ?? null
+
+      // Extract A1 (orgType) from response_data.expansionInfo.orgType
+      let orgType: string | null = null
+      if (responseData?.expansionInfo && typeof responseData.expansionInfo === "object") {
+        const expansionInfo = responseData.expansionInfo as Record<string, unknown>
+        orgType = typeof expansionInfo.orgType === "string" ? expansionInfo.orgType : null
+      }
+
+      // Extract B1 (expansionTiming) from response_data.projectDetails.expansionTiming
+      let expansionTiming: string | null = null
+      if (responseData?.projectDetails && typeof responseData.projectDetails === "object") {
+        const projectDetails = responseData.projectDetails as Record<string, unknown>
+        expansionTiming =
+          typeof projectDetails.expansionTiming === "string" ? projectDetails.expansionTiming : null
+      }
+
+      return {
+        id: item.id as string,
+        respondentName: (item.respondent_name as string | null) ?? null,
+        organizationName: (item.organization_name as string | null) ?? null,
+        rewardStatus: item.reward_status as RewardStatus,
+        rewardSentAt: (item.reward_sent_at as string | null) ?? null,
+        submittedAt: item.submitted_at as string,
+        rewardNote: (item.reward_note as string | null) ?? null,
+        orgType,
+        expansionTiming,
+        responseData,
+        piiData,
+      }
+    }
   )
 
   return { responses: items, totalCount, error }

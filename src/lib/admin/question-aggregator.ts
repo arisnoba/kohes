@@ -87,6 +87,8 @@ export interface AggregatedOptionStat {
   percentage: number
   totalScore?: number
   averageScore?: number
+  averageRank?: number // 평균 순위 (낮을수록 중요)
+  rankDistribution?: number[] // 각 순위로 선택된 횟수 [1위 횟수, 2위 횟수, ...]
 }
 
 export interface AggregatedQuestionStats {
@@ -140,12 +142,18 @@ function accumulateQuestionStats(
 ): AggregatedQuestionStats {
   let answeredCount = 0
   const isChoiceQuestion = question.questionType === "multi_choice" || question.questionType === "rank_choice"
-  const counts = new Map<string, { count: number; display: string; totalScore?: number }>()
+  const counts = new Map<
+    string,
+    { count: number; display: string; totalScore?: number; rankSum?: number; rankDist?: number[] }
+  >()
   const sampleValues: string[] = []
 
   const weights = Array.isArray((question.scoring as any)?.weights)
     ? ((question.scoring as any).weights as number[])
     : []
+
+  const isRankChoice = question.questionType === "rank_choice"
+  const rankCount = question.rankCount ?? weights.length
 
   for (const entry of entries) {
     const raw = extractValue(entry, mapping)
@@ -166,12 +174,27 @@ function accumulateQuestionStats(
       values.forEach((value, index) => {
         const displayValue = getDisplayValue(question.questionId, value)
         const key = value
-        const current = counts.get(key) ?? { count: 0, display: displayValue, totalScore: 0 }
+        const current = counts.get(key) ?? {
+          count: 0,
+          display: displayValue,
+          totalScore: 0,
+          rankSum: 0,
+          rankDist: isRankChoice ? new Array(rankCount).fill(0) : undefined,
+        }
         current.count += 1
 
-        if (question.questionType === "rank_choice") {
+        if (isRankChoice) {
           const weight = weights[index] ?? Math.max(weights[weights.length - 1] ?? 0, 0)
           current.totalScore = (current.totalScore ?? 0) + weight
+
+          // 순위 추적 (index는 0부터, 실제 순위는 1부터)
+          const actualRank = index + 1
+          current.rankSum = (current.rankSum ?? 0) + actualRank
+
+          // 순위별 분포 기록
+          if (current.rankDist && index < rankCount) {
+            current.rankDist[index] = (current.rankDist[index] ?? 0) + 1
+          }
         }
 
         counts.set(key, current)
@@ -197,7 +220,7 @@ function accumulateQuestionStats(
   counts.forEach((value, key) => {
     if (answeredCount === 0) return
 
-    const percentage = value.count / answeredCount * 100
+    const percentage = (value.count / answeredCount) * 100
     const stat: AggregatedOptionStat = {
       value: key,
       displayValue: value.display,
@@ -208,6 +231,16 @@ function accumulateQuestionStats(
     if (question.questionType === "rank_choice" && value.totalScore !== undefined) {
       stat.totalScore = value.totalScore
       stat.averageScore = value.count > 0 ? value.totalScore / value.count : 0
+
+      // 평균 순위 계산 (낮을수록 중요)
+      if (value.rankSum !== undefined && value.count > 0) {
+        stat.averageRank = value.rankSum / value.count
+      }
+
+      // 순위별 분포
+      if (value.rankDist) {
+        stat.rankDistribution = value.rankDist
+      }
     }
 
     optionStats.push(stat)

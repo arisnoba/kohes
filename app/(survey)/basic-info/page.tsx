@@ -9,6 +9,10 @@ import { NavigationButton } from "@/components/survey/NavigationButton"
 import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 
+const telRegex = /^(?:0\d{1,2})-?\d{3,4}-?\d{4}$/
+const mobileRegex = /^01[016789]-?\d{3,4}-?\d{4}$/
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function BasicInfoPage() {
   const router = useRouter()
   const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
@@ -36,29 +40,41 @@ export default function BasicInfoPage() {
       return true
     }
 
-    if (!basicInfo.name.trim()) {
+    const name = basicInfo.name.trim()
+    const position = basicInfo.position.trim()
+    const telValue = basicInfo.tel.trim()
+    const mobileValue = basicInfo.mobile.trim()
+    const emailValue = basicInfo.email.trim()
+
+    if (!name) {
       alert("성명을 입력해주세요.")
       return false
     }
-    if (!basicInfo.position.trim()) {
+    if (!position) {
       alert("직위를 입력해주세요.")
       return false
     }
-    if (!basicInfo.tel.trim()) {
+    if (!telValue) {
       alert("전화번호를 입력해주세요.")
       return false
     }
-    if (!basicInfo.mobile.trim()) {
+    if (!telRegex.test(telValue)) {
+      alert("올바른 전화번호 형식을 입력해주세요. 예: 02-1234-5678")
+      return false
+    }
+    if (!mobileValue) {
       alert("휴대전화번호를 입력해주세요.")
       return false
     }
-    if (!basicInfo.email.trim()) {
+    if (!mobileRegex.test(mobileValue)) {
+      alert("올바른 휴대전화번호 형식을 입력해주세요. 예: 010-1234-5678")
+      return false
+    }
+    if (!emailValue) {
       alert("이메일을 입력해주세요.")
       return false
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(basicInfo.email)) {
+    if (!emailRegex.test(emailValue)) {
       alert("올바른 이메일 형식을 입력해주세요.")
       return false
     }
@@ -78,13 +94,19 @@ export default function BasicInfoPage() {
 
   // 클라이언트에서만 폼 유효성 검사 (hydration 불일치 방지)
   useEffect(() => {
+    const name = basicInfo.name.trim()
+    const position = basicInfo.position.trim()
+    const telValue = basicInfo.tel.trim()
+    const mobileValue = basicInfo.mobile.trim()
+    const emailValue = basicInfo.email.trim()
+
     const valid =
       skipValidation ||
-      (basicInfo.name.trim() !== "" &&
-        basicInfo.position.trim() !== "" &&
-        basicInfo.tel.trim() !== "" &&
-        basicInfo.mobile.trim() !== "" &&
-        basicInfo.email.trim() !== "")
+      (name !== "" &&
+        position !== "" &&
+        telRegex.test(telValue) &&
+        mobileRegex.test(mobileValue) &&
+        emailRegex.test(emailValue))
     setIsFormValid(valid)
   }, [basicInfo, skipValidation])
 

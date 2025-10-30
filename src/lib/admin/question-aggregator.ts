@@ -44,6 +44,7 @@ const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
 const ADDITIONAL_TEXT_FIELDS: Record<string, FieldMapping> = {
   C1: { source: "response", path: ["policyNeeds", "difficultiesOther"] },
   C2: { source: "response", path: ["policyNeeds", "supportNeedsOther"] },
+  C3: { source: "response", path: ["policyNeeds", "desiredSupportOther"] },
 }
 
 const VALUE_LABEL_OVERRIDES: Record<string, Record<string, string>> = {

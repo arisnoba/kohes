@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { HTMLAttributes } from "react"
 
 interface QuestionTextProps {
   id: string
@@ -12,6 +13,8 @@ interface QuestionTextProps {
   onChange?: (value: string) => void
   error?: string
   validate?: (value: string) => string | null
+  maxLength?: number
+  inputMode?: HTMLAttributes<HTMLInputElement>["inputMode"]
 }
 
 export function QuestionText({
@@ -24,6 +27,8 @@ export function QuestionText({
   onChange,
   error,
   validate,
+  maxLength,
+  inputMode,
 }: QuestionTextProps) {
   const [inputValue, setInputValue] = useState(value)
   const [touched, setTouched] = useState(false)
@@ -67,6 +72,8 @@ export function QuestionText({
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder={placeholder}
+        maxLength={maxLength}
+        inputMode={inputMode}
         className={`w-full border-0 border-b-2 bg-transparent px-0 py-3 text-lg transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-0 ${hasError
           ? "border-red-500 focus:border-red-600"
           : "border-gray-300 focus:border-blue-600"

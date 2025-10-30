@@ -33,6 +33,7 @@ export default function ExpansionInfoPage() {
         orgType: value,
         companyName: "",
         companyCategory: "",
+        companyCategoryOther: "",
       })
     } else if (value === "회사") {
       updateSection("expansionInfo", {
@@ -288,6 +289,10 @@ export default function ExpansionInfoPage() {
               ]}
               value={expansionInfo.companyCategory}
               onChange={(value) => updateSection("expansionInfo", { companyCategory: value })}
+              otherValue={expansionInfo.companyCategoryOther}
+              onOtherChange={(value) =>
+                updateSection("expansionInfo", { companyCategoryOther: value })
+              }
             />
           </div>
         )}

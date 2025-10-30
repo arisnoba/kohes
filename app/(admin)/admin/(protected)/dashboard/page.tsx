@@ -106,11 +106,11 @@ export default async function DashboardPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[200px]">문항</TableHead>
-              <TableHead className="w-[120px]">유형</TableHead>
-              <TableHead className="w-[90px]">필수</TableHead>
-              <TableHead className="w-[120px] text-right">응답 수</TableHead>
-              <TableHead className="min-w-[280px]">주요 응답 요약</TableHead>
+              <TableHead>문항</TableHead>
+              <TableHead>유형</TableHead>
+              <TableHead>필수</TableHead>
+              <TableHead className="text-right ">응답 수</TableHead>
+              <TableHead>주요 응답 요약</TableHead>
               {/* <TableHead className="min-w-[220px]">선택지 요약</TableHead> */}
               {/* <TableHead className="min-w-[220px]">출현 조건</TableHead> */}
             </TableRow>

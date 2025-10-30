@@ -20,6 +20,7 @@ export interface ExpansionInfoState {
   legalType: string
   companyName: string
   companyCategory: string
+  companyCategoryOther: string
 }
 
 export interface ProjectDetailsState {
@@ -73,6 +74,7 @@ const baseSurveyData: SurveyData = {
     legalType: "",
     companyName: "",
     companyCategory: "",
+    companyCategoryOther: "",
   },
   projectDetails: {
     expansionTiming: "",

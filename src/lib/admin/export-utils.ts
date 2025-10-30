@@ -78,6 +78,68 @@ function getExportColumns(type: ExportType): ExportColumn[] {
 }
 
 /**
+ * 경로를 따라 값 추출 (원본)
+ */
+function extractRawValue(data: unknown, path: string[]): unknown {
+  let current: unknown = data
+  for (const segment of path) {
+    if (!current || typeof current !== "object") {
+      return null
+    }
+    current = (current as Record<string, unknown>)[segment]
+  }
+  return current
+}
+
+/**
+ * "기타" 옵션에 입력된 내용을 병합
+ */
+function decorateWithOther(values: string[], otherValue: string | null): string[] {
+  const trimmedOther = otherValue?.trim()
+  
+  // otherValue가 없으면 원본 배열 그대로 반환
+  if (!trimmedOther) return values
+
+  let hasOtherOption = false
+  const decorated = values.map((raw) => {
+    const option = raw.trim()
+    if (!option) return option
+
+    // "기타"로 시작하거나, "기타"와 완전 일치하는 경우
+    const normalized = option.replace(/\s*\(.*\)$/u, "").trim()
+    if (normalized === "기타" || normalized.startsWith("기타")) {
+      hasOtherOption = true
+      return `기타 : ${trimmedOther}`
+    }
+
+    return option
+  })
+
+  // "기타" 옵션이 배열에 없었지만 otherValue는 있는 경우 추가
+  if (!hasOtherOption && trimmedOther) {
+    decorated.push(`기타 : ${trimmedOther}`)
+  }
+
+  return decorated.filter((item) => item.length > 0)
+}
+
+/**
+ * 단일 선택 값에 "기타" 내용 병합
+ */
+function decorateSingleWithOther(value: string | null, otherValue: string | null): string {
+  if (!value?.trim()) return otherValue?.trim() || ""
+
+  const trimmedValue = value.trim()
+  const trimmedOther = otherValue?.trim()
+
+  if (trimmedValue === "기타" && trimmedOther) {
+    return `기타 : ${trimmedOther}`
+  }
+
+  return trimmedValue
+}
+
+/**
  * 경로를 따라 값 추출
  */
 function extractValue(
@@ -96,29 +158,50 @@ function extractValue(
   if (!sourceData || !column.path) return ""
 
   // 경로를 따라 값 추출
-  let current: unknown = sourceData
-  for (const segment of column.path) {
-    if (!current || typeof current !== "object") {
-      return ""
-    }
-    current = (current as Record<string, unknown>)[segment]
-  }
+  const current = extractRawValue(sourceData, column.path)
 
   // 값 정규화
   if (current === null || current === undefined) {
     return ""
   }
 
+  // 배열 값 처리 (다중 선택, 순위 선택)
   if (Array.isArray(current)) {
-    // 배열은 세미콜론으로 구분
-    return current
+    const section = column.path[0] // "projectDetails", "policyNeeds" 등
+    const field = column.path[column.path.length - 1]
+    const otherFieldName = `${field}Other`
+
+    // *Other 필드 값 추출
+    const otherPath = [...column.path.slice(0, -1), otherFieldName]
+    const otherValue = extractRawValue(sourceData, otherPath)
+    const otherStr = typeof otherValue === "string" ? otherValue : null
+
+    // 문자열 배열로 변환
+    const stringArray = current
       .map((item) => {
         if (typeof item === "string") return item
         if (typeof item === "number" || typeof item === "boolean") return String(item)
         return ""
       })
       .filter((item) => item.length > 0)
-      .join("; ")
+
+    // "기타" 입력 병합
+    const decorated = decorateWithOther(stringArray, otherStr)
+    return decorated.join(" | ")
+  }
+
+  // 단일 선택 값 처리
+  if (typeof current === "string") {
+    const section = column.path[0]
+    const field = column.path[column.path.length - 1]
+    const otherFieldName = `${field}Other`
+
+    // *Other 필드 값 추출
+    const otherPath = [...column.path.slice(0, -1), otherFieldName]
+    const otherValue = extractRawValue(sourceData, otherPath)
+    const otherStr = typeof otherValue === "string" ? otherValue : null
+
+    return decorateSingleWithOther(current, otherStr)
   }
 
   if (typeof current === "object") {
@@ -190,4 +273,3 @@ export function convertToOrderedCSV(data: Record<string, unknown>[]): string {
 
   return [headerRow, ...rows].join("\n")
 }
-

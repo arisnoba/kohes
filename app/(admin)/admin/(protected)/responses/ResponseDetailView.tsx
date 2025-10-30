@@ -42,6 +42,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     legalType: extractValue(responseData, ["expansionInfo", "legalType"]),
     companyName: extractValue(responseData, ["expansionInfo", "companyName"]),
     companyCategory: extractValue(responseData, ["expansionInfo", "companyCategory"]),
+    companyCategoryOther: extractValue(responseData, ["expansionInfo", "companyCategoryOther"]),
   }
 
   const projectDetails = {
@@ -99,6 +100,10 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     policyNeeds.desiredSupport,
     policyNeeds.desiredSupportOther
   )
+  const companyCategoryDisplay = decorateSingleOption(
+    expansionInfo.companyCategory,
+    expansionInfo.companyCategoryOther
+  )
 
   const hasExpansionInfo = Object.values(expansionInfo).some((value) => Boolean(value))
   const hasProjectDetails =
@@ -140,7 +145,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
         <DetailSection title="A. 기관 유형">
           <DetailItem label="기관 유형" value={expansionInfo.orgType} />
           <DetailItem label="회사명" value={expansionInfo.companyName} />
-          <DetailItem label="회사 구분" value={expansionInfo.companyCategory} />
+          <DetailItem label="회사 구분" value={companyCategoryDisplay} />
           <DetailItem label="의료기관명" value={expansionInfo.medicalOrgName} />
           <DetailItem label="의료기관 구분" value={expansionInfo.medicalOrgCategory} />
           <DetailItem label="설립 구분" value={expansionInfo.foundationType} />
@@ -361,25 +366,26 @@ function formatDateValue(value: string | null) {
 
 function decorateOptionsWithOther(values: string[], other: string | null): string[] {
   const trimmedOther = other?.trim()
+  if (!trimmedOther) return values
+
+  let hasOtherOption = false
   const decorated = values.map((raw) => {
     const option = raw.trim()
     if (!option) return option
 
-    if (trimmedOther) {
-      const normalized = option.replace(/\s*\(.*\)$/u, "")
-      if (normalized === "기타") {
-        return `기타 : ${trimmedOther}`
-      }
+    // "기타"로 시작하거나, "기타"와 완전 일치하는 경우
+    const normalized = option.replace(/\s*\(.*\)$/u, "").trim()
+    if (normalized === "기타" || normalized.startsWith("기타")) {
+      hasOtherOption = true
+      return `기타 : ${trimmedOther}`
     }
 
     return option
   })
 
-  if (trimmedOther) {
-    const hasOtherBadge = decorated.some((item) => item.includes(`기타 : ${trimmedOther}`))
-    if (!hasOtherBadge) {
-      decorated.push(`기타 : ${trimmedOther}`)
-    }
+  // "기타" 옵션이 배열에 없었지만 otherValue는 있는 경우 추가
+  if (!hasOtherOption && trimmedOther) {
+    decorated.push(`기타 : ${trimmedOther}`)
   }
 
   return decorated.filter((item) => item.length > 0)

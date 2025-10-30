@@ -10,6 +10,42 @@ import { useSurveyForm } from "@/components/survey/SurveyProvider"
 
 const telRegex = /^(?:0\d{1,2})-?\d{3,4}-?\d{4}$/
 const mobileRegex = /^01[016789]-?\d{3,4}-?\d{4}$/
+
+const MAX_PHONE_LENGTH = 13
+
+function formatLandlineNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11)
+  if (digits.length === 0) return ""
+
+  const isSeoul = digits.startsWith("02")
+  const areaLength = isSeoul ? 2 : Math.min(3, digits.length)
+
+  if (digits.length <= areaLength) {
+    return digits
+  }
+
+  if (digits.length <= areaLength + 3) {
+    return `${digits.slice(0, areaLength)}-${digits.slice(areaLength)}`
+  }
+
+  const middleEnd = Math.max(areaLength + 1, digits.length - 4)
+  return `${digits.slice(0, areaLength)}-${digits.slice(areaLength, middleEnd)}-${digits.slice(-4)}`
+}
+
+function formatMobileNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11)
+  if (digits.length === 0) return ""
+
+  if (digits.length <= 3) {
+    return digits
+  }
+
+  if (digits.length <= 7) {
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  }
+
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function BasicInfoPage() {
@@ -21,6 +57,14 @@ export default function BasicInfoPage() {
 
   const handleChange = (field: keyof typeof basicInfo, value: string) => {
     updateSection("basicInfo", { [field]: value })
+  }
+
+  const handleTelChange = (value: string) => {
+    handleChange("tel", formatLandlineNumber(value))
+  }
+
+  const handleMobileChange = (value: string) => {
+    handleChange("mobile", formatMobileNumber(value))
   }
 
   // Validation functions
@@ -155,9 +199,11 @@ export default function BasicInfoPage() {
             placeholder="02-1234-5678"
             required={true}
             value={basicInfo.tel}
-            onChange={(value) => handleChange("tel", value)}
+            onChange={handleTelChange}
             validate={validateTel}
             error={showErrors ? validateTel(basicInfo.tel) || undefined : undefined}
+            maxLength={MAX_PHONE_LENGTH}
+            inputMode="tel"
           />
 
           <QuestionText
@@ -167,9 +213,11 @@ export default function BasicInfoPage() {
             placeholder="010-1234-5678"
             required={true}
             value={basicInfo.mobile}
-            onChange={(value) => handleChange("mobile", value)}
+            onChange={handleMobileChange}
             validate={validateMobile}
             error={showErrors ? validateMobile(basicInfo.mobile) || undefined : undefined}
+            maxLength={MAX_PHONE_LENGTH}
+            inputMode="tel"
           />
 
           <QuestionText

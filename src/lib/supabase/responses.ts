@@ -103,7 +103,7 @@ async function fetchSurveyRows<T>(
       break
     }
 
-    rows.push(...data.map((item) => mapFn(item as Record<string, unknown>)))
+    rows.push(...data.map((item) => mapFn(item as unknown as Record<string, unknown>)))
 
     if (data.length < PAGE_SIZE) {
       break

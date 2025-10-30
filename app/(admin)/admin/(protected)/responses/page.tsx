@@ -26,10 +26,10 @@ export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 interface ResponsesPageProps {
-  searchParams?: Record<string, string | string[]>
+  searchParams?: Record<string, string | string[] | undefined>
 }
 
-export default async function ResponsesPage({ searchParams }: ResponsesPageProps = {}) {
+export default async function ResponsesPage({ searchParams }: ResponsesPageProps) {
   const currentPage = parsePage(searchParams?.page)
   const { responses, totalCount, page, pageSize, error } = await fetchSurveyResponsesPage({
     page: currentPage,

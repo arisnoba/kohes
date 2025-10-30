@@ -49,10 +49,12 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     targetCountries: extractArray(responseData, ["projectDetails", "targetCountries"]),
     expansionReason: extractValue(responseData, ["projectDetails", "expansionReason"]),
     services: extractArray(responseData, ["projectDetails", "services"]),
+    servicesOther: extractValue(responseData, ["projectDetails", "servicesOther"]),
     projectName: extractValue(responseData, ["projectDetails", "projectName"]),
     reportingAwareness1: extractValue(responseData, ["projectDetails", "reportingAwareness1"]),
     reportingAwareness2: extractValue(responseData, ["projectDetails", "reportingAwareness2"]),
     departments: extractArray(responseData, ["projectDetails", "departments"]),
+    departmentsOther: extractValue(responseData, ["projectDetails", "departmentsOther"]),
     hasEvidence: extractValue(responseData, ["projectDetails", "hasEvidence"]),
   }
 
@@ -66,11 +68,28 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     additionalComments: extractValue(responseData, ["policyNeeds", "additionalComments"]),
   }
 
+  const difficultiesRankDisplay = decorateOptionsWithOther(
+    policyNeeds.difficultiesRank,
+    policyNeeds.difficultiesOther
+  )
+  const supportNeedsDisplay = decorateOptionsWithOther(
+    policyNeeds.supportNeedsRank,
+    policyNeeds.supportNeedsOther
+  )
+  const servicesDisplay = decorateOptionsWithOther(
+    projectDetails.services,
+    projectDetails.servicesOther
+  )
+  const departmentsDisplay = decorateOptionsWithOther(
+    projectDetails.departments,
+    projectDetails.departmentsOther
+  )
+
   const hasExpansionInfo = Object.values(expansionInfo).some((value) => Boolean(value))
   const hasProjectDetails =
     projectDetails.targetCountries.length > 0 ||
-    projectDetails.services.length > 0 ||
-    projectDetails.departments.length > 0 ||
+    servicesDisplay.length > 0 ||
+    departmentsDisplay.length > 0 ||
     Boolean(
       projectDetails.expansionTiming ||
         projectDetails.expansionReason ||
@@ -80,25 +99,19 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
         projectDetails.hasEvidence
     )
   const hasPolicyNeeds =
-    policyNeeds.difficultiesRank.length > 0 ||
-    policyNeeds.supportNeedsRank.length > 0 ||
-    Boolean(
-      policyNeeds.difficultiesOther ||
-        policyNeeds.supportNeedsOther ||
-        policyNeeds.desiredSupport ||
-        policyNeeds.awareness ||
-        policyNeeds.additionalComments
-    )
+    difficultiesRankDisplay.length > 0 ||
+    supportNeedsDisplay.length > 0 ||
+    Boolean(policyNeeds.desiredSupport || policyNeeds.awareness || policyNeeds.additionalComments)
 
   return (
     <div className="space-y-8">
-      {/* <DetailSection title="응답 요약">
+      <DetailSection title="응답 요약">
         <DetailItem label="응답 ID" value={response.id} />
         <DetailItem label="소속" value={response.organizationName} />
         <DetailItem label="기관 유형" value={response.orgType} />
         <DetailItem label="진출 시기" value={response.expansionTiming} />
         <DetailItem label="제출 일시" value={formatDateValue(response.submittedAt)} />
-      </DetailSection> */}
+      </DetailSection>
 
       <DetailSection title="기본 정보" description="민감 정보는 잠금 아이콘으로 표시됩니다.">
         <DetailItem label="성명" value={basicInfo.name} sensitive />
@@ -132,8 +145,8 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
           />
           <DetailItem
             label="제공 서비스"
-            values={projectDetails.services}
-            span={projectDetails.services.length > 2}
+            values={servicesDisplay}
+            span={servicesDisplay.length > 2}
           />
           <DetailItem label="프로젝트명" value={projectDetails.projectName} span />
           <DetailItem
@@ -145,9 +158,9 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
             value={projectDetails.reportingAwareness2}
           />
           <DetailItem
-            label="관련 부처"
-            values={projectDetails.departments}
-            span={projectDetails.departments.length > 2}
+            label="진출 진료과"
+            values={departmentsDisplay}
+            span={departmentsDisplay.length > 2}
           />
           <DetailItem label="증빙 자료 보유" value={projectDetails.hasEvidence} />
         </DetailSection>
@@ -155,10 +168,8 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
 
       {hasPolicyNeeds ? (
         <DetailSection title="C. 정책 수요">
-          <DetailItem label="어려움 순위" values={policyNeeds.difficultiesRank} span />
-          <DetailItem label="기타 어려움" value={policyNeeds.difficultiesOther} span />
-          <DetailItem label="지원 필요 순위" values={policyNeeds.supportNeedsRank} span />
-          <DetailItem label="기타 지원 필요" value={policyNeeds.supportNeedsOther} span />
+          <DetailItem label="어려움 순위" values={difficultiesRankDisplay} span />
+          <DetailItem label="지원 필요 순위" values={supportNeedsDisplay} span />
           <DetailItem label="희망 지원 사업" value={policyNeeds.desiredSupport} />
           <DetailItem label="KOHES 인지" value={policyNeeds.awareness} />
           <DetailItem label="추가 의견" value={policyNeeds.additionalComments} span />
@@ -176,7 +187,7 @@ interface DetailSectionProps {
 
 function DetailSection({ title, description, children }: DetailSectionProps) {
   return (
-    <div className="bg-muted/10">
+    <div className="rounded-lg border bg-muted/10 p-5 shadow-sm">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
         <h4 className="text-sm font-semibold text-foreground">{title}</h4>
         {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
@@ -212,7 +223,7 @@ function DetailItem({ label, value, values, sensitive = false, span = false }: D
         ) : hasValues ? (
           <div className="flex flex-wrap gap-2">
             {values!.map((item, index) => (
-              <Badge key={`${item}-${index}`} variant="secondary" className="whitespace-nowrap">
+              <Badge key={`${item}-${index}`} variant="outline" className="whitespace-nowrap">
                 {item}
               </Badge>
             ))}
@@ -332,4 +343,30 @@ function formatDateValue(value: string | null) {
   } catch (error) {
     return value
   }
+}
+
+function decorateOptionsWithOther(values: string[], other: string | null): string[] {
+  const trimmedOther = other?.trim()
+  const decorated = values.map((raw) => {
+    const option = raw.trim()
+    if (!option) return option
+
+    if (trimmedOther) {
+      const normalized = option.replace(/\s*\(.*\)$/u, "")
+      if (normalized === "기타") {
+        return `기타 : ${trimmedOther}`
+      }
+    }
+
+    return option
+  })
+
+  if (trimmedOther) {
+    const hasOtherBadge = decorated.some((item) => item.includes(`기타 : ${trimmedOther}`))
+    if (!hasOtherBadge) {
+      decorated.push(`기타 : ${trimmedOther}`)
+    }
+  }
+
+  return decorated.filter((item) => item.length > 0)
 }

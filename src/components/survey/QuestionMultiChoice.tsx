@@ -62,7 +62,7 @@ export function QuestionMultiChoice({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id={id}>
       <div>
         <label className="block text-2xl font-semibold text-gray-900 md:text-3xl leading-snug">
           {label}
@@ -90,17 +90,15 @@ export function QuestionMultiChoice({
               <button
                 type="button"
                 onClick={() => handleToggle(option.value)}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
-                  isSelected
+                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${isSelected
                     ? "border-blue-600 bg-blue-50 text-blue-900"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-all ${
-                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
-                    }`}
+                    className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-all ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                      }`}
                   >
                     {isSelected && <Check className="h-4 w-4 text-white" strokeWidth={3} />}
                   </div>

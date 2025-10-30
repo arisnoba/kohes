@@ -1,19 +1,26 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { NavigationButton } from "@/components/survey/NavigationButton"
-import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ExpansionInfoPage() {
   const router = useRouter()
-  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
+  const { data, updateSection } = useSurveyForm()
   const { expansionInfo } = data
+  const [isMounted, setIsMounted] = useState(false)
+  const [showErrors, setShowErrors] = useState(false)
   const canAccess = useSurveyStepGuard("expansion-info")
+
+  // 클라이언트 마운트 확인
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   if (!canAccess) {
     return null
@@ -46,80 +53,94 @@ export default function ExpansionInfoPage() {
     })
   }
 
-  const handleAutoFill = () => {
-    updateSection("expansionInfo", {
-      orgType: "의료기관",
-      medicalOrgName: "서울대학교병원",
-      medicalOrgCategory: "상급종합병원",
-      foundationType: "법인",
-      legalType: "의료법인",
-      companyName: "",
-      companyCategory: "",
-    })
+  // Validation functions
+  const validateMedicalOrgName = (value: string) => {
+    if (!value.trim()) return "의료기관명을 입력해주세요."
+    return null
   }
 
-  const validateForm = () => {
-    if (skipValidation) return true
-
-    if (!expansionInfo.orgType) {
-      alert("기관 구분을 선택해주세요.")
-      return false
-    }
-
-    if (expansionInfo.orgType === "의료기관") {
-      if (!expansionInfo.medicalOrgName.trim()) {
-        alert("의료기관명을 입력해주세요.")
-        return false
-      }
-      if (!expansionInfo.medicalOrgCategory) {
-        alert("의료기관 구분을 선택해주세요.")
-        return false
-      }
-      if (!expansionInfo.foundationType) {
-        alert("설립구분을 선택해주세요.")
-        return false
-      }
-      if (expansionInfo.foundationType === "법인" && !expansionInfo.legalType) {
-        alert("법인 유형을 선택해주세요.")
-        return false
-      }
-    }
-
-    if (expansionInfo.orgType === "회사") {
-      if (!expansionInfo.companyName.trim()) {
-        alert("회사명을 입력해주세요.")
-        return false
-      }
-      if (!expansionInfo.companyCategory) {
-        alert("회사 구분을 선택해주세요.")
-        return false
-      }
-    }
-
-    return true
+  const validateCompanyName = (value: string) => {
+    if (!value.trim()) return "회사명을 입력해주세요."
+    return null
   }
 
   const handleNext = () => {
-    if (validateForm()) {
-      router.push("/project-details")
+    // 기관 구분 체크
+    if (!expansionInfo.orgType) {
+      setShowErrors(true)
+      alert("기관 구분을 선택해주세요.")
+      setTimeout(() => {
+        document.getElementById("org-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
+
+    // 의료기관 검증
+    if (expansionInfo.orgType === "의료기관") {
+      const medicalOrgNameError = validateMedicalOrgName(expansionInfo.medicalOrgName)
+
+      if (medicalOrgNameError || !expansionInfo.medicalOrgCategory || !expansionInfo.foundationType) {
+        setShowErrors(true)
+
+        if (medicalOrgNameError) {
+          setTimeout(() => {
+            const element = document.getElementById("medical-org-name")
+            element?.focus()
+            element?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 100)
+        } else if (!expansionInfo.medicalOrgCategory) {
+          alert("의료기관의 유형을 선택해주세요.")
+          console.log("g")
+          setTimeout(() => {
+            document.getElementById("medical-org-category")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 100)
+        } else if (!expansionInfo.foundationType) {
+          alert("의료기관의 설립유형을 선택해주세요.")
+          setTimeout(() => {
+            document.getElementById("foundation-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 100)
+        }
+        return
+      }
+
+      if (expansionInfo.foundationType === "법인" && !expansionInfo.legalType) {
+        alert("법인 유형을 선택해주세요.")
+        setTimeout(() => {
+          document.getElementById("legal-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 100)
+        return
+      }
+    }
+
+    // 회사 검증
+    if (expansionInfo.orgType === "회사") {
+      const companyNameError = validateCompanyName(expansionInfo.companyName)
+
+      if (companyNameError || !expansionInfo.companyCategory) {
+        setShowErrors(true)
+
+        if (companyNameError) {
+          setTimeout(() => {
+            const element = document.getElementById("company-name")
+            element?.focus()
+            element?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 100)
+        } else if (!expansionInfo.companyCategory) {
+          alert("회사 구분을 선택해주세요.")
+          setTimeout(() => {
+            document.getElementById("company-category")?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 100)
+        }
+        return
+      }
+    }
+
+    router.push("/project-details")
   }
 
   const handleBack = () => {
     router.push("/basic-info")
   }
-
-  const isFormValid =
-    skipValidation ||
-    (expansionInfo.orgType &&
-      ((expansionInfo.orgType === "의료기관" &&
-        expansionInfo.medicalOrgName.trim() &&
-        expansionInfo.medicalOrgCategory &&
-        expansionInfo.foundationType &&
-        (expansionInfo.foundationType !== "법인" || expansionInfo.legalType)) ||
-        (expansionInfo.orgType === "회사" &&
-          expansionInfo.companyName.trim() &&
-          expansionInfo.companyCategory)))
 
   return (
     <SurveyLayout currentStep={2} totalSteps={5} onBack={handleBack} showBackButton={true}>
@@ -155,6 +176,8 @@ export default function ExpansionInfoPage() {
               required={true}
               value={expansionInfo.medicalOrgName}
               onChange={(value) => updateSection("expansionInfo", { medicalOrgName: value })}
+              validate={validateMedicalOrgName}
+              error={showErrors ? validateMedicalOrgName(expansionInfo.medicalOrgName) || undefined : undefined}
             />
 
             <QuestionSingleChoice
@@ -231,6 +254,8 @@ export default function ExpansionInfoPage() {
               required={true}
               value={expansionInfo.companyName}
               onChange={(value) => updateSection("expansionInfo", { companyName: value })}
+              validate={validateCompanyName}
+              error={showErrors ? validateCompanyName(expansionInfo.companyName) || undefined : undefined}
             />
 
             <QuestionSingleChoice
@@ -250,17 +275,11 @@ export default function ExpansionInfoPage() {
         )}
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext} disabled={!isFormValid}>
+          <NavigationButton onClick={handleNext}>
             다음
           </NavigationButton>
         </div>
       </div>
-
-      <DevTools
-        onAutoFill={handleAutoFill}
-        skipValidation={skipValidation}
-        onSkipValidationChange={setSkipValidation}
-      />
     </SurveyLayout>
   )
 }

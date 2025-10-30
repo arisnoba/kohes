@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from "react"
+import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react"
 import { submitSurveyResponse } from "@/lib/supabase/responses"
 
 export interface BasicInfoState {
@@ -104,10 +104,10 @@ const defaultSurveyData = createSurveyData()
 
 type SurveyAction =
   | {
-      type: "update"
-      section: keyof SurveyData
-      payload: Partial<SurveyData[keyof SurveyData]>
-    }
+    type: "update"
+    section: keyof SurveyData
+    payload: Partial<SurveyData[keyof SurveyData]>
+  }
   | { type: "replace"; payload: SurveyData }
   | { type: "reset" }
 
@@ -139,61 +139,12 @@ export interface SurveyContextValue {
   updateSection: <K extends keyof SurveyData>(section: K, payload: Partial<SurveyData[K]>) => void
   resetSurvey: () => void
   submitSurvey: () => Promise<{ success: boolean; error: string | null; id: string | null }>
-  skipValidation: boolean
-  setSkipValidation: (skip: boolean) => void
 }
 
 const SurveyContext = createContext<SurveyContextValue | undefined>(undefined)
 
-const STORAGE_KEY = "survey-data"
-const SKIP_VALIDATION_STORAGE_KEY = "survey-skip-validation"
-
 export function SurveyProvider({ children }: { children: ReactNode }) {
-  // 초기 상태를 기본값으로 설정 (서버와 클라이언트 동일)
   const [state, dispatch] = useReducer(surveyReducer, defaultSurveyData)
-  const [isMounted, setIsMounted] = useState(false)
-  const [skipValidation, setSkipValidation] = useState(() =>
-    process.env.NODE_ENV !== "production"
-  )
-
-  // 클라이언트 마운트 후에만 sessionStorage에서 데이터 로드
-  useEffect(() => {
-    setIsMounted(true)
-    if (typeof window === "undefined") return
-
-    try {
-      const stored = window.sessionStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        const loadedData = createSurveyData(parsed ?? {})
-        dispatch({ type: "replace", payload: loadedData })
-      }
-      const storedSkip = window.sessionStorage.getItem(SKIP_VALIDATION_STORAGE_KEY)
-      if (storedSkip !== null) {
-        setSkipValidation(storedSkip === "true")
-      } else {
-        setSkipValidation(process.env.NODE_ENV !== "production")
-      }
-    } catch (error) {
-      console.warn("설문 데이터 로딩 실패", error)
-    }
-  }, [])
-
-  // 상태 변경 시 sessionStorage에 저장
-  useEffect(() => {
-    if (!isMounted) return
-    if (typeof window === "undefined") return
-    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  }, [state, isMounted])
-
-  useEffect(() => {
-    if (!isMounted) return
-    if (typeof window === "undefined") return
-    window.sessionStorage.setItem(
-      SKIP_VALIDATION_STORAGE_KEY,
-      skipValidation ? "true" : "false"
-    )
-  }, [skipValidation, isMounted])
 
   const value: SurveyContextValue = useMemo(() => {
     return {
@@ -204,18 +155,10 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
       resetSurvey: () => dispatch({ type: "reset" }),
       submitSurvey: async () => {
         const result = await submitSurveyResponse(state)
-        if (result.success) {
-          // 제출 성공 시 sessionStorage 정리
-          if (typeof window !== "undefined") {
-            window.sessionStorage.removeItem(STORAGE_KEY)
-          }
-        }
         return result
       },
-      skipValidation,
-      setSkipValidation,
     }
-  }, [skipValidation, state])
+  }, [state])
 
   return <SurveyContext.Provider value={value}>{children}</SurveyContext.Provider>
 }

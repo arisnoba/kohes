@@ -6,13 +6,12 @@ import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { QuestionRankChoice } from "@/components/survey/QuestionRankChoice"
 import { QuestionTextarea } from "@/components/survey/QuestionTextarea"
 import { NavigationButton } from "@/components/survey/NavigationButton"
-import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function PolicyNeedsPage() {
   const router = useRouter()
-  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
+  const { data, updateSection } = useSurveyForm()
   const { policyNeeds } = data
   const canAccess = useSurveyStepGuard("policy-needs")
 
@@ -20,63 +19,45 @@ export default function PolicyNeedsPage() {
     return null
   }
 
-  const handleAutoFill = () => {
-    updateSection("policyNeeds", {
-      difficultiesRank: ["자금 조달의 어려움", "수익 예측의 불확실성", "해외 정보 부족"],
-      difficultiesOther: "",
-      supportNeedsRank: [
-        "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
-        "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
-      ],
-      supportNeedsOther: "",
-      desiredSupport: "진출 기관 및 예정기관 간의 네트워크 구축",
-      awareness: "방문",
-      additionalComments: "해외진출 지원 확대를 희망합니다.",
-    })
-  }
-
-  const validateForm = () => {
-    if (skipValidation) return true
-
-    if (policyNeeds.difficultiesRank.length === 0) {
-      alert("어려움 순위를 하나 이상 선택해주세요.")
-      return false
+  const handleNext = () => {
+    if (policyNeeds.difficultiesRank.length !== 9) {
+      alert("어려움 순위 9개 항목을 순서대로 선택해주세요")
+      setTimeout(() => {
+        document.getElementById("difficulties-rank")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
-    if (policyNeeds.supportNeedsRank.length === 0) {
-      alert("지원 필요 순위를 하나 이상 선택해주세요.")
-      return false
+    if (policyNeeds.supportNeedsRank.length !== 8) {
+      alert("지원 필요 순위 8개 항목을 순서대로 선택해주세요")
+      setTimeout(() => {
+        document.getElementById("support-needs-rank")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (!policyNeeds.desiredSupport) {
       alert("희망하는 지원 사업을 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("desired-support")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (!policyNeeds.awareness) {
       alert("KOHES 인지도를 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("awareness")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
-    return true
-  }
-
-  const handleNext = () => {
-    if (validateForm()) {
-      router.push("/complete")
-    }
+    router.push("/complete")
   }
 
   const handleBack = () => {
     router.push("/project-details")
   }
-
-  const isFormValid =
-    skipValidation ||
-    (policyNeeds.difficultiesRank.length > 0 &&
-      policyNeeds.supportNeedsRank.length > 0 &&
-      policyNeeds.desiredSupport &&
-      policyNeeds.awareness)
 
   return (
     <SurveyLayout currentStep={4} totalSteps={5} onBack={handleBack} showBackButton={true}>
@@ -218,17 +199,11 @@ export default function PolicyNeedsPage() {
         />
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext} disabled={!isFormValid}>
+          <NavigationButton onClick={handleNext}>
             제출
           </NavigationButton>
         </div>
       </div>
-
-      <DevTools
-        onAutoFill={handleAutoFill}
-        skipValidation={skipValidation}
-        onSkipValidationChange={setSkipValidation}
-      />
     </SurveyLayout>
   )
 }

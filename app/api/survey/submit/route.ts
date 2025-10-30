@@ -30,7 +30,6 @@ export async function POST(request: Request) {
         response_data: JSON.parse(JSON.stringify(responseData)),
         pii_data: JSON.parse(JSON.stringify(piiData)),
         is_completed: true,
-        reward_status: "발송 대기",
       })
       .select("id")
       .single()

@@ -6,7 +6,6 @@ import { Info } from "lucide-react"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { NavigationButton } from "@/components/survey/NavigationButton"
-import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 
 const telRegex = /^(?:0\d{1,2})-?\d{3,4}-?\d{4}$/
@@ -15,100 +14,100 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function BasicInfoPage() {
   const router = useRouter()
-  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
+  const { data, updateSection } = useSurveyForm()
   const { basicInfo } = data
-  const [isFormValid, setIsFormValid] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const [showErrors, setShowErrors] = useState(false)
 
   const handleChange = (field: keyof typeof basicInfo, value: string) => {
     updateSection("basicInfo", { [field]: value })
   }
 
-  // 개발자 도구: 자동 채우기
-  const handleAutoFill = () => {
-    updateSection("basicInfo", {
-      name: "홍길동",
-      position: "팀장",
-      tel: "02-1234-5678",
-      mobile: "010-1234-5678",
-      email: "test@example.com",
-      address: "서울특별시 강남구 테헤란로 123",
-    })
+  // Validation functions
+  const validateName = (value: string) => {
+    if (!value.trim()) return "성명을 입력해주세요."
+    return null
   }
 
-  const validateForm = () => {
-    if (skipValidation) {
-      return true
-    }
+  const validatePosition = (value: string) => {
+    if (!value.trim()) return "직위를 입력해주세요."
+    return null
+  }
 
-    const name = basicInfo.name.trim()
-    const position = basicInfo.position.trim()
-    const telValue = basicInfo.tel.trim()
-    const mobileValue = basicInfo.mobile.trim()
-    const emailValue = basicInfo.email.trim()
+  const validateTel = (value: string) => {
+    if (!value.trim()) return "전화번호를 입력해주세요."
+    if (!telRegex.test(value)) return "올바른 전화번호 형식을 입력해주세요. 예: 02-1234-5678"
+    return null
+  }
 
-    if (!name) {
-      alert("성명을 입력해주세요.")
-      return false
-    }
-    if (!position) {
-      alert("직위를 입력해주세요.")
-      return false
-    }
-    if (!telValue) {
-      alert("전화번호를 입력해주세요.")
-      return false
-    }
-    if (!telRegex.test(telValue)) {
-      alert("올바른 전화번호 형식을 입력해주세요. 예: 02-1234-5678")
-      return false
-    }
-    if (!mobileValue) {
-      alert("휴대전화번호를 입력해주세요.")
-      return false
-    }
-    if (!mobileRegex.test(mobileValue)) {
-      alert("올바른 휴대전화번호 형식을 입력해주세요. 예: 010-1234-5678")
-      return false
-    }
-    if (!emailValue) {
-      alert("이메일을 입력해주세요.")
-      return false
-    }
-    if (!emailRegex.test(emailValue)) {
-      alert("올바른 이메일 형식을 입력해주세요.")
-      return false
-    }
+  const validateMobile = (value: string) => {
+    if (!value.trim()) return "휴대전화번호를 입력해주세요."
+    if (!mobileRegex.test(value)) return "올바른 휴대전화번호 형식을 입력해주세요. 예: 010-1234-5678"
+    return null
+  }
 
-    return true
+  const validateEmail = (value: string) => {
+    if (!value.trim()) return "이메일을 입력해주세요."
+    if (!emailRegex.test(value)) return "올바른 이메일 형식을 입력해주세요."
+    return null
+  }
+
+  const validateAddress = (value: string) => {
+    if (!value.trim()) return "주소를 입력해주세요."
+    return null
   }
 
   const handleNext = () => {
-    if (validateForm()) {
-      router.push("/expansion-info")
+    // 모든 필드 검증 (모든 검증을 먼저 실행)
+    const nameError = validateName(basicInfo.name)
+    const positionError = validatePosition(basicInfo.position)
+    const telError = validateTel(basicInfo.tel)
+    const mobileError = validateMobile(basicInfo.mobile)
+    const emailError = validateEmail(basicInfo.email)
+    const addressError = validateAddress(basicInfo.address)
+
+    // 에러가 하나라도 있으면
+    const hasErrors = nameError || positionError || telError || mobileError || emailError || addressError
+
+    if (hasErrors) {
+      // 모든 에러 표시
+      setShowErrors(true)
+
+      // 첫 번째 에러 필드 찾기
+      const firstErrorId = nameError
+        ? "name"
+        : positionError
+          ? "position"
+          : telError
+            ? "tel"
+            : mobileError
+              ? "mobile"
+              : emailError
+                ? "email"
+                : "address"
+
+      // 에러가 있는 필드로 포커스 이동
+      setTimeout(() => {
+        const element = document.getElementById(firstErrorId)
+        if (element) {
+          element.focus()
+          element.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+      }, 100)
+      return
     }
+
+    router.push("/expansion-info")
   }
 
   const handleBack = () => {
     router.push("/intro")
   }
 
-  // 클라이언트에서만 폼 유효성 검사 (hydration 불일치 방지)
+  // 클라이언트 마운트 확인
   useEffect(() => {
-    const name = basicInfo.name.trim()
-    const position = basicInfo.position.trim()
-    const telValue = basicInfo.tel.trim()
-    const mobileValue = basicInfo.mobile.trim()
-    const emailValue = basicInfo.email.trim()
-
-    const valid =
-      skipValidation ||
-      (name !== "" &&
-        position !== "" &&
-        telRegex.test(telValue) &&
-        mobileRegex.test(mobileValue) &&
-        emailRegex.test(emailValue))
-    setIsFormValid(valid)
-  }, [basicInfo, skipValidation])
+    setIsMounted(true)
+  }, [])
 
   return (
     <SurveyLayout currentStep={1} totalSteps={5} onBack={handleBack} showBackButton={true}>
@@ -134,6 +133,8 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.name}
             onChange={(value) => handleChange("name", value)}
+            validate={validateName}
+            error={showErrors ? validateName(basicInfo.name) || undefined : undefined}
           />
 
           <QuestionText
@@ -143,6 +144,8 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.position}
             onChange={(value) => handleChange("position", value)}
+            validate={validatePosition}
+            error={showErrors ? validatePosition(basicInfo.position) || undefined : undefined}
           />
 
           <QuestionText
@@ -153,6 +156,8 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.tel}
             onChange={(value) => handleChange("tel", value)}
+            validate={validateTel}
+            error={showErrors ? validateTel(basicInfo.tel) || undefined : undefined}
           />
 
           <QuestionText
@@ -163,6 +168,8 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.mobile}
             onChange={(value) => handleChange("mobile", value)}
+            validate={validateMobile}
+            error={showErrors ? validateMobile(basicInfo.mobile) || undefined : undefined}
           />
 
           <QuestionText
@@ -173,6 +180,8 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.email}
             onChange={(value) => handleChange("email", value)}
+            validate={validateEmail}
+            error={showErrors ? validateEmail(basicInfo.email) || undefined : undefined}
           />
 
           <QuestionText
@@ -182,21 +191,17 @@ export default function BasicInfoPage() {
             required={true}
             value={basicInfo.address}
             onChange={(value) => handleChange("address", value)}
+            validate={validateAddress}
+            error={showErrors ? validateAddress(basicInfo.address) || undefined : undefined}
           />
         </div>
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext} disabled={!isFormValid}>
+          <NavigationButton onClick={handleNext}>
             다음
           </NavigationButton>
         </div>
       </div>
-
-      <DevTools
-        onAutoFill={handleAutoFill}
-        skipValidation={skipValidation}
-        onSkipValidationChange={setSkipValidation}
-      />
     </SurveyLayout>
   )
 }

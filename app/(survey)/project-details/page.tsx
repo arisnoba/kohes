@@ -1,38 +1,27 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { QuestionSingleChoice } from "@/components/survey/QuestionSingleChoice"
 import { QuestionMultiChoice } from "@/components/survey/QuestionMultiChoice"
 import { NavigationButton } from "@/components/survey/NavigationButton"
-import { DevTools } from "@/components/survey/DevTools"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 import type { ProjectDetailsState } from "@/components/survey/SurveyProvider"
 import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ProjectDetailsPage() {
   const router = useRouter()
-  const { data, updateSection, skipValidation, setSkipValidation } = useSurveyForm()
+  const { data, updateSection } = useSurveyForm()
   const { projectDetails } = data
+  const [showErrors, setShowErrors] = useState(false)
   const canAccess = useSurveyStepGuard("project-details")
+
+  useEffect(() => { }, [])
 
   if (!canAccess) {
     return null
-  }
-
-  const handleAutoFill = () => {
-    updateSection("projectDetails", {
-      expansionTiming: "2016.6 이후 진출",
-      targetCountries: "미국, 중국, 베트남",
-      expansionReason: "국내 경쟁 심화",
-      services: ["개설운영_신설", "컨설팅"],
-      projectName: "아시아 의료진출 프로젝트",
-      reportingAwareness1: "예",
-      reportingAwareness2: "",
-      departments: ["내과", "외과"],
-      hasEvidence: "네",
-    })
   }
 
   const needsProjectInfo =
@@ -43,77 +32,102 @@ export default function ProjectDetailsPage() {
   const needsReportingAwareness2 =
     projectDetails.expansionTiming === "진출 기획·발굴" || projectDetails.expansionTiming === "기타"
 
-  const validateForm = () => {
-    if (skipValidation) return true
+  const validateTargetCountries = (value: string) => {
+    if (!value.trim()) return "대상국을 입력해주세요."
+    return null
+  }
+
+  const validateProjectName = (value: string) => {
+    if (!value.trim()) return "사업명을 입력해주세요."
+    return null
+  }
+
+  const handleNext = () => {
+    setShowErrors(true)
 
     if (!projectDetails.expansionTiming) {
       alert("진출 시기를 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("expansion-timing")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
-    if (!projectDetails.targetCountries.trim()) {
-      alert("대상국을 입력해주세요.")
-      return false
+    const targetCountriesError = validateTargetCountries(projectDetails.targetCountries)
+    if (targetCountriesError) {
+      setTimeout(() => {
+        const element = document.getElementById("target-countries")
+        element?.focus()
+        element?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (!projectDetails.expansionReason) {
       alert("진출 이유를 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("expansion-reason")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (projectDetails.services.length === 0) {
       alert("제공하는 서비스를 하나 이상 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (needsProjectInfo) {
-      if (!projectDetails.projectName.trim()) {
-        alert("사업명을 입력해주세요.")
-        return false
+      const projectNameError = validateProjectName(projectDetails.projectName)
+      if (projectNameError) {
+        setTimeout(() => {
+          const element = document.getElementById("project-name")
+          element?.focus()
+          element?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 100)
+        return
       }
       if (!projectDetails.reportingAwareness1) {
         alert("신고 의무 인지 여부를 선택해주세요.")
-        return false
+        setTimeout(() => {
+          document.getElementById("reporting-awareness-1")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 100)
+        return
       }
     }
 
-    if (needsReportingAwareness2) {
-      if (!projectDetails.reportingAwareness2) {
-        alert("신고 의무 인지 여부를 선택해주세요.")
-        return false
-      }
+    if (needsReportingAwareness2 && !projectDetails.reportingAwareness2) {
+      alert("신고 의무 인지 여부를 선택해주세요.")
+      setTimeout(() => {
+        document.getElementById("reporting-awareness-2")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
+    }
+
+    if (projectDetails.departments.length === 0) {
+      alert("진출 진료과를 하나 이상 선택해주세요.")
+      setTimeout(() => {
+        document.getElementById("departments")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
     if (!projectDetails.hasEvidence) {
       alert("증빙 자료 존재 여부를 선택해주세요.")
-      return false
+      setTimeout(() => {
+        document.getElementById("has-evidence")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+      return
     }
 
-    return true
-  }
-
-  const handleNext = () => {
-    if (validateForm()) {
-      router.push("/policy-needs")
-    }
+    router.push("/policy-needs")
   }
 
   const handleBack = () => {
     router.push("/expansion-info")
   }
-
-  const isFormValid =
-    skipValidation ||
-    (projectDetails.expansionTiming &&
-      projectDetails.targetCountries.trim() &&
-      projectDetails.expansionReason &&
-      projectDetails.services.length > 0 &&
-      ((needsProjectInfo &&
-        projectDetails.projectName.trim() &&
-        projectDetails.reportingAwareness1) ||
-        (needsReportingAwareness2 && projectDetails.reportingAwareness2) ||
-        (!needsProjectInfo && !needsReportingAwareness2)) &&
-      projectDetails.hasEvidence)
 
   return (
     <SurveyLayout currentStep={3} totalSteps={5} onBack={handleBack} showBackButton={true}>
@@ -197,6 +211,8 @@ export default function ProjectDetailsPage() {
           required={true}
           value={projectDetails.targetCountries}
           onChange={(value) => updateSection("projectDetails", { targetCountries: value })}
+          validate={validateTargetCountries}
+          error={showErrors ? validateTargetCountries(projectDetails.targetCountries) || undefined : undefined}
         />
 
         <QuestionSingleChoice
@@ -252,6 +268,8 @@ export default function ProjectDetailsPage() {
               required={true}
               value={projectDetails.projectName}
               onChange={(value) => updateSection("projectDetails", { projectName: value })}
+              validate={validateProjectName}
+              error={showErrors ? validateProjectName(projectDetails.projectName) || undefined : undefined}
             />
 
             <QuestionSingleChoice
@@ -350,17 +368,11 @@ export default function ProjectDetailsPage() {
         />
 
         <div className="mt-8">
-          <NavigationButton onClick={handleNext} disabled={!isFormValid}>
+          <NavigationButton onClick={handleNext}>
             다음
           </NavigationButton>
         </div>
       </div>
-
-      <DevTools
-        onAutoFill={handleAutoFill}
-        skipValidation={skipValidation}
-        onSkipValidationChange={setSkipValidation}
-      />
     </SurveyLayout>
   )
 }

@@ -60,7 +60,7 @@ export function QuestionSingleChoice({
   }
 
   return (
-    <div className="space-y-4">
+    <div id={id} className="space-y-4">
       <div>
         <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
           {label}
@@ -87,17 +87,15 @@ export function QuestionSingleChoice({
               <button
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
-                  isSelected
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${isSelected
+                  ? "border-blue-600 bg-blue-50 text-blue-900"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`h-5 w-5 rounded-full border-2 transition-all ${
-                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
-                    }`}
+                    className={`h-5 w-5 rounded-full border-2 transition-all ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                      }`}
                   >
                     {isSelected && (
                       <div className="flex h-full items-center justify-center">

@@ -79,7 +79,7 @@ export function QuestionRankChoice({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id={id}>
       <div>
         <label className="block text-2xl font-semibold text-gray-900 leading-snug">
           {label}
@@ -106,11 +106,10 @@ export function QuestionRankChoice({
               type="button"
               onClick={() => handleSelect(option.value)}
               disabled={rankedItems.length >= maxRanks && !selected}
-              className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
-                selected
+              className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all disabled:cursor-not-allowed disabled:opacity-50 ${selected
                   ? "border-blue-600 bg-blue-50 text-blue-900"
                   : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 {rankNumbers.length > 0 && (

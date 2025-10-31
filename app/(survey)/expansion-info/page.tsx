@@ -35,7 +35,7 @@ export default function ExpansionInfoPage() {
         companyCategory: "",
         companyCategoryOther: "",
       })
-    } else if (value === "회사") {
+    } else if (value === "회사(MSO 등)") {
       updateSection("expansionInfo", {
         orgType: value,
         medicalOrgName: "",
@@ -124,7 +124,7 @@ export default function ExpansionInfoPage() {
     }
 
     // 회사 검증
-    if (expansionInfo.orgType === "회사") {
+    if (expansionInfo.orgType === "회사(MSO 등)") {
       const companyNameError = validateCompanyName(expansionInfo.companyName)
 
       if (companyNameError || !expansionInfo.companyCategory) {
@@ -170,7 +170,7 @@ export default function ExpansionInfoPage() {
           required={true}
           options={[
             { value: "의료기관", label: "의료기관" },
-            { value: "회사", label: "회사 (MSO 등)" },
+            { value: "회사(MSO 등)", label: "회사 (MSO 등)" },
           ]}
           value={expansionInfo.orgType}
           onChange={handleOrgTypeChange}
@@ -258,7 +258,7 @@ export default function ExpansionInfoPage() {
           </div>
         )}
 
-        {expansionInfo.orgType === "회사" && (
+        {expansionInfo.orgType === "회사(MSO 등)" && (
           <div className="space-y-6 rounded-lg border-2 border-emerald-200 bg-emerald-50 p-6">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-emerald-900">회사 정보</h3>

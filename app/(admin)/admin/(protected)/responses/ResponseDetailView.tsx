@@ -6,14 +6,6 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { Lock } from "lucide-react"
 
-const DATETIME_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-})
-
 interface ResponseDetailViewProps {
   response: AdminResponseSummary
 }
@@ -144,12 +136,22 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       {hasExpansionInfo ? (
         <DetailSection title="A. 기관 유형">
           <DetailItem label="기관 유형" value={expansionInfo.orgType} />
-          <DetailItem label="회사명" value={expansionInfo.companyName} />
-          <DetailItem label="회사 구분" value={companyCategoryDisplay} />
-          <DetailItem label="의료기관명" value={expansionInfo.medicalOrgName} />
-          <DetailItem label="의료기관 구분" value={expansionInfo.medicalOrgCategory} />
-          <DetailItem label="설립 구분" value={expansionInfo.foundationType} />
-          <DetailItem label="법인 유형" value={expansionInfo.legalType} />
+          {(expansionInfo.orgType === "회사(MSO 등)" || expansionInfo.orgType === "회사") ? (
+            <>
+              <DetailItem label="회사명" value={expansionInfo.companyName} />
+              <DetailItem label="회사 구분" value={companyCategoryDisplay} />
+            </>
+          ) : null}
+          {expansionInfo.orgType === "의료기관" ? (
+            <>
+              <DetailItem label="의료기관명" value={expansionInfo.medicalOrgName} />
+              <DetailItem label="의료기관 구분" value={expansionInfo.medicalOrgCategory} />
+              <DetailItem label="설립 구분" value={expansionInfo.foundationType} />
+              {expansionInfo.foundationType === "법인" ? (
+                <DetailItem label="법인 유형" value={expansionInfo.legalType} />
+              ) : null}
+            </>
+          ) : null}
         </DetailSection>
       ) : null}
 
@@ -353,15 +355,6 @@ function maskPII(piiData: Record<string, unknown> | null, field: string): string
   }
 
   return value
-}
-
-function formatDateValue(value: string | null) {
-  if (!value) return null
-  try {
-    return DATETIME_FORMATTER.format(new Date(value))
-  } catch (error) {
-    return value
-  }
 }
 
 function decorateOptionsWithOther(values: string[], other: string | null): string[] {

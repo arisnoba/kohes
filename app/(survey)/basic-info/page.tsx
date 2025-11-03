@@ -14,7 +14,10 @@ import {
   mobileRegex,
   telRegex,
 } from "@/lib/validation/phone"
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// RFC 5322 compliant email validation (practical subset)
+// Prevents consecutive dots, leading/trailing dots in local and domain parts
+const emailRegex = /^[a-zA-Z0-9_%+-]+(\.[a-zA-Z0-9_%+-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/
 
 export default function BasicInfoPage() {
   const router = useRouter()

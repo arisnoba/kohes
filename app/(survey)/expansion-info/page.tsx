@@ -146,6 +146,18 @@ export default function ExpansionInfoPage() {
         }
         return
       }
+
+      // "기타" 선택 시 상세 입력 필수
+      if (expansionInfo.companyCategory === "기타" && !expansionInfo.companyCategoryOther?.trim()) {
+        setShowErrors(true)
+        toast.error("기타 내용을 입력해주세요.")
+        setTimeout(() => {
+          document
+            .getElementById("company-category")
+            ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, 100)
+        return
+      }
     }
 
     router.push("/project-details")
@@ -210,8 +222,8 @@ export default function ExpansionInfoPage() {
                 { value: "치과병원", label: "치과병원" },
                 { value: "한방병원", label: "한방병원" },
                 { value: "요양병원", label: "요양병원" },
-                { value: "종합병원(100~300)", label: "종합병원 (100~300병상)" },
-                { value: "종합병원(300+)", label: "종합병원 (300병상 이상)" },
+                { value: "종합병원(100~300병상)", label: "종합병원 (100~300병상)" },
+                { value: "종합병원(300병상 초과)", label: "종합병원 (300병상 초과)" },
                 { value: "상급종합병원", label: "상급종합병원" },
               ]}
               value={expansionInfo.medicalOrgCategory}
@@ -242,13 +254,13 @@ export default function ExpansionInfoPage() {
                 label="법인 유형"
                 required={true}
                 options={[
-                  { value: "학교", label: "학교법인" },
-                  { value: "특수", label: "특수법인" },
-                  { value: "종교", label: "종교법인" },
-                  { value: "사회복지", label: "사회복지법인" },
-                  { value: "사단", label: "사단법인" },
-                  { value: "재단", label: "재단법인" },
-                  { value: "회사", label: "회사법인" },
+                  { value: "학교법인", label: "학교법인" },
+                  { value: "특수법인", label: "특수법인" },
+                  { value: "종교법인", label: "종교법인" },
+                  { value: "사회복지법인", label: "사회복지법인" },
+                  { value: "사단법인", label: "사단법인" },
+                  { value: "재단법인", label: "재단법인" },
+                  { value: "회사법인", label: "회사법인" },
                   { value: "의료법인", label: "의료법인" },
                 ]}
                 value={expansionInfo.legalType}
@@ -282,7 +294,7 @@ export default function ExpansionInfoPage() {
               label="회사 구분"
               required={true}
               options={[
-                { value: "MSO", label: "MSO(병원경영지원회사)" },
+                { value: "MSO(병원경영지원회사)", label: "MSO(병원경영지원회사)" },
                 { value: "의료기기", label: "의료기기" },
                 { value: "의약품", label: "의약품" },
                 { value: "기타", label: "기타" },

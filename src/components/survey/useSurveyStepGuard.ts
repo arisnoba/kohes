@@ -99,8 +99,13 @@ function isExpansionInfoComplete(data: SurveyData) {
     )
   }
 
-  if (expansionInfo.orgType === "회사") {
-    return isNonEmpty(expansionInfo.companyName) && Boolean(expansionInfo.companyCategory)
+  if (expansionInfo.orgType === "회사(MSO 등)") {
+    const hasBasicFields = isNonEmpty(expansionInfo.companyName) && Boolean(expansionInfo.companyCategory)
+    // "기타" 선택 시 상세 입력 필수
+    if (expansionInfo.companyCategory === "기타") {
+      return hasBasicFields && isNonEmpty(expansionInfo.companyCategoryOther)
+    }
+    return hasBasicFields
   }
 
   return false
@@ -117,10 +122,11 @@ function isProjectDetailsComplete(data: SurveyData) {
   const needsProjectInfo =
     projectDetails.expansionTiming === "2016.6 이전 진출" ||
     projectDetails.expansionTiming === "2016.6 이후 진출" ||
-    projectDetails.expansionTiming === "진출 진행 중(계약완료 및 인허가 대기 등)"
+    projectDetails.expansionTiming === "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
 
   const needsReportingAwareness2 =
-    projectDetails.expansionTiming === "진출 기획·발굴" || projectDetails.expansionTiming === "기타"
+    projectDetails.expansionTiming === "진출 기획/발굴 단계(시장조사 등)" ||
+    projectDetails.expansionTiming === "기타"
 
   if (needsProjectInfo) {
     if (!isNonEmpty(projectDetails.projectName) || !projectDetails.reportingAwareness1) {

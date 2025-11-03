@@ -28,10 +28,11 @@ export default function ProjectDetailsPage() {
   const needsProjectInfo =
     projectDetails.expansionTiming === "2016.6 이전 진출" ||
     projectDetails.expansionTiming === "2016.6 이후 진출" ||
-    projectDetails.expansionTiming === "진출 진행 중(계약완료 및 인허가 대기 등)"
+    projectDetails.expansionTiming === "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
 
   const needsReportingAwareness2 =
-    projectDetails.expansionTiming === "진출 기획·발굴" || projectDetails.expansionTiming === "기타"
+    projectDetails.expansionTiming === "진출 기획/발굴 단계(시장조사 등)" ||
+    projectDetails.expansionTiming === "기타"
 
   const validateTargetCountries = (value: string) => {
     if (!value.trim()) return "대상국을 입력해주세요."
@@ -196,17 +197,20 @@ export default function ProjectDetailsPage() {
             { value: "2016.6 이전 진출", label: "2016.6 이전 진출" },
             { value: "2016.6 이후 진출", label: "2016.6 이후 진출" },
             {
-              value: "진출 진행 중(계약완료 및 인허가 대기 등)",
-              label: "진출 진행 중(계약완료 및 인허가 대기 등)",
+              value: "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)",
+              label: "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)",
             },
-            { value: "진출 기획·발굴", label: "진출 기획·발굴(시장조사 등)" },
+            {
+              value: "진출 기획/발굴 단계(시장조사 등)",
+              label: "진출 기획/발굴 단계(시장조사 등)",
+            },
             { value: "기타", label: "기타" },
           ]}
           value={projectDetails.expansionTiming}
           onChange={(value) => {
             const payload: Partial<ProjectDetailsState> = { expansionTiming: value }
 
-            if (value === "진출 기획·발굴" || value === "기타") {
+            if (value === "진출 기획/발굴 단계(시장조사 등)" || value === "기타") {
               payload.projectName = ""
               payload.reportingAwareness1 = ""
             } else {

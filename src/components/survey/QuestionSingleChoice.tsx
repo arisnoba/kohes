@@ -60,12 +60,12 @@ export function QuestionSingleChoice({
   }
 
   return (
-    <div id={id} className="space-y-4">
+    <div id={id} className="space-y-4" role="group" aria-labelledby={`${id}-label`}>
       <div>
-        <label className="block text-2xl font-semibold text-gray-900 leading-relaxed">
+        <div id={`${id}-label`} className="block text-2xl font-semibold text-gray-900 leading-relaxed">
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
-        </label>
+        </div>
         {description && (
           <div className="mt-1 text-base leading-relaxed">
             {typeof description === "string" ? (

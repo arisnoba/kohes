@@ -2,15 +2,33 @@
 
 import { useState } from "react"
 import { Lock, Loader2, Eye, EyeOff } from "lucide-react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { createSupabaseClient } from "@/lib/supabase/client"
 
 export default function PasswordManagementPage() {
   const [loading, setLoading] = useState(false)
+  const [dialogState, setDialogState] = useState<{
+    open: boolean
+    type: "success" | "error" | "validation"
+    title: string
+    message: string
+  }>({
+    open: false,
+    type: "success",
+    title: "",
+    message: "",
+  })
   const [showPasswords, setShowPasswords] = useState({
     old: false,
     new: false,
@@ -21,6 +39,18 @@ export default function PasswordManagementPage() {
     newPassword: "",
     confirmPassword: "",
   })
+
+  const showDialog = (
+    type: "success" | "error" | "validation",
+    title: string,
+    message: string,
+  ) => {
+    setDialogState({ open: true, type, title, message })
+  }
+
+  const closeDialog = () => {
+    setDialogState((prev) => ({ ...prev, open: false }))
+  }
 
   const togglePasswordVisibility = (field: "old" | "new" | "confirm") => {
     setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }))
@@ -33,17 +63,17 @@ export default function PasswordManagementPage() {
 
     // 유효성 검사
     if (!newPassword || !confirmPassword) {
-      toast.error("새 비밀번호와 확인 비밀번호를 입력해주세요.")
+      showDialog("validation", "입력 오류", "새 비밀번호와 확인 비밀번호를 입력해주세요.")
       return
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error("새 비밀번호가 일치하지 않습니다.")
+      showDialog("validation", "입력 오류", "새 비밀번호가 일치하지 않습니다.")
       return
     }
 
     if (newPassword.length < 8) {
-      toast.error("비밀번호는 최소 8자 이상이어야 합니다.")
+      showDialog("validation", "입력 오류", "비밀번호는 최소 8자 이상이어야 합니다.")
       return
     }
 
@@ -72,10 +102,11 @@ export default function PasswordManagementPage() {
       }
 
       if (!success) {
-        throw new Error("현재 비밀번호가 올바르지 않습니다.")
+        showDialog("error", "현재 비밀번호가 올바르지 않습니다", "입력하신 현재 비밀번호가 일치하지 않습니다.")
+        return
       }
 
-      toast.success("비밀번호가 성공적으로 변경되었습니다.")
+      showDialog("success", "변경 완료", "비밀번호가 성공적으로 변경되었습니다.")
 
       // 입력 필드 초기화
       setPasswords({
@@ -85,7 +116,11 @@ export default function PasswordManagementPage() {
       })
     } catch (error) {
       console.error("비밀번호 변경 오류:", error)
-      toast.error(error instanceof Error ? error.message : "비밀번호 변경에 실패했습니다.")
+      showDialog(
+        "error",
+        "변경 실패",
+        error instanceof Error ? error.message : "비밀번호 변경에 실패했습니다.",
+      )
     } finally {
       setLoading(false)
     }
@@ -234,6 +269,65 @@ export default function PasswordManagementPage() {
           <p>• 비밀번호 변경 시 관련 담당자에게 안전한 채널로 전달하세요.</p>
         </CardContent>
       </Card>
+
+      {/* 안내 Dialog (성공/에러/유효성 검사) */}
+      <Dialog open={dialogState.open} onOpenChange={closeDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle
+              className={`flex items-center gap-2 text-xl ${
+                dialogState.type === "success"
+                  ? "text-green-600"
+                  : dialogState.type === "error"
+                    ? "text-red-600"
+                    : "text-amber-600"
+              }`}
+            >
+              <Lock className="h-5 w-5" />
+              {dialogState.title}
+            </DialogTitle>
+            <DialogDescription>{dialogState.message}</DialogDescription>
+          </DialogHeader>
+
+          {dialogState.type === "error" && (
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg bg-amber-50 p-4 border border-amber-200">
+                <h3 className="font-semibold text-sm text-amber-900 mb-2">확인해주세요</h3>
+                <ul className="text-sm text-amber-800 space-y-1">
+                  <li>• 현재 비밀번호를 정확히 입력했는지 확인하세요.</li>
+                  <li>• 대소문자를 구분하여 입력하세요.</li>
+                  <li>• 처음 설정하는 경우 현재 비밀번호를 비워두세요.</li>
+                </ul>
+              </div>
+
+              <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
+                <h3 className="font-semibold text-sm text-blue-900 mb-2">처음 설정하시나요?</h3>
+                <p className="text-sm text-blue-800">
+                  처음 비밀번호를 설정하는 경우 <strong>&ldquo;현재 비밀번호&rdquo;</strong> 필드는
+                  비워두고 새 비밀번호만 입력하세요.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {dialogState.type === "success" && (
+            <div className="py-4">
+              <div className="rounded-lg bg-green-50 p-4 border border-green-200">
+                <p className="text-sm text-green-800">
+                  변경된 비밀번호는 데이터 내보내기 시 ZIP 파일의 압축 해제에 사용됩니다. 안전한
+                  곳에 보관하세요.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button onClick={closeDialog} className="w-full sm:w-auto">
+              확인
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

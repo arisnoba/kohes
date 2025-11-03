@@ -7,45 +7,13 @@ import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
 import { NavigationButton } from "@/components/survey/NavigationButton"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
-
-const telRegex = /^(?:0\d{1,2})-?\d{3,4}-?\d{4}$/
-const mobileRegex = /^01[016789]-?\d{3,4}-?\d{4}$/
-
-const MAX_PHONE_LENGTH = 13
-
-function formatLandlineNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 11)
-  if (digits.length === 0) return ""
-
-  const isSeoul = digits.startsWith("02")
-  const areaLength = isSeoul ? 2 : Math.min(3, digits.length)
-
-  if (digits.length <= areaLength) {
-    return digits
-  }
-
-  if (digits.length <= areaLength + 3) {
-    return `${digits.slice(0, areaLength)}-${digits.slice(areaLength)}`
-  }
-
-  const middleEnd = Math.max(areaLength + 1, digits.length - 4)
-  return `${digits.slice(0, areaLength)}-${digits.slice(areaLength, middleEnd)}-${digits.slice(-4)}`
-}
-
-function formatMobileNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 11)
-  if (digits.length === 0) return ""
-
-  if (digits.length <= 3) {
-    return digits
-  }
-
-  if (digits.length <= 7) {
-    return `${digits.slice(0, 3)}-${digits.slice(3)}`
-  }
-
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
-}
+import {
+  MAX_PHONE_LENGTH,
+  formatLandlineNumber,
+  formatMobileNumber,
+  mobileRegex,
+  telRegex,
+} from "@/lib/validation/phone"
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function BasicInfoPage() {

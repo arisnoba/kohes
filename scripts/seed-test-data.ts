@@ -240,6 +240,7 @@ function generateSurveyResponse() {
       "의원",
       "치과의원",
       "한의원",
+      "조산원",
       "병원",
       "치과병원",
       "한방병원",
@@ -313,18 +314,18 @@ function generateSurveyResponse() {
   ])
 
   const servicesOptions = [
-    "개설·운영(신설)",
-    "개설·운영(인수합병)",
+    "개설운영_신설",
+    "개설운영_인수합병",
     "수탁운영",
-    "운영컨설팅",
-    "종사자 파견",
-    "의료기술 이전",
-    "정보시스템 이전",
-    "국외 의료서비스 제공 위한 의약품 제공",
-    "국외 의료서비스 제공 위한 의료기기 등 제공",
-    "의료인 교육(외국의료인 국내연수)",
-    "의료인 교육(국내의료진 해외 방문연수)",
-    "그 외 국제의료사업",
+    "컨설팅",
+    "파견",
+    "기술이전",
+    "정보시스템이전",
+    "의약품제공",
+    "의료기기제공",
+    "교육_국내",
+    "교육_해외",
+    "기타",
   ]
   const services = randomElements(servicesOptions, 1, 3)
 
@@ -376,7 +377,7 @@ function generateSurveyResponse() {
 
   projectDetails.hasEvidence = randomElement(["네", "아니오"])
 
-  // C. 정책 수요 (survey_schema.json의 정확한 옵션 값 사용)
+  // C. 정책 수요 (survey_schema.json 기준)
   const c1Options = [
     "자금 조달의 어려움",
     "수익 예측의 불확실성",
@@ -387,8 +388,9 @@ function generateSurveyResponse() {
     "현지(해외) 전문인력 고용의 어려움",
     "인허가, 면허 등 현지(해외) 법·제도 규제",
     "현지 네트워크 부재",
+    "기타",
   ]
-  const difficultiesRank = shuffle(c1Options)
+  const difficultiesRank = shuffle(c1Options).slice(0, 9) // 최대 9개 선택
 
   const c2Options = [
     "현지 문화·법·정책·동향 등 유관 정보 지원",
@@ -399,12 +401,13 @@ function generateSurveyResponse() {
     "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
     "기 진출 의료기관 선도사례 및 진출 전략 공유",
     "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
+    "기타",
   ]
-  const supportNeedsRank = shuffle(c2Options)
+  const supportNeedsRank = shuffle(c2Options).slice(0, 8) // 최대 8개 선택
 
   const desiredSupport = randomElement([
-    "진출 기관 및 예정기관 간의 네트워크 구축",
-    "성공사례 및 실패사례 공유",
+    "진출 기관 및 예정 기관 간의 네트워크 구축",
+    "성공 및 실패 사례 공유",
     "선진국의 진출사례 공유",
     "의료 해외진출 및 신고제도 홍보",
     "인력 매칭을 위한 플랫폼 운영",

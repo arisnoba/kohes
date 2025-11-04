@@ -21,7 +21,7 @@ const emailRegex = /^[a-zA-Z0-9_%+-]+(\.[a-zA-Z0-9_%+-]+)*@[a-zA-Z0-9-]+(\.[a-zA
 
 export default function BasicInfoPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation } = useSurveyForm()
   const { basicInfo } = data
   const [isMounted, setIsMounted] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
@@ -73,6 +73,11 @@ export default function BasicInfoPage() {
   }
 
   const handleNext = () => {
+    if (skipValidation) {
+      router.push("/expansion-info")
+      return
+    }
+
     // 모든 필드 검증 (모든 검증을 먼저 실행)
     const nameError = validateName(basicInfo.name)
     const positionError = validatePosition(basicInfo.position)

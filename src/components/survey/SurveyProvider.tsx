@@ -1,7 +1,16 @@
 "use client"
 
-import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+  type ReactNode,
+} from "react"
 import { submitSurveyResponse } from "@/lib/supabase/responses"
+import { DevTools } from "./DevTools"
 
 export interface BasicInfoState {
   name: string
@@ -114,6 +123,52 @@ function createSurveyData(partial: Partial<SurveyData> = {}): SurveyData {
 
 const defaultSurveyData = createSurveyData()
 
+const mockSurveyData = createSurveyData({
+  basicInfo: {
+    name: "홍길동",
+    position: "팀장",
+    tel: "02-1234-5678",
+    mobile: "010-1234-5678",
+    email: "dev@example.com",
+    address: "서울특별시 중구 세종대로 110",
+  },
+  expansionInfo: {
+    orgType: "의료기관",
+    medicalOrgName: "서울케어병원",
+    medicalOrgCategory: "상급종합병원",
+    foundationType: "법인",
+    legalType: "의료법인",
+    companyName: "",
+    companyCategory: "",
+    companyCategoryOther: "",
+  },
+  projectDetails: {
+    expansionTiming: "2016.6 이후 진출",
+    expansionTimingOther: "",
+    targetCountries: "미국, 중국",
+    expansionReason: "국내 경쟁 심화",
+    expansionReasonOther: "",
+    services: ["개설운영_신설", "정보시스템이전"],
+    servicesOther: "",
+    projectName: "글로벌 클리닉 프로젝트",
+    reportingAwareness1: "예",
+    reportingAwareness2: "",
+    departments: ["내과", "외과"],
+    departmentsOther: "",
+    hasEvidence: "네",
+  },
+  policyNeeds: {
+    difficultiesRank: ["자금 조달의 어려움", "해외 정보 부족"],
+    difficultiesOther: "",
+    supportNeedsRank: ["현지 문화, 법, 정책, 동향 등 유관 정보 지원", "컨설팅 지원"],
+    supportNeedsOther: "",
+    desiredSupport: "성공 및 실패 사례 공유",
+    desiredSupportOther: "",
+    awareness: "방문한 적 있다.",
+    additionalComments: "테스트용 더미 데이터입니다.",
+  },
+})
+
 type SurveyAction =
   | {
     type: "update"
@@ -151,12 +206,24 @@ export interface SurveyContextValue {
   updateSection: <K extends keyof SurveyData>(section: K, payload: Partial<SurveyData[K]>) => void
   resetSurvey: () => void
   submitSurvey: () => Promise<{ success: boolean; error: string | null; id: string | null }>
+  autoFillSurvey: () => void
+  skipValidation: boolean
+  setSkipValidation: (skip: boolean) => void
 }
 
 const SurveyContext = createContext<SurveyContextValue | undefined>(undefined)
 
 export function SurveyProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(surveyReducer, defaultSurveyData)
+  const [skipValidation, setSkipValidation] = useState(process.env.NODE_ENV !== "production")
+
+  const handleSkipValidationChange = useCallback((skip: boolean) => {
+    setSkipValidation(skip)
+  }, [])
+
+  const autoFillSurvey = useCallback(() => {
+    dispatch({ type: "replace", payload: mockSurveyData })
+  }, [dispatch])
 
   const value: SurveyContextValue = useMemo(() => {
     return {
@@ -169,10 +236,24 @@ export function SurveyProvider({ children }: { children: ReactNode }) {
         const result = await submitSurveyResponse(state)
         return result
       },
+      autoFillSurvey,
+      skipValidation,
+      setSkipValidation: handleSkipValidationChange,
     }
-  }, [state])
+  }, [autoFillSurvey, handleSkipValidationChange, skipValidation, state])
 
-  return <SurveyContext.Provider value={value}>{children}</SurveyContext.Provider>
+  return (
+    <SurveyContext.Provider value={value}>
+      {children}
+      {process.env.NODE_ENV !== "production" ? (
+        <DevTools
+          onAutoFill={autoFillSurvey}
+          skipValidation={skipValidation}
+          onSkipValidationChange={handleSkipValidationChange}
+        />
+      ) : null}
+    </SurveyContext.Provider>
+  )
 }
 
 export function useSurveyForm() {

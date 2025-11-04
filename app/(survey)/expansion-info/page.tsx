@@ -12,7 +12,7 @@ import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ExpansionInfoPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation } = useSurveyForm()
   const { expansionInfo } = data
   const [isMounted, setIsMounted] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
@@ -67,6 +67,11 @@ export default function ExpansionInfoPage() {
   }
 
   const handleNext = () => {
+    if (skipValidation) {
+      router.push("/project-details")
+      return
+    }
+
     // 기관 구분 체크
     if (!expansionInfo.orgType) {
       setShowErrors(true)

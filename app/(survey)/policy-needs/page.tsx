@@ -12,7 +12,7 @@ import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function PolicyNeedsPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation } = useSurveyForm()
   const { policyNeeds } = data
   const canAccess = useSurveyStepGuard("policy-needs")
 
@@ -21,6 +21,11 @@ export default function PolicyNeedsPage() {
   }
 
   const handleNext = () => {
+    if (skipValidation) {
+      router.push("/complete")
+      return
+    }
+
     if (policyNeeds.difficultiesRank.length === 0) {
       toast.error("어려움 순위를 하나 이상 선택해주세요")
       setTimeout(() => {

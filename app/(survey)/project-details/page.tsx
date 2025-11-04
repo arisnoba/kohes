@@ -14,7 +14,7 @@ import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function ProjectDetailsPage() {
   const router = useRouter()
-  const { data, updateSection } = useSurveyForm()
+  const { data, updateSection, skipValidation } = useSurveyForm()
   const { projectDetails } = data
   const [showErrors, setShowErrors] = useState(false)
   const canAccess = useSurveyStepGuard("project-details")
@@ -45,6 +45,11 @@ export default function ProjectDetailsPage() {
   }
 
   const handleNext = () => {
+    if (skipValidation) {
+      router.push("/policy-needs")
+      return
+    }
+
     setShowErrors(true)
 
     if (!projectDetails.expansionTiming) {
@@ -355,8 +360,8 @@ export default function ProjectDetailsPage() {
           label="추진 중인 해외 진출의 형태는 무엇입니까?"
           required={true}
           options={[
-            { value: "개설운영_신설", label: "의료기관 개설·운영 (신설)" },
-            { value: "개설운영_인수합병", label: "의료기관 개설·운영 (인수합병)" },
+            { value: "개설운영_신설", label: "개설·운영 (신설)" },
+            { value: "개설운영_인수합병", label: "개설·운영 (인수합병)" },
             { value: "수탁운영", label: "수탁운영" },
             { value: "컨설팅", label: "운영 컨설팅" },
             { value: "파견", label: "종사자 파견" },
@@ -435,26 +440,25 @@ export default function ProjectDetailsPage() {
           }
           required={true}
           options={[
+            { value: "건강검진", label: "건강검진" },
             { value: "내과", label: "내과" },
-            { value: "외과", label: "외과" },
-            { value: "산부인과", label: "산부인과" },
             { value: "소아청소년과", label: "소아청소년과" },
+            { value: "신경(외)과", label: "신경(외)과" },
+            { value: "피부·성형", label: "피부·성형" },
             { value: "정형외과", label: "정형외과" },
-            { value: "신경외과", label: "신경외과" },
-            { value: "정신건강의학과", label: "정신건강의학과" },
+            { value: "산부인과", label: "산부인과" },
             { value: "안과", label: "안과" },
             { value: "이비인후과", label: "이비인후과" },
-            { value: "피부과", label: "피부과" },
-            { value: "비뇨의학과", label: "비뇨의학과" },
-            { value: "영상의학과", label: "영상의학과" },
-            { value: "방사선종양학과", label: "방사선종양학과" },
-            { value: "병리과", label: "병리과" },
-            { value: "진단검사의학과", label: "진단검사의학과" },
-            { value: "결핵과", label: "결핵과" },
+            { value: "비뇨기과", label: "비뇨기과" },
             { value: "재활의학과", label: "재활의학과" },
-            { value: "성형외과", label: "성형외과" },
+            { value: "가정의학과", label: "가정의학과" },
             { value: "마취통증의학과", label: "마취통증의학과" },
-            { value: "응급의학과", label: "응급의학과" },
+            { value: "영상의학과", label: "영상의학과" },
+            { value: "진단검사의학과", label: "진단검사의학과" },
+            { value: "한방", label: "한방" },
+            { value: "치과", label: "치과" },
+            { value: "일반외과", label: "일반외과" },
+            { value: "정신과", label: "정신과" },
             { value: "기타", label: "기타" },
           ]}
           value={projectDetails.departments}

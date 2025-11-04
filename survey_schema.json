@@ -499,7 +499,7 @@
       "questions": [
         {
           "id": "C1",
-          "label": "사업 추진 시 가장 큰 어려움 (1~9 순위)",
+          "label": "사업 추진 시 가장 큰 걸림돌 (1~9 순위)",
           "type": "rank_choice",
           "required": true,
           "rank_count": 9,

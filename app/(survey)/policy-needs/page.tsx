@@ -133,7 +133,7 @@ export default function PolicyNeedsPage() {
 
         <QuestionRankChoice
           id="difficulties-rank"
-          label="의료 해외진출 사업 추진 시, 가장 큰 어려움을 순서대로 선택해주세요."
+          label="의료 해외진출 사업 추진 시, 가장 큰 걸림돌이 되는 요인을 순서대로 선택해 주세요."
           required={true}
           maxRanks={9}
           options={[
@@ -165,7 +165,7 @@ export default function PolicyNeedsPage() {
 
         <QuestionRankChoice
           id="support-needs-rank"
-          label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해주세요."
+          label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해 주세요."
           required={true}
           maxRanks={8}
           options={[
@@ -212,12 +212,12 @@ export default function PolicyNeedsPage() {
           required={true}
           options={[
             {
-              value: "진출 기관 및 예정기관 간의 네트워크 구축",
-              label: "진출 기관 및 예정기관 간의 네트워크 구축",
+              value: "진출 기관 및 예정 기관 간의 네트워크 구축",
+              label: "진출 기관 및 예정 기관 간의 네트워크 구축",
             },
             {
-              value: "성공/실패 사례 공유",
-              label: "성공/실패 사례 공유",
+              value: "성공 및 실패 사례 공유",
+              label: "성공 및 실패 사례 공유",
             },
             {
               value: "선진국 진출사례 공유",

@@ -86,8 +86,11 @@ export function QuestionRankChoice({
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
         <p className="mt-2 text-sm text-gray-500">
-          <span className="font-bold text-blue-600">{maxRanks}개 항목을 순서대로 선택</span>
-          해주세요. (중복 선택 가능)
+          <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-400">
+            1순위가 가장 큰 어려움, {maxRanks}순위가 가장 작은 어려움
+          </span>
+          <br />
+          최대 {maxRanks}개 항목을 순서대로 선택 해주세요.
         </p>
       </div>
 

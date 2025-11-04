@@ -64,7 +64,7 @@ export function QuestionMultiChoice({
   return (
     <div className="space-y-4" id={id}>
       <div>
-        <label className="block text-2xl font-semibold text-gray-900 md:text-3xl leading-snug">
+        <label className="block text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
@@ -116,7 +116,7 @@ export function QuestionMultiChoice({
                     value={otherText}
                     onChange={handleOtherChange}
                     placeholder="기타 내용을 입력해주세요"
-                    className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
+                    className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
                   />
                 </div>
               )}

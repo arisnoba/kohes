@@ -89,7 +89,7 @@ export default function CompletePage() {
   // 제출 성공 화면
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="mx-auto max-w-2xl px-4 py-8 md:py-12">
         {/* Success Icon */}
         <div className="mb-8 flex justify-center">
           <div className="rounded-full bg-green-100 p-6">
@@ -98,8 +98,10 @@ export default function CompletePage() {
         </div>
 
         {/* Success Message */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold text-gray-900">설문이 완료되었습니다</h1>
+        <div className="mb-8 text-center">
+          <h1 className="mb-1 md:mb-2 text-3xl md:text-4xl font-bold text-gray-900">
+            설문이 완료되었습니다
+          </h1>
           <p className="text-lg text-gray-600">소중한 의견을 주셔서 감사합니다</p>
         </div>
 
@@ -138,7 +140,7 @@ export default function CompletePage() {
         </div>
 
         {/* Thank You Message */}
-        <div className="mt-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center text-white shadow-lg">
+        <div className="mt-8 md:mt-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-6 md:p-8 text-center text-white shadow-lg">
           <p className="text-lg font-semibold">
             대한민국 의료 해외진출의
             <br />

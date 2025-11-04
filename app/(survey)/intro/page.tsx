@@ -15,7 +15,7 @@ export default function IntroPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      <div className="mx-auto max-w-2xl px-4 py-12">
+      <div className="mx-auto max-w-2xl px-4 py-8 md:py-12">
         {/* Header */}
         <div className="mb-12 text-center flex flex-col items-center">
           <a href="https://www.khidi.or.kr/" target="_blank">
@@ -24,11 +24,15 @@ export default function IntroPage() {
               alt="logo"
               width={108}
               height={54}
-              className="mb-8 h-10 w-auto"
+              className="mb-4 md:mb-8 h-8 md:h-10 w-auto"
             />
           </a>
-          <h1 className="mb-2 text-4xl font-bold text-gray-900">2025년 의료해외진출 현황조사</h1>
-          <p className="text-lg text-gray-600">귀하의 소중한 의견을 듣고자 합니다.</p>
+          <h1 className="mb-1 md:mb-2 text-2xl md:text-4xl font-bold text-gray-900">
+            2025년 의료해외진출 현황조사
+          </h1>
+          <p className="text-base md:text-lg font-medium text-gray-600">
+            귀하의 소중한 의견을 듣고자 합니다.
+          </p>
         </div>
 
         {/* Info Cards */}

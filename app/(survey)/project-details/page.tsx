@@ -188,7 +188,7 @@ export default function ProjectDetailsPage() {
           id="expansion-timing"
           label="귀 기관(회사)의 의료 해외진출 시기는 언제입니까?"
           description={
-            <span className="text-red-500 font-medium">
+            <span className="text-red-500 font-medium leading-snug text-sm md:text-base">
               ※ 의료 해외진출 신고를 하지 않은 프로젝트만 기입해주십시오.
             </span>
           }
@@ -220,7 +220,9 @@ export default function ProjectDetailsPage() {
             updateSection("projectDetails", payload)
           }}
           otherValue={projectDetails.expansionTimingOther}
-          onOtherChange={(value) => updateSection("projectDetails", { expansionTimingOther: value })}
+          onOtherChange={(value) =>
+            updateSection("projectDetails", { expansionTimingOther: value })
+          }
         />
 
         <QuestionText
@@ -255,7 +257,9 @@ export default function ProjectDetailsPage() {
           value={projectDetails.expansionReason}
           onChange={(value) => updateSection("projectDetails", { expansionReason: value })}
           otherValue={projectDetails.expansionReasonOther}
-          onOtherChange={(value) => updateSection("projectDetails", { expansionReasonOther: value })}
+          onOtherChange={(value) =>
+            updateSection("projectDetails", { expansionReasonOther: value })
+          }
         />
 
         <QuestionMultiChoice
@@ -337,7 +341,7 @@ export default function ProjectDetailsPage() {
           id="departments"
           label="진출 진료과는 무엇입니까?"
           description={
-            <span className="text-blue-500">
+            <span className="text-blue-500 leading-tight text-sm md:text-base">
               의료인 교육, 정보시스템 이전 등 진료과에 해당하지 않는 경우엔 기타에 기입
             </span>
           }

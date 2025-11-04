@@ -62,7 +62,10 @@ export function QuestionSingleChoice({
   return (
     <div id={id} className="space-y-4" role="group" aria-labelledby={`${id}-label`}>
       <div>
-        <div id={`${id}-label`} className="block text-2xl font-semibold text-gray-900 leading-relaxed">
+        <div
+          id={`${id}-label`}
+          className="block text-xl md:text-2xl font-semibold text-gray-900 leading-relaxed"
+        >
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </div>
@@ -87,15 +90,17 @@ export function QuestionSingleChoice({
               <button
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${isSelected
-                  ? "border-blue-600 bg-blue-50 text-blue-900"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
+                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
+                  isSelected
+                    ? "border-blue-600 bg-blue-50 text-blue-900"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`h-5 w-5 rounded-full border-2 transition-all ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
-                      }`}
+                    className={`h-5 w-5 rounded-full border-2 transition-all ${
+                      isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                    }`}
                   >
                     {isSelected && (
                       <div className="flex h-full items-center justify-center">
@@ -115,7 +120,7 @@ export function QuestionSingleChoice({
                       onChange={handleOtherChange}
                       onClick={(e) => e.stopPropagation()}
                       placeholder="기타 내용을 입력해주세요"
-                      className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
+                      className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
                     />
                   </div>
                 )}

@@ -169,7 +169,7 @@ export default function ExpansionInfoPage() {
 
   return (
     <SurveyLayout currentStep={2} totalSteps={5} onBack={handleBack} showBackButton={true}>
-      <div className="space-y-10">
+      <div className="space-y-6">
         <div>
           <div className="mb-2 text-sm font-medium text-blue-600">Section 2</div>
           <h2 className="text-2xl font-bold text-gray-900">의료 해외진출 기본 정보</h2>

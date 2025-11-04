@@ -59,8 +59,11 @@ export function QuestionText({
   const hasError = (touched || error) && displayError
 
   return (
-    <div className="space-y-2">
-      <label htmlFor={id} className="block text-2xl font-semibold text-gray-900 leading-snug">
+    <div className="space-y-1">
+      <label
+        htmlFor={id}
+        className="block text-xl md:text-2xl font-semibold text-gray-900 leading-snug"
+      >
         {label}
         {required && <sup className="ml-0.5 text-red-500">*</sup>}
       </label>
@@ -74,10 +77,9 @@ export function QuestionText({
         placeholder={placeholder}
         maxLength={maxLength}
         inputMode={inputMode}
-        className={`w-full border-0 border-b-2 bg-transparent px-0 py-3 text-lg transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-0 ${hasError
-          ? "border-red-500 focus:border-red-600"
-          : "border-gray-300 focus:border-blue-600"
-          }`}
+        className={`w-full border-0 border-b-2 bg-transparent rounded-none px-0 py-3 text-lg transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-0 ${
+          hasError ? "border-red-500 focus:border-red-600" : "border-gray-300 focus:border-blue-600"
+        }`}
         required={required}
       />
 

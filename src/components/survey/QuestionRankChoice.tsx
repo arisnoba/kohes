@@ -81,18 +81,19 @@ export function QuestionRankChoice({
   return (
     <div className="space-y-4" id={id}>
       <div>
-        <label className="block text-2xl font-semibold text-gray-900 leading-snug">
+        <label className="block text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
         <p className="mt-2 text-sm text-gray-500">
-          {maxRanks}개 항목을 순서대로 선택해주세요 (중복 선택 가능)
+          <span className="font-bold text-blue-600">{maxRanks}개 항목을 순서대로 선택</span>
+          해주세요. (중복 선택 가능)
         </p>
       </div>
 
       {/* 옵션 선택 */}
       <div className="space-y-2">
-        <p className="mt-1 text-sm font-medium text-blue-600">
+        <p className="mt-1 text-sm font-bold text-blue-600">
           현재 {rankedItems.length}/{maxRanks}개 선택됨
         </p>
         {options.map((option) => {
@@ -137,7 +138,7 @@ export function QuestionRankChoice({
                     value={otherText}
                     onChange={handleOtherChange}
                     placeholder="기타 내용을 입력해주세요"
-                    className="w-full border-0 border-b-2 border-blue-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
+                    className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
                   />
                 </div>
               )}

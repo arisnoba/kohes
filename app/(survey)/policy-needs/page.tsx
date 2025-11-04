@@ -21,8 +21,8 @@ export default function PolicyNeedsPage() {
   }
 
   const handleNext = () => {
-    if (policyNeeds.difficultiesRank.length !== 9) {
-      toast.error("어려움 순위 9개 항목을 순서대로 선택해주세요")
+    if (policyNeeds.difficultiesRank.length === 0) {
+      toast.error("어려움 순위를 하나 이상 선택해주세요")
       setTimeout(() => {
         const element = document.getElementById("difficulties-rank")
         if (element) {
@@ -48,8 +48,8 @@ export default function PolicyNeedsPage() {
       return
     }
 
-    if (policyNeeds.supportNeedsRank.length !== 8) {
-      toast.error("지원 필요 순위 8개 항목을 순서대로 선택해주세요")
+    if (policyNeeds.supportNeedsRank.length === 0) {
+      toast.error("지원 필요 순위를 하나 이상 선택해주세요")
       setTimeout(() => {
         const element = document.getElementById("support-needs-rank")
         if (element) {

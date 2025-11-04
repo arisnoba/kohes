@@ -363,15 +363,24 @@ export default function ProjectDetailsPage() {
             { value: "개설운영_신설", label: "개설·운영 (신설)" },
             { value: "개설운영_인수합병", label: "개설·운영 (인수합병)" },
             { value: "수탁운영", label: "수탁운영" },
-            { value: "컨설팅", label: "운영 컨설팅" },
-            { value: "파견", label: "종사자 파견" },
-            { value: "기술이전", label: "의료기술 이전" },
-            { value: "정보시스템이전", label: "정보시스템 이전" },
-            { value: "의약품제공", label: "국외 의료서비스 제공 위한 의약품 제공" },
-            { value: "의료기기제공", label: "국외 의료서비스 제공 위한 의료기기 등 제공" },
-            { value: "교육_국내", label: "의료인 교육 (국내 연수)" },
-            { value: "교육_해외", label: "의료인 교육 (해외 방문연수)" },
-            { value: "기타", label: "그 외 국제의료사업" },
+            { value: "운영 컨설팅", label: "운영 컨설팅" },
+            { value: "종사자 파견", label: "종사자 파견" },
+            { value: "의료기술 이전", label: "의료기술 이전" },
+            { value: "정보시스템 이전", label: "정보시스템 이전" },
+            {
+              value: "국외 의료서비스 제공 위한 의약품 제공",
+              label: "국외 의료서비스 제공 위한 의약품 제공",
+            },
+            {
+              value: "국외 의료서비스 제공 위한 의료기기 등 제공",
+              label: "국외 의료서비스 제공 위한 의료기기 등 제공",
+            },
+            { value: "의료인 교육(외국의료인 국내연수)", label: "의료인 교육 (국내 연수)" },
+            {
+              value: "의료인 교육(국내의료진 해외 방문연수)",
+              label: "의료인 교육 (해외 방문연수)",
+            },
+            { value: "그 외 국제의료사업", label: "그 외 국제의료사업" },
           ]}
           value={projectDetails.services}
           onChange={(values) => updateSection("projectDetails", { services: values })}

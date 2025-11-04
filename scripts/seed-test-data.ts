@@ -314,18 +314,18 @@ function generateSurveyResponse() {
   ])
 
   const servicesOptions = [
-    "개설운영_신설",
-    "개설운영_인수합병",
+    "개설·운영(신설)",
+    "개설·운영(인수합병)",
     "수탁운영",
-    "컨설팅",
-    "파견",
-    "기술이전",
-    "정보시스템이전",
-    "의약품제공",
-    "의료기기제공",
-    "교육_국내",
-    "교육_해외",
-    "기타",
+    "운영컨설팅",
+    "종사자 파견",
+    "의료기술 이전",
+    "정보시스템 이전",
+    "국외 의료서비스 제공 위한 의약품 제공",
+    "국외 의료서비스 제공 위한 의료기기 등 제공",
+    "의료인 교육(외국의료인 국내연수)",
+    "의료인 교육(국내의료진 해외 방문연수)",
+    "그 외 국제의료사업",
   ]
   const services = randomElements(servicesOptions, 1, 3)
 
@@ -377,7 +377,7 @@ function generateSurveyResponse() {
 
   projectDetails.hasEvidence = randomElement(["네", "아니오"])
 
-  // C. 정책 수요 (survey_schema.json 기준)
+  // C. 정책 수요 (survey_schema.json의 정확한 옵션 값 사용)
   const c1Options = [
     "자금 조달의 어려움",
     "수익 예측의 불확실성",

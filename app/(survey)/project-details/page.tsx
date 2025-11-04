@@ -352,7 +352,7 @@ export default function ProjectDetailsPage() {
 
         <QuestionMultiChoice
           id="services"
-          label="해외진출 사업에서 제공하는 서비스는 무엇입니까?"
+          label="추진 중인 해외 진출의 형태는 무엇입니까?"
           required={true}
           options={[
             { value: "개설운영_신설", label: "의료기관 개설·운영 (신설)" },
@@ -397,7 +397,7 @@ export default function ProjectDetailsPage() {
 
             <QuestionSingleChoice
               id="reporting-awareness-1"
-              label="의료법 제33조의2에 따른 해외진출 전 신고 의무를 알고 계십니까?"
+              label="의료 해외진출 시, 의료해외진출법 제4조에 의거하여 ‘의료 해외진출 신고’를 의무적으로 하여야 합니다. 해당 사실을 알고 계십니까?"
               required={true}
               options={[
                 { value: "예", label: "예" },

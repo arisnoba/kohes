@@ -136,7 +136,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       {hasExpansionInfo ? (
         <DetailSection title="A. 기관 유형">
           <DetailItem label="기관 유형" value={expansionInfo.orgType} />
-          {(expansionInfo.orgType === "회사(MSO 등)" || expansionInfo.orgType === "회사") ? (
+          {expansionInfo.orgType === "회사(MSO 등)" || expansionInfo.orgType === "회사" ? (
             <>
               <DetailItem label="회사명" value={expansionInfo.companyName} />
               <DetailItem label="회사 구분" value={companyCategoryDisplay} />
@@ -165,19 +165,13 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
             span={projectDetails.targetCountries.length > 2}
           />
           <DetailItem
-            label="제공 서비스"
+            label="추진 중인 해외 진출의 형태"
             values={servicesDisplay}
             span={servicesDisplay.length > 2}
           />
           <DetailItem label="프로젝트명" value={projectDetails.projectName} span />
-          <DetailItem
-            label="신고 의무 인지 (진출 완료)"
-            value={projectDetails.reportingAwareness1}
-          />
-          <DetailItem
-            label="신고 의무 인지 (기획 단계)"
-            value={projectDetails.reportingAwareness2}
-          />
+          <DetailItem label="신고 의무 인지 (B1=①②③)" value={projectDetails.reportingAwareness1} />
+          <DetailItem label="신고 의무 인지 (B1=④⑤)" value={projectDetails.reportingAwareness2} />
           <DetailItem
             label="진출 진료과"
             values={departmentsDisplay}

@@ -18,7 +18,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
   }
 
   const basicInfo = {
-    name: maskPII(piiData, "name"),
+    name: extractPII(piiData, "name"),
     position: extractValue(responseData, ["basicInfo", "position"]),
     tel: maskPII(piiData, "tel"),
     mobile: maskPII(piiData, "mobile"),
@@ -125,7 +125,7 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       </DetailSection> */}
 
       <DetailSection title="기본 정보" description="민감 정보는 잠금 아이콘으로 표시됩니다.">
-        <DetailItem label="성명" value={basicInfo.name} sensitive />
+        <DetailItem label="성명" value={basicInfo.name} />
         <DetailItem label="직책" value={basicInfo.position} />
         <DetailItem label="전화번호" value={basicInfo.tel} sensitive />
         <DetailItem label="휴대전화" value={basicInfo.mobile} sensitive />
@@ -306,6 +306,20 @@ function extractArray(data: Record<string, unknown>, path: string[]): string[] {
   }
 
   return []
+}
+
+function extractPII(piiData: Record<string, unknown> | null, field: string): string | null {
+  if (!piiData || typeof piiData !== "object") {
+    return null
+  }
+
+  const value = piiData[field]
+
+  if (typeof value !== "string" || !value.trim()) {
+    return null
+  }
+
+  return value.trim()
 }
 
 function maskPII(piiData: Record<string, unknown> | null, field: string): string | null {

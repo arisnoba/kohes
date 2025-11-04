@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Generate Commit Message
+
+- Use Korean
+- Follow Conventional Commits format (feat, fix, chore, etc.)
+
 ## Project Overview
 
 This is a medical overseas expansion survey system (의료해외진출 현황조사) built as a mobile-first responsive web application. The system collects structured survey data with complex conditional branching logic, validates responses, and provides admin dashboards for data export.
@@ -13,26 +18,31 @@ This is a medical overseas expansion survey system (의료해외진출 현황조
 ## Architecture & Data Flow
 
 ### Source of Truth
+
 - **`survey_schema.json`**: Single source of truth for all survey logic, branching rules, validation, and question structure. Always reference this file when implementing survey features.
 - **`PRD.md`**: Product requirements including security guidelines, export formats, and business rules.
 - **`AGENTS.md`**: Development guidelines including project structure, coding conventions, and commit standards.
 
 ### Survey Logic Structure
+
 The survey follows a hierarchical flow: **Intro (Basic Info) → A (Organization Type) → B (Project Details) → C (Policy Needs)**
 
 **Conditional Branching Rules**:
+
 - `A1` determines whether `A2_group` (medical institution) or `A3_group` (company) questions appear
 - `A2_found_type="법인"` triggers `A2_legal_subtype` question
 - `B1` value determines which follow-up questions appear (`B5_1_1`, `B5_1_1_1` vs `B5_2`)
 - All branching logic uses `show_if` or `show_if_any` conditions in schema
 
 **Validation Layer**:
+
 - Global validation rules in `validation_global` array (e.g., conditional required fields based on A1 or B1 selections)
 - Question-level validation via `required` and `validation` properties
 - All contact fields (tel/mobile/email) are required
 - Rank choice questions allow duplicate selections (same item can be selected for multiple ranks)
 
 ### Suggested Directory Structure
+
 ```
 app/
 ├─ (survey)/          # Public survey pages
@@ -68,12 +78,14 @@ tests/
 ## Development Commands
 
 ### Initial Setup
+
 ```bash
 pnpm install          # Install dependencies (use pnpm for consistency)
 supabase start        # Start local Supabase instance
 ```
 
 ### Development Workflow
+
 ```bash
 pnpm dev              # Start Next.js dev server (verify /(survey) and /admin routes)
 pnpm lint             # Run ESLint (next/core-web-vitals)
@@ -82,6 +94,7 @@ pnpm test             # Run test suite (Vitest/Jest)
 ```
 
 ### Database Operations
+
 ```bash
 pnpm supabase db push           # Push migrations to database
 pnpm supabase db reset          # Reset local database
@@ -89,7 +102,9 @@ pnpm supabase gen types typescript --local  # Generate TypeScript types
 ```
 
 ### Testing
+
 Focus tests on conditional branching logic from `survey_schema.json`:
+
 - Use Vitest/Jest for validation logic and schema parsing
 - Use Playwright for E2E flows testing conditional question appearance
 - Test admin login barriers and export functionality
@@ -98,12 +113,14 @@ Focus tests on conditional branching logic from `survey_schema.json`:
 ## Coding Standards
 
 ### TypeScript & Naming
+
 - **Components**: PascalCase (e.g., `SurveyQuestion.tsx`)
 - **Hooks/Utils**: camelCase (e.g., `useConditionalLogic.ts`)
 - **Survey IDs**: Follow schema pattern (`A1`, `B5_1_1`, `A2_group`)
 - Enforce strict TypeScript throughout
 
 ### Code Style
+
 - **Indentation**: 2 spaces (enforced by Prettier)
 - **Linter**: ESLint with `next/core-web-vitals` preset
 - **Tailwind Classes**: Order as layout → spacing → typography
@@ -111,7 +128,9 @@ Focus tests on conditional branching logic from `survey_schema.json`:
 - **Layout Separation**: Survey and admin layouts must be distinct (no shared headers/footers)
 
 ### Schema Integration
+
 When implementing survey features:
+
 1. Parse `survey_schema.json` for question definitions
 2. Implement `show_if` and `show_if_any` conditional rendering
 3. Apply validation rules from both question-level and `validation_global`
@@ -121,6 +140,7 @@ When implementing survey features:
 ## Data Security & Privacy
 
 **Critical Requirements** (from PRD.md):
+
 - **PII Isolation**: Separate storage for personally identifiable information
 - **File Encryption**: AES-256 for uploaded evidence files
 - **Access Control**: Least-privilege roles in Supabase (admin/analyst separation)
@@ -128,6 +148,7 @@ When implementing survey features:
 - **Export Security**: Raw survey data is confidential, distribute only through secured channels
 
 **Supabase Security**:
+
 - Implement row-level security (RLS) policies
 - Use service role only in secure server contexts
 - Never expose service keys in client code
@@ -135,11 +156,13 @@ When implementing survey features:
 ## Export Formats
 
 ### CSV Export
+
 - Delimiter: comma (`,`)
 - Array fields: semicolon-separated (`; `) within single cell
 - Example: `"option1; option2; option3"`
 
 ### JSON Export
+
 - Encoding: UTF-8
 - Indentation: 2 spaces
 - Preserve Korean characters without escaping
@@ -147,13 +170,16 @@ When implementing survey features:
 ## Git & Collaboration
 
 ### Commit Messages
+
 Use Conventional Commits format:
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `chore:` Maintenance tasks
 - Example: `feat: implement B1 conditional branching logic`
 
 ### Pull Requests
+
 - Link tracking ticket/issue number
 - Document behavior changes (especially branching logic)
 - Include screenshots for UI changes or `/admin` exports
@@ -164,7 +190,9 @@ Use Conventional Commits format:
 ## Key Implementation Notes
 
 ### Conditional Question Rendering
+
 The schema uses two patterns:
+
 ```typescript
 // Single value match
 "show_if": { "A1": "의료기관" }
@@ -176,12 +204,15 @@ The schema uses two patterns:
 ```
 
 ### Validation Rules
+
 Global validation includes:
+
 - All contact fields (tel/mobile/email) are individually required
 - `when`: Conditional required fields based on A1 or B1 selections
 - Question groups (`type: "group"`) contain nested questions with their own requirements
 
 ### Rank Choice Scoring
+
 - `C1`: 9 ranks to assign, 1st=9 points → 9th=1 point
 - `C2`: 8 ranks to assign, 1st=8 points → 8th=1 point
 - **Allow duplicate selections**: Same item can be selected for multiple ranks

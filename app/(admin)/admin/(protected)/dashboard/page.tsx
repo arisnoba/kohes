@@ -1,5 +1,6 @@
 import { Fragment } from "react"
 
+import { SimplePieChart } from "@/components/admin/SimplePieChart"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -80,6 +81,31 @@ export default async function DashboardPage() {
   const { statsByQuestion } = aggregation
   const totalResponses = totalCount
   const hasResponses = totalResponses > 0
+  const summaryLookup = new Map(
+    questionSummaries.map((summary) => [summary.questionId, summary])
+  )
+  const highlightCharts = ["A1", "B1", "C4"].map((questionId) => {
+    const summary = summaryLookup.get(questionId)
+    const stats = statsByQuestion.get(questionId)
+    if (!summary || !stats) {
+      return null
+    }
+
+    const data = stats.optionStats.map((option) => ({
+      name: option.displayValue,
+      value: option.count,
+      percentage: Number.isFinite(option.percentage) ? option.percentage : 0,
+    }))
+
+    return {
+      questionId,
+      title: `${summary.questionId}. ${summary.questionLabel}`,
+      data,
+    }
+  })
+  .filter((chart): chart is { questionId: string; title: string; data: Array<{ name: string; value: number; percentage: number }> } =>
+    chart !== null
+  )
 
   return (
     <div className="space-y-6">
@@ -87,6 +113,14 @@ export default async function DashboardPage() {
         <h2 className="text-2xl font-bold">설문 문항별 응답 관리</h2>
         <p className="text-sm text-muted-foreground">문항별 응답 분포를 확인할 수 있습니다.</p>
       </div>
+
+      {highlightCharts.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {highlightCharts.map((chart) => (
+            <SimplePieChart key={chart.questionId} data={chart.data} title={chart.title} />
+          ))}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border bg-background p-4 shadow-sm">

@@ -80,7 +80,7 @@ export function QuestionText({
         className={`w-full border-0 border-b-2 bg-transparent rounded-none px-0 py-3 text-lg transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-0 ${
           hasError ? "border-red-500 focus:border-red-600" : "border-gray-300 focus:border-blue-600"
         }`}
-        required={required}
+        aria-required={required}
       />
 
       {hasError && <p className="text-sm text-red-600">{displayError}</p>}

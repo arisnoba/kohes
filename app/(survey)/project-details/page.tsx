@@ -50,19 +50,41 @@ export default function ProjectDetailsPage() {
     if (!projectDetails.expansionTiming) {
       toast.error("진출 시기를 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("expansion-timing")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("expansion-timing")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (projectDetails.expansionTiming === "기타" && !projectDetails.expansionTimingOther?.trim()) {
+      toast.error("진출 시기 '기타' 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("expansion-timing")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
 
     const targetCountriesError = validateTargetCountries(projectDetails.targetCountries)
     if (targetCountriesError) {
+      toast.error("해외진출 대상국을 입력해주세요.")
       setTimeout(() => {
         const element = document.getElementById("target-countries")
-        element?.focus()
-        element?.scrollIntoView({ behavior: "smooth", block: "center" })
+        if (element) {
+          element.focus()
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -70,9 +92,26 @@ export default function ProjectDetailsPage() {
     if (!projectDetails.expansionReason) {
       toast.error("진출 이유를 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("expansion-reason")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("expansion-reason")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (projectDetails.expansionReason === "기타" && !projectDetails.expansionReasonOther?.trim()) {
+      toast.error("진출 이유 '기타' 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("expansion-reason")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -80,7 +119,26 @@ export default function ProjectDetailsPage() {
     if (projectDetails.services.length === 0) {
       toast.error("제공하는 서비스를 하나 이상 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("services")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (projectDetails.services.includes("기타") && !projectDetails.servicesOther?.trim()) {
+      toast.error("서비스 '기타' 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("services")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -90,17 +148,24 @@ export default function ProjectDetailsPage() {
       if (projectNameError) {
         setTimeout(() => {
           const element = document.getElementById("project-name")
-          element?.focus()
-          element?.scrollIntoView({ behavior: "smooth", block: "center" })
+          if (element) {
+            element.focus()
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 100
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+          }
         }, 100)
         return
       }
       if (!projectDetails.reportingAwareness1) {
         toast.error("신고 의무 인지 여부를 선택해주세요.")
         setTimeout(() => {
-          document
-            .getElementById("reporting-awareness-1")
-            ?.scrollIntoView({ behavior: "smooth", block: "center" })
+          const element = document.getElementById("reporting-awareness-1")
+          if (element) {
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 100
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+          }
         }, 100)
         return
       }
@@ -109,9 +174,12 @@ export default function ProjectDetailsPage() {
     if (needsReportingAwareness2 && !projectDetails.reportingAwareness2) {
       toast.error("신고 의무 인지 여부를 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("reporting-awareness-2")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("reporting-awareness-2")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -119,9 +187,26 @@ export default function ProjectDetailsPage() {
     if (projectDetails.departments.length === 0) {
       toast.error("진출 진료과를 하나 이상 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("departments")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("departments")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (projectDetails.departments.includes("기타") && !projectDetails.departmentsOther?.trim()) {
+      toast.error("진출 진료과 '기타' 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("departments")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -129,9 +214,12 @@ export default function ProjectDetailsPage() {
     if (!projectDetails.hasEvidence) {
       toast.error("증빙 자료 존재 여부를 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("has-evidence")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("has-evidence")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }

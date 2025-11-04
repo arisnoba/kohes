@@ -49,12 +49,12 @@ export default function CompletePage() {
         <div className="mx-auto max-w-2xl px-4 py-12">
           <div className="mb-8 flex justify-center">
             <div className="rounded-full bg-blue-100 p-6">
-              <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
+              <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
             </div>
           </div>
           <div className="text-center">
             <h1 className="mb-4 text-3xl font-bold text-gray-900">설문을 제출하고 있습니다...</h1>
-            <p className="text-lg text-gray-600">잠시만 기다려주세요</p>
+            <p className="text-lg text-gray-600">잠시만 기다려주세요.</p>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function CompletePage() {
             </div>
           </div>
           <div className="mb-12 text-center">
-            <h1 className="mb-4 text-3xl font-bold text-gray-900">제출 중 오류가 발생했습니다</h1>
+            <h1 className="mb-4 text-3xl font-bold text-gray-900">제출 중 오류가 발생했습니다.</h1>
             <p className="mb-6 text-lg text-gray-600">{errorMessage}</p>
             <button
               onClick={() => router.back()}
@@ -93,16 +93,20 @@ export default function CompletePage() {
         {/* Success Icon */}
         <div className="mb-8 flex justify-center">
           <div className="rounded-full bg-green-100 p-6">
-            <CheckCircle className="h-16 w-16 text-green-600" />
+            <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
         </div>
 
         {/* Success Message */}
         <div className="mb-8 text-center">
-          <h1 className="mb-1 md:mb-2 text-3xl md:text-4xl font-bold text-gray-900">
-            설문이 완료되었습니다
+          <h1 className="mb-3 text-3xl md:text-4xl font-bold text-gray-900">
+            설문이 완료되었습니다.
           </h1>
-          <p className="text-lg text-gray-600">소중한 의견을 주셔서 감사합니다</p>
+          <p className="text-lg text-gray-600 font-medium">
+            대한민국 의료 해외진출의 발전을 위해
+            <br />
+            소중한 의견을 주셔서 감사합니다.
+          </p>
         </div>
 
         {/* Info Cards */}
@@ -139,22 +143,13 @@ export default function CompletePage() {
           </div>
         </div>
 
-        {/* Thank You Message */}
-        <div className="mt-8 md:mt-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 p-6 md:p-8 text-center text-white shadow-lg">
-          <p className="text-lg font-semibold">
-            대한민국 의료 해외진출의
-            <br />
-            발전을 위해 함께해 주셔서 감사합니다
-          </p>
-        </div>
-
         {/* Home Button */}
         <div className="mt-8 text-center">
           <a
             href="/"
             className="inline-block text-sm text-gray-600 hover:text-gray-900 hover:underline"
           >
-            홈으로 돌아가기
+            처음으로 돌아가기
           </a>
         </div>
       </div>

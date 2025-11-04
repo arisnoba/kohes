@@ -72,7 +72,12 @@ export default function ExpansionInfoPage() {
       setShowErrors(true)
       toast.error("기관 구분을 선택해주세요.")
       setTimeout(() => {
-        document.getElementById("org-type")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("org-type")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -91,22 +96,32 @@ export default function ExpansionInfoPage() {
         if (medicalOrgNameError) {
           setTimeout(() => {
             const element = document.getElementById("medical-org-name")
-            element?.focus()
-            element?.scrollIntoView({ behavior: "smooth", block: "center" })
+            if (element) {
+              element.focus()
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = elementPosition - 100
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+            }
           }, 100)
         } else if (!expansionInfo.medicalOrgCategory) {
           toast.error("의료기관의 유형을 선택해주세요.")
           setTimeout(() => {
-            document
-              .getElementById("medical-org-category")
-              ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            const element = document.getElementById("medical-org-category")
+            if (element) {
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = elementPosition - 100
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+            }
           }, 100)
         } else if (!expansionInfo.foundationType) {
           toast.error("의료기관의 설립유형을 선택해주세요.")
           setTimeout(() => {
-            document
-              .getElementById("foundation-type")
-              ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            const element = document.getElementById("foundation-type")
+            if (element) {
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = elementPosition - 100
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+            }
           }, 100)
         }
         return
@@ -115,9 +130,12 @@ export default function ExpansionInfoPage() {
       if (expansionInfo.foundationType === "법인" && !expansionInfo.legalType) {
         toast.error("법인 유형을 선택해주세요.")
         setTimeout(() => {
-          document
-            .getElementById("legal-type")
-            ?.scrollIntoView({ behavior: "smooth", block: "center" })
+          const element = document.getElementById("legal-type")
+          if (element) {
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 100
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+          }
         }, 100)
         return
       }
@@ -133,15 +151,22 @@ export default function ExpansionInfoPage() {
         if (companyNameError) {
           setTimeout(() => {
             const element = document.getElementById("company-name")
-            element?.focus()
-            element?.scrollIntoView({ behavior: "smooth", block: "center" })
+            if (element) {
+              element.focus()
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = elementPosition - 100
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+            }
           }, 100)
         } else if (!expansionInfo.companyCategory) {
           toast.error("회사 구분을 선택해주세요.")
           setTimeout(() => {
-            document
-              .getElementById("company-category")
-              ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            const element = document.getElementById("company-category")
+            if (element) {
+              const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+              const offsetPosition = elementPosition - 100
+              window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+            }
           }, 100)
         }
         return
@@ -152,9 +177,12 @@ export default function ExpansionInfoPage() {
         setShowErrors(true)
         toast.error("기타 내용을 입력해주세요.")
         setTimeout(() => {
-          document
-            .getElementById("company-category")
-            ?.scrollIntoView({ behavior: "smooth", block: "center" })
+          const element = document.getElementById("company-category")
+          if (element) {
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+            const offsetPosition = elementPosition - 100
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+          }
         }, 100)
         return
       }

@@ -24,9 +24,26 @@ export default function PolicyNeedsPage() {
     if (policyNeeds.difficultiesRank.length !== 9) {
       toast.error("어려움 순위 9개 항목을 순서대로 선택해주세요")
       setTimeout(() => {
-        document
-          .getElementById("difficulties-rank")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("difficulties-rank")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (policyNeeds.difficultiesRank.includes("기타") && !policyNeeds.difficultiesOther?.trim()) {
+      toast.error("어려움 순서의 '기타' 항목 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("difficulties-rank")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -34,9 +51,26 @@ export default function PolicyNeedsPage() {
     if (policyNeeds.supportNeedsRank.length !== 8) {
       toast.error("지원 필요 순위 8개 항목을 순서대로 선택해주세요")
       setTimeout(() => {
-        document
-          .getElementById("support-needs-rank")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("support-needs-rank")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (policyNeeds.supportNeedsRank.includes("기타") && !policyNeeds.supportNeedsOther?.trim()) {
+      toast.error("지원 필요 순위의 '기타' 항목 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("support-needs-rank")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -44,9 +78,26 @@ export default function PolicyNeedsPage() {
     if (!policyNeeds.desiredSupport) {
       toast.error("희망하는 지원 사업을 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("desired-support")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("desired-support")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
+      }, 100)
+      return
+    }
+
+    // "기타" 선택 시 입력값 필수 체크
+    if (policyNeeds.desiredSupport === "기타" && !policyNeeds.desiredSupportOther?.trim()) {
+      toast.error("희망하는 지원 사업의 '기타' 항목 내용을 입력해주세요")
+      setTimeout(() => {
+        const element = document.getElementById("desired-support")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }
@@ -54,9 +105,12 @@ export default function PolicyNeedsPage() {
     if (!policyNeeds.awareness) {
       toast.error("KOHES 인지도를 선택해주세요.")
       setTimeout(() => {
-        document
-          .getElementById("awareness")
-          ?.scrollIntoView({ behavior: "smooth", block: "center" })
+        const element = document.getElementById("awareness")
+        if (element) {
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+        }
       }, 100)
       return
     }

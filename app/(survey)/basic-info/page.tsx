@@ -106,7 +106,14 @@ export default function BasicInfoPage() {
         const element = document.getElementById(firstErrorId)
         if (element) {
           element.focus()
-          element.scrollIntoView({ behavior: "smooth", block: "center" })
+          // 요소의 위치를 계산하여 헤더 높이만큼 오프셋을 적용
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+          const offsetPosition = elementPosition - 100 // 헤더(80px) + 여유공간(20px)
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          })
         }
       }, 100)
       return

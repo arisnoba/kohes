@@ -306,8 +306,8 @@ function OptionBar({ option, question }: OptionBarProps) {
   return (
     <div className="space-y-2 rounded-md border bg-background p-3">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-sm font-medium">{option.displayValue}</span>
-        <div className="flex items-baseline gap-2 text-xs text-muted-foreground">
+        <span className="text-sm font-semibold">{option.displayValue}</span>
+        <div className="flex items-baseline gap-2 text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">
             {NUMBER_FORMATTER.format(option.count)}건
           </span>
@@ -328,27 +328,31 @@ function OptionBar({ option, question }: OptionBarProps) {
       {/* 순위형 추가 정보 */}
       {isRankChoice && (
         <div className="space-y-2 border-t pt-2">
-          <div className="flex items-baseline gap-4 text-xs">
-            {option.totalScore !== undefined && (
-              <div>
-                <span className="text-muted-foreground">총점:</span>{" "}
-                <span className="font-semibold">{NUMBER_FORMATTER.format(option.totalScore)}</span>
-              </div>
-            )}
-            {option.averageRank !== undefined && (
-              <div>
-                <span className="text-muted-foreground">평균 순위:</span>{" "}
-                <span className="font-semibold text-amber-600">
-                  {option.averageRank.toFixed(1)}위
-                </span>
-              </div>
-            )}
-          </div>
-
           {/* 순위별 분포 히스토그램 */}
           {option.rankDistribution && option.rankDistribution.some((count) => count > 0) && (
-            <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground">순위별 선택 횟수</p>
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between gap-4 text-sm">
+                <p className="text-sm font-medium text-muted-foreground">순위별 선택 횟수</p>
+                <div className="flex items-baseline gap-4">
+                  {option.totalScore !== undefined && (
+                    <div>
+                      <span className="text-muted-foreground">총점:</span>{" "}
+                      <span className="font-semibold">
+                        {NUMBER_FORMATTER.format(option.totalScore)}
+                      </span>
+                    </div>
+                  )}
+                  {option.averageRank !== undefined && (
+                    <div>
+                      <span className="text-muted-foreground">평균:</span>{" "}
+                      <span className="font-semibold text-blue-600">
+                        {option.averageRank.toFixed(1)}위
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="flex gap-1">
                 {option.rankDistribution.map((count, index) => {
                   const maxCount = Math.max(...option.rankDistribution!)
@@ -357,13 +361,17 @@ function OptionBar({ option, question }: OptionBarProps) {
                     <div key={index} className="flex flex-1 flex-col items-center gap-1">
                       <div className="flex h-12 w-full items-end">
                         <div
-                          className="w-full rounded-t bg-amber-500/70 transition-all"
-                          style={{ height: `${heightPercent}%` }}
+                          className="w-full rounded-t bg-blue-500 transition-all"
+                          style={{
+                            height: `${heightPercent}%`,
+                            // Height가 높을수록 더 진한 색상이 되도록 opacity는 heightPercent에 직접 비례 (0.3 ~ 1.0)
+                            opacity: `${0.1 + 0.9 * (heightPercent / 100)}`,
+                          }}
                           title={`${index + 1}위: ${count}건`}
                         />
                       </div>
-                      <div className="text-[10px] text-muted-foreground">{index + 1}</div>
-                      <div className="text-[10px] font-medium">{count}</div>
+                      <div className="text-xs text-muted-foreground">{index + 1}위</div>
+                      <div className="text-xs font-medium">{count}건</div>
                     </div>
                   )
                 })}

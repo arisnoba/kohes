@@ -205,7 +205,7 @@ function DetailSection({ title, description, children }: DetailSectionProps) {
     <div className="bg-muted/10">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
         <h4 className="text-base font-bold text-foreground">{title}</h4>
-        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+        {description ? <p className="text-xs text-red-600">{description}</p> : null}
       </div>
       <Separator className="my-4" />
       <dl className="grid gap-4 sm:grid-cols-2">{children}</dl>

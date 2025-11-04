@@ -40,11 +40,7 @@ export default function PasswordManagementPage() {
     confirmPassword: "",
   })
 
-  const showDialog = (
-    type: "success" | "error" | "validation",
-    title: string,
-    message: string,
-  ) => {
+  const showDialog = (type: "success" | "error" | "validation", title: string, message: string) => {
     setDialogState({ open: true, type, title, message })
   }
 
@@ -102,7 +98,11 @@ export default function PasswordManagementPage() {
       }
 
       if (!success) {
-        showDialog("error", "현재 비밀번호가 올바르지 않습니다", "입력하신 현재 비밀번호가 일치하지 않습니다.")
+        showDialog(
+          "error",
+          "현재 비밀번호가 올바르지 않습니다",
+          "입력하신 현재 비밀번호가 일치하지 않습니다."
+        )
         return
       }
 
@@ -119,7 +119,7 @@ export default function PasswordManagementPage() {
       showDialog(
         "error",
         "변경 실패",
-        error instanceof Error ? error.message : "비밀번호 변경에 실패했습니다.",
+        error instanceof Error ? error.message : "비밀번호 변경에 실패했습니다."
       )
     } finally {
       setLoading(false)
@@ -135,140 +135,139 @@ export default function PasswordManagementPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="h-5 w-5" />
-            비밀번호 변경
-          </CardTitle>
-          <CardDescription>
-            보안을 위해 주기적으로 비밀번호를 변경하는 것을 권장합니다. 변경 후 ZIP 파일의 압축 해제 비밀번호도 동일하게 변경됩니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* 현재 비밀번호 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">현재 비밀번호 (처음 설정하는 경우 비워두세요)</label>
-            <div className="relative">
-              <Input
-                type={showPasswords.old ? "text" : "password"}
-                placeholder="현재 비밀번호 입력"
-                value={passwords.oldPassword}
-                onChange={(e) =>
-                  setPasswords((prev) => ({ ...prev, oldPassword: e.target.value }))
-                }
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full hover:bg-transparent"
-                onClick={() => togglePasswordVisibility("old")}
-                disabled={loading}
-              >
-                {showPasswords.old ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
+      <div className="flex flex-col lg:flex-row gap-4 w-full ">
+        {/* 보안 안내 */}
+        <Card className="border-red-200 bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-700">보안 지침</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-red-900">
+            <ul className="list-disc list-inside space-y-1">
+              <li>보안을 위해 주기적으로 비밀번호를 변경하는 것을 권장합니다.</li>
+              <li>ZIP 파일의 압축 해제 비밀번호도 동일하게 변경됩니다.</li>
+              <li>
+                비밀번호는 최소 8자 이상으로 영문 대소문자, 숫자, 특수문자를 조합하여 사용하세요.
+              </li>
+              <li>다른 사람과 비밀번호를 공유하지 마세요.</li>
+              <li>비밀번호 변경 시 관련 담당자에게 안전한 채널로 전달하세요.</li>
+            </ul>
+          </CardContent>
+        </Card>
 
-          {/* 새 비밀번호 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">새 비밀번호</label>
-            <div className="relative">
-              <Input
-                type={showPasswords.new ? "text" : "password"}
-                placeholder="새 비밀번호 입력 (최소 8자)"
-                value={passwords.newPassword}
-                onChange={(e) =>
-                  setPasswords((prev) => ({ ...prev, newPassword: e.target.value }))
-                }
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full hover:bg-transparent"
-                onClick={() => togglePasswordVisibility("new")}
-                disabled={loading}
-              >
-                {showPasswords.new ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* 비밀번호 확인 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">새 비밀번호 확인</label>
-            <div className="relative">
-              <Input
-                type={showPasswords.confirm ? "text" : "password"}
-                placeholder="새 비밀번호 다시 입력"
-                value={passwords.confirmPassword}
-                onChange={(e) =>
-                  setPasswords((prev) => ({ ...prev, confirmPassword: e.target.value }))
-                }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !loading) {
-                    handleChangePassword()
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 mb-3">
+              <Lock className="h-5 w-5" />
+              비밀번호 변경
+            </CardTitle>
+            <CardDescription>
+              변경 후 ZIP 파일의 압축 해제 비밀번호도 동일하게 변경됩니다.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* 현재 비밀번호 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">현재 비밀번호</label>
+              <div className="relative">
+                <Input
+                  type={showPasswords.old ? "text" : "password"}
+                  placeholder="현재 비밀번호 입력"
+                  value={passwords.oldPassword}
+                  onChange={(e) =>
+                    setPasswords((prev) => ({ ...prev, oldPassword: e.target.value }))
                   }
-                }}
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full hover:bg-transparent"
-                onClick={() => togglePasswordVisibility("confirm")}
-                disabled={loading}
-              >
-                {showPasswords.confirm ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
+                  disabled={loading}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full hover:bg-transparent"
+                  onClick={() => togglePasswordVisibility("old")}
+                  disabled={loading}
+                >
+                  {showPasswords.old ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
-          </div>
 
-          <Button onClick={handleChangePassword} disabled={loading} className="w-full">
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                변경 중...
-              </>
-            ) : (
-              <>
-                <Lock className="mr-2 h-4 w-4" />
-                비밀번호 변경
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+            {/* 새 비밀번호 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">새 비밀번호</label>
+              <div className="relative">
+                <Input
+                  type={showPasswords.new ? "text" : "password"}
+                  placeholder="새 비밀번호 입력 (최소 8자)"
+                  value={passwords.newPassword}
+                  onChange={(e) =>
+                    setPasswords((prev) => ({ ...prev, newPassword: e.target.value }))
+                  }
+                  disabled={loading}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full hover:bg-transparent"
+                  onClick={() => togglePasswordVisibility("new")}
+                  disabled={loading}
+                >
+                  {showPasswords.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
 
-      {/* 보안 안내 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>보안 지침</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>• 비밀번호는 최소 8자 이상으로 설정하세요.</p>
-          <p>• 영문 대소문자, 숫자, 특수문자를 조합하여 사용하세요.</p>
-          <p>• 다른 사람과 비밀번호를 공유하지 마세요.</p>
-          <p>• 비밀번호 변경 시 관련 담당자에게 안전한 채널로 전달하세요.</p>
-        </CardContent>
-      </Card>
+            {/* 비밀번호 확인 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">새 비밀번호 확인</label>
+              <div className="relative">
+                <Input
+                  type={showPasswords.confirm ? "text" : "password"}
+                  placeholder="새 비밀번호 다시 입력"
+                  value={passwords.confirmPassword}
+                  onChange={(e) =>
+                    setPasswords((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !loading) {
+                      handleChangePassword()
+                    }
+                  }}
+                  disabled={loading}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full hover:bg-transparent"
+                  onClick={() => togglePasswordVisibility("confirm")}
+                  disabled={loading}
+                >
+                  {showPasswords.confirm ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <Button onClick={handleChangePassword} disabled={loading} className="w-full h-10">
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  변경 중...
+                </>
+              ) : (
+                <>
+                  <Lock className="mr-2 h-4 w-4" />
+                  비밀번호 변경
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* 안내 Dialog (성공/에러/유효성 검사) */}
       <Dialog open={dialogState.open} onOpenChange={closeDialog}>
@@ -331,4 +330,3 @@ export default function PasswordManagementPage() {
     </div>
   )
 }
-

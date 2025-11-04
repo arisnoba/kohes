@@ -1,11 +1,12 @@
 "use client"
 
+import * as React from "react"
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from "recharts"
-import type { TooltipPayloadEntry } from "recharts/types/state/tooltipSlice"
 
 import {
   type ChartConfig,
   ChartContainer,
+  ChartLegendContent,
   ChartLegend,
   ChartTooltip,
   ChartTooltipContent,
@@ -71,12 +72,6 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
     return acc
   }, {})
 
-  const tooltipValueFormatter = (entry: TooltipPayloadEntry) => {
-    const value = typeof entry.value === "number" ? entry.value : Number(entry.value ?? 0)
-    const percentage = typeof entry.payload?.percentage === "number" ? entry.payload.percentage : 0
-    return `${NUMBER_FORMATTER.format(value)}건 (${percentage.toFixed(1)}%)`
-  }
-
   return (
     <div className="rounded-lg border bg-background p-6 shadow-sm">
       <h3 className="mb-4 text-lg font-semibold text-foreground flex items-start gap-2 justify-between">
@@ -90,13 +85,43 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={(tooltipProps) => (
-                <ChartTooltipContent
-                  {...tooltipProps}
-                  className="min-w-[180px]"
-                  valueFormatter={tooltipValueFormatter}
-                />
-              )}
+              content={(tooltipProps) => {
+                if (!tooltipProps || !tooltipProps.active || !tooltipProps.payload?.length) {
+                  return null
+                }
+                const item = tooltipProps.payload[0]
+                const numValue =
+                  typeof item.value === "number" ? item.value : Number(item.value ?? 0)
+                const payload = item.payload as { percentage?: number } | undefined
+                const percentage = payload?.percentage ?? 0
+                const categoryName = item.name ?? ""
+                // 색상은 item.color 또는 item.payload.fill에서 가져옴
+                const indicatorColor =
+                  item.color || (item.payload as { fill?: string })?.fill || colors[0]
+
+                return (
+                  <div className="inline-flex flex-col gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl">
+                    <div className="flex items-center gap-2">
+                      {/* 색상 인디케이터 */}
+                      <div
+                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                        style={{
+                          backgroundColor: indicatorColor,
+                        }}
+                      />
+                      {/* 텍스트 내용 */}
+                      <div className="flex items-center gap-2 leading-none">
+                        <span className="text-muted-foreground whitespace-nowrap">
+                          {categoryName}
+                        </span>
+                        <span className="font-medium tabular-nums text-foreground whitespace-nowrap">
+                          {NUMBER_FORMATTER.format(numValue)}건 ({percentage.toFixed(1)}%)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              }}
             />
             <Pie
               data={data}
@@ -115,14 +140,32 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     const cx = typeof viewBox.cx === "number" ? viewBox.cx : 0
                     const cy = typeof viewBox.cy === "number" ? viewBox.cy : 0
-                    // 숫자를 중앙에 정확히 배치
-                    // text-3xl의 높이를 고려하여 숫자 중심이 cy에 오도록 첫 번째 tspan의 y 조정
+                    // 숫자와 라벨을 정확히 중앙에 배치
+                    // dominantBaseline을 사용하여 수직 중앙 정렬
                     return (
-                      <text x={cx} y={cy} textAnchor="middle" className="fill-foreground">
-                        <tspan x={cx} y={cy - 10} className="fill-foreground text-3xl font-bold">
+                      <text
+                        x={cx}
+                        y={cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="fill-foreground"
+                      >
+                        <tspan
+                          x={cx}
+                          y={cy}
+                          dy="-8"
+                          textAnchor="middle"
+                          className="fill-foreground text-3xl font-bold"
+                        >
                           {NUMBER_FORMATTER.format(totalCount)}
                         </tspan>
-                        <tspan x={cx} y={cy + 10} className="fill-muted-foreground text-xs">
+                        <tspan
+                          x={cx}
+                          y={cy}
+                          dy="16"
+                          textAnchor="middle"
+                          className="fill-muted-foreground text-xs"
+                        >
                           총 응답
                         </tspan>
                       </text>
@@ -132,7 +175,14 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
                 }}
               />
             </Pie>
-            <ChartLegend verticalAlign="bottom" align="center" />
+            <ChartLegend
+              content={
+                <ChartLegendContent
+                  className="flex-wrap gap-2 *:justify-center items-center"
+                  payload={data}
+                />
+              }
+            />
           </PieChart>
         </ResponsiveContainer>
       </ChartContainer>

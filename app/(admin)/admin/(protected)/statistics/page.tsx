@@ -73,7 +73,7 @@ export default async function StatisticsPage() {
   const sections = groupBySection(questionSummaries)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold">문항별 통계</h2>
         <p className="text-sm text-muted-foreground">
@@ -301,6 +301,7 @@ interface OptionBarProps {
 function OptionBar({ option, question }: OptionBarProps) {
   const isRankChoice = question.questionType === "rank_choice"
   const percentage = option.percentage
+  const hideBarAndPercentage = isRankChoice && ["C1", "C2"].includes(question.questionId)
 
   return (
     <div className="space-y-2 rounded-md border bg-background p-3">
@@ -310,17 +311,19 @@ function OptionBar({ option, question }: OptionBarProps) {
           <span className="font-semibold text-foreground">
             {NUMBER_FORMATTER.format(option.count)}건
           </span>
-          <span>({formatPercentage(percentage)})</span>
+          {!hideBarAndPercentage && <span>({formatPercentage(percentage)})</span>}
         </div>
       </div>
 
       {/* 총점 막대 */}
-      <div className="h-2 overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full bg-primary transition-all"
-          style={{ width: `${Math.min(percentage, 100)}%` }}
-        />
-      </div>
+      {!hideBarAndPercentage && (
+        <div className="h-2 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+      )}
 
       {/* 순위형 추가 정보 */}
       {isRankChoice && (

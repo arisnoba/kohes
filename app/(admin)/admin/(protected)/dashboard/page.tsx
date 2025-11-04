@@ -81,31 +81,36 @@ export default async function DashboardPage() {
   const { statsByQuestion } = aggregation
   const totalResponses = totalCount
   const hasResponses = totalResponses > 0
-  const summaryLookup = new Map(
-    questionSummaries.map((summary) => [summary.questionId, summary])
-  )
-  const highlightCharts = ["A1", "B1", "C4"].map((questionId) => {
-    const summary = summaryLookup.get(questionId)
-    const stats = statsByQuestion.get(questionId)
-    if (!summary || !stats) {
-      return null
-    }
+  const summaryLookup = new Map(questionSummaries.map((summary) => [summary.questionId, summary]))
+  const highlightCharts = ["A1", "B1", "C4"]
+    .map((questionId) => {
+      const summary = summaryLookup.get(questionId)
+      const stats = statsByQuestion.get(questionId)
+      if (!summary || !stats) {
+        return null
+      }
 
-    const data = stats.optionStats.map((option) => ({
-      name: option.displayValue,
-      value: option.count,
-      percentage: Number.isFinite(option.percentage) ? option.percentage : 0,
-    }))
+      const data = stats.optionStats.map((option) => ({
+        name: option.displayValue,
+        value: option.count,
+        percentage: Number.isFinite(option.percentage) ? option.percentage : 0,
+      }))
 
-    return {
-      questionId,
-      title: `${summary.questionId}. ${summary.questionLabel}`,
-      data,
-    }
-  })
-  .filter((chart): chart is { questionId: string; title: string; data: Array<{ name: string; value: number; percentage: number }> } =>
-    chart !== null
-  )
+      return {
+        questionId,
+        title: `${summary.questionId}. ${summary.questionLabel}`,
+        data,
+      }
+    })
+    .filter(
+      (
+        chart
+      ): chart is {
+        questionId: string
+        title: string
+        data: Array<{ name: string; value: number; percentage: number }>
+      } => chart !== null
+    )
 
   return (
     <div className="space-y-6">
@@ -122,7 +127,7 @@ export default async function DashboardPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border bg-background p-4 shadow-sm">
           <p className="text-sm text-muted-foreground">총 설문 응답</p>
           <p className="mt-1 text-2xl font-bold text-foreground">
@@ -134,7 +139,7 @@ export default async function DashboardPage() {
             </p>
           ) : null}
         </div>
-      </div>
+      </div> */}
 
       <div className="overflow-hidden rounded-lg border bg-background shadow-sm">
         <Table>

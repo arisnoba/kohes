@@ -1,10 +1,10 @@
 "use client"
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from "recharts"
+import type { TooltipPayloadEntry } from "recharts/types/state/tooltipSlice"
 
 import {
   type ChartConfig,
-  type ChartTooltipContentProps,
   ChartContainer,
   ChartLegend,
   ChartTooltip,
@@ -15,6 +15,7 @@ interface ChartData {
   name: string
   value: number
   percentage: number
+  [key: string]: string | number
 }
 
 interface SimplePieChartProps {
@@ -70,9 +71,7 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
     return acc
   }, {})
 
-  const tooltipValueFormatter = (
-    entry: NonNullable<ChartTooltipContentProps["payload"]>[number]
-  ) => {
+  const tooltipValueFormatter = (entry: TooltipPayloadEntry) => {
     const value = typeof entry.value === "number" ? entry.value : Number(entry.value ?? 0)
     const percentage = typeof entry.payload?.percentage === "number" ? entry.payload.percentage : 0
     return `${NUMBER_FORMATTER.format(value)}건 (${percentage.toFixed(1)}%)`
@@ -80,21 +79,24 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
 
   return (
     <div className="rounded-lg border bg-background p-6 shadow-sm">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">{title}</h3>
+      <h3 className="mb-4 text-lg font-semibold text-foreground flex items-start gap-2 justify-between">
+        {title}{" "}
+        <span className="text-xs text-muted-foreground font-normal">
+          총 {NUMBER_FORMATTER.format(totalCount)}건의 응답
+        </span>
+      </h3>
       <ChartContainer config={chartConfig} className="mx-auto h-[280px] w-full max-w-[420px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={
-                (tooltipProps) => (
-                  <ChartTooltipContent
-                    {...tooltipProps}
-                    className="min-w-[180px]"
-                    valueFormatter={tooltipValueFormatter}
-                  />
-                )
-              }
+              content={(tooltipProps) => (
+                <ChartTooltipContent
+                  {...tooltipProps}
+                  className="min-w-[180px]"
+                  valueFormatter={tooltipValueFormatter}
+                />
+              )}
             />
             <Pie
               data={data}
@@ -103,27 +105,30 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
               innerRadius={60}
               strokeWidth={5}
               paddingAngle={2}
+              activeShape={false}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
               <Label
-                position="center"
                 content={({ viewBox }) => {
-                  if (!viewBox || typeof viewBox.cx !== "number" || typeof viewBox.cy !== "number") {
-                    return null
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    const cx = typeof viewBox.cx === "number" ? viewBox.cx : 0
+                    const cy = typeof viewBox.cy === "number" ? viewBox.cy : 0
+                    // 숫자를 중앙에 정확히 배치
+                    // text-3xl의 높이를 고려하여 숫자 중심이 cy에 오도록 첫 번째 tspan의 y 조정
+                    return (
+                      <text x={cx} y={cy} textAnchor="middle" className="fill-foreground">
+                        <tspan x={cx} y={cy - 10} className="fill-foreground text-3xl font-bold">
+                          {NUMBER_FORMATTER.format(totalCount)}
+                        </tspan>
+                        <tspan x={cx} y={cy + 10} className="fill-muted-foreground text-xs">
+                          총 응답
+                        </tspan>
+                      </text>
+                    )
                   }
-                  const { cx, cy } = viewBox
-                  return (
-                    <text x={cx} y={cy} textAnchor="middle" className="fill-foreground">
-                      <tspan className="text-lg font-semibold">
-                        {NUMBER_FORMATTER.format(totalCount)}건
-                      </tspan>
-                      <tspan x={cx} y={cy + 16} className="fill-muted-foreground text-xs">
-                        응답
-                      </tspan>
-                    </text>
-                  )
+                  return null
                 }}
               />
             </Pie>
@@ -131,9 +136,6 @@ export function SimplePieChart({ data, title, colors = DEFAULT_COLORS }: SimpleP
           </PieChart>
         </ResponsiveContainer>
       </ChartContainer>
-      <div className="mt-2 text-center text-xs text-muted-foreground">
-        총 {NUMBER_FORMATTER.format(totalCount)}건의 응답
-      </div>
     </div>
   )
 }

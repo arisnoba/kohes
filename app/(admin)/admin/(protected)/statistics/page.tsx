@@ -96,8 +96,8 @@ export default async function StatisticsPage() {
 
       {sections.map((section) => (
         <div key={section.sectionId} className="space-y-4">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold">{section.sectionTitle}</h3>
+          <div className="flex items-center gap-2 border-t-2 border-primary pt-6 ">
+            <h3 className="text-2xl font-semibold">{section.sectionTitle}</h3>
             <Badge variant="outline">{section.questions.length}개 문항</Badge>
           </div>
 
@@ -158,7 +158,13 @@ interface QuestionStatCardProps {
   totalCount: number
 }
 
-function QuestionStatCard({ question, stats, totalResponses, entries, totalCount }: QuestionStatCardProps) {
+function QuestionStatCard({
+  question,
+  stats,
+  totalResponses,
+  entries,
+  totalCount,
+}: QuestionStatCardProps) {
   const typeLabel = QUESTION_TYPE_LABELS[question.questionType] ?? question.questionType
   const hasStats = stats && stats.answeredCount > 0
   const isRankChoice = question.questionType === "rank_choice"
@@ -210,9 +216,9 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
           <div className="text-sm text-muted-foreground">아직 응답이 없습니다.</div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-baseline justify-between gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold">
+                <span className="text-2xl font-bold leading-tight">
                   {NUMBER_FORMATTER.format(stats.answeredCount)}건
                 </span>
                 <span className="text-sm text-muted-foreground">

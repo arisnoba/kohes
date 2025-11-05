@@ -134,9 +134,16 @@ export default function ProjectDetailsPage() {
       return
     }
 
-    // "기타" 선택 시 입력값 필수 체크
-    if (projectDetails.services.includes("기타") && !projectDetails.servicesOther?.trim()) {
-      toast.error("서비스 '기타' 내용을 입력해주세요")
+    // "기타" 또는 "그 외 국제의료사업" 선택 시 입력값 필수 체크
+    if (
+      (projectDetails.services.includes("기타") ||
+        projectDetails.services.includes("그 외 국제의료사업")) &&
+      !projectDetails.servicesOther?.trim()
+    ) {
+      const selectedOption = projectDetails.services.includes("그 외 국제의료사업")
+        ? "그 외 국제의료사업"
+        : "기타"
+      toast.error(`서비스 '${selectedOption}' 내용을 입력해주세요`)
       setTimeout(() => {
         const element = document.getElementById("services")
         if (element) {

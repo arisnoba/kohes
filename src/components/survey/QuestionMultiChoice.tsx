@@ -48,8 +48,11 @@ export function QuestionMultiChoice({
     setSelectedValues(newValues)
     onChange?.(newValues)
 
-    // 기타를 선택 해제하면 기타 입력 초기화
-    if (optionValue === "기타" && selectedValues.includes("기타")) {
+    // 기타 또는 그 외 국제의료사업을 선택 해제하면 기타 입력 초기화
+    if (
+      (optionValue === "기타" || optionValue === "그 외 국제의료사업") &&
+      selectedValues.includes(optionValue)
+    ) {
       setOtherText("")
       onOtherChange?.("")
     }
@@ -82,7 +85,7 @@ export function QuestionMultiChoice({
 
       <div className="space-y-2">
         {options.map((option) => {
-          const isOtherOption = option.value === "기타"
+          const isOtherOption = option.value === "기타" || option.value === "그 외 국제의료사업"
           const isSelected = selectedValues.includes(option.value)
 
           return (
@@ -108,14 +111,18 @@ export function QuestionMultiChoice({
                 </div>
               </button>
 
-              {/* 기타 입력 필드 - 버튼 외부 */}
+              {/* 기타 또는 그 외 국제의료사업 입력 필드 - 버튼 외부 */}
               {isOtherOption && isSelected && (
                 <div className="mt-2 rounded-lg border-2 border-blue-300 bg-blue-50 px-4 py-3">
                   <input
                     type="text"
                     value={otherText}
                     onChange={handleOtherChange}
-                    placeholder="기타 내용을 입력해주세요"
+                    placeholder={
+                      option.value === "그 외 국제의료사업"
+                        ? "그 외 국제의료사업 내용을 입력해주세요"
+                        : "기타 내용을 입력해주세요"
+                    }
                     className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
                   />
                 </div>

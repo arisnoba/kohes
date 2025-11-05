@@ -102,7 +102,7 @@ function extractRawValue(data: unknown, path: string[]): unknown {
 }
 
 /**
- * "기타" 옵션에 입력된 내용을 병합
+ * "기타" 또는 "그 외 국제의료사업" 옵션에 입력된 내용을 병합
  */
 function decorateWithOther(values: string[], otherValue: string | null): string[] {
   const trimmedOther = otherValue?.trim()
@@ -111,9 +111,16 @@ function decorateWithOther(values: string[], otherValue: string | null): string[
   if (!trimmedOther) return values
 
   let hasOtherOption = false
+  let hasInternationalMedicalOption = false
   const decorated = values.map((raw) => {
     const option = raw.trim()
     if (!option) return option
+
+    // "그 외 국제의료사업"인 경우
+    if (option === "그 외 국제의료사업") {
+      hasInternationalMedicalOption = true
+      return `그 외 국제의료사업 : ${trimmedOther}`
+    }
 
     // "기타"로 시작하거나, "기타"와 완전 일치하는 경우
     const normalized = option.replace(/\s*\(.*\)$/u, "").trim()
@@ -125,8 +132,13 @@ function decorateWithOther(values: string[], otherValue: string | null): string[
     return option
   })
 
+  // "그 외 국제의료사업" 옵션이 배열에 없었지만 otherValue는 있는 경우 추가
+  if (!hasInternationalMedicalOption && trimmedOther && values.includes("그 외 국제의료사업")) {
+    decorated.push(`그 외 국제의료사업 : ${trimmedOther}`)
+  }
+
   // "기타" 옵션이 배열에 없었지만 otherValue는 있는 경우 추가
-  if (!hasOtherOption && trimmedOther) {
+  if (!hasOtherOption && trimmedOther && values.includes("기타")) {
     decorated.push(`기타 : ${trimmedOther}`)
   }
 

@@ -125,7 +125,7 @@ const defaultSurveyData = createSurveyData()
 
 const mockSurveyData = createSurveyData({
   basicInfo: {
-    name: "홍길동",
+    name: "관리자 테스트",
     position: "팀장",
     tel: "02-1234-5678",
     mobile: "010-1234-5678",
@@ -158,7 +158,7 @@ const mockSurveyData = createSurveyData({
     hasEvidence: "네",
   },
   policyNeeds: {
-    difficultiesRank: ["자금 조달의 어려움", "해외 정보 부족"],
+    difficultiesRank: ["자금 조달의 어려움", "수익 예측의 불확실성"],
     difficultiesOther: "",
     supportNeedsRank: ["현지 문화, 법, 정책, 동향 등 유관 정보 지원", "컨설팅 지원"],
     supportNeedsOther: "",
@@ -171,10 +171,10 @@ const mockSurveyData = createSurveyData({
 
 type SurveyAction =
   | {
-    type: "update"
-    section: keyof SurveyData
-    payload: Partial<SurveyData[keyof SurveyData]>
-  }
+      type: "update"
+      section: keyof SurveyData
+      payload: Partial<SurveyData[keyof SurveyData]>
+    }
   | { type: "replace"; payload: SurveyData }
   | { type: "reset" }
 

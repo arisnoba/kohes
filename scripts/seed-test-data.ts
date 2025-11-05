@@ -383,14 +383,14 @@ function generateSurveyResponse() {
     "수익 예측의 불확실성",
     "현지(해외) 정보 부족",
     "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치",
-    "불안정한 현지(해외) 정치·법·제도",
+    "정권에 따라 변화하는 등 불안정한 현지(해외) 정치·법·제도",
     "의료 해외진출 관련 전문인력 부족",
     "현지(해외) 전문인력 고용의 어려움",
     "인허가, 면허 등 현지(해외) 법·제도 규제",
     "현지 네트워크 부재",
     "기타",
   ]
-  const difficultiesRank = shuffle(c1Options).slice(0, 9) // 최대 9개 선택
+  const difficultiesRank = randomElements(c1Options, 1, 9) // 1~9개 랜덤 선택
 
   const c2Options = [
     "현지 문화·법·정책·동향 등 유관 정보 지원",
@@ -403,7 +403,7 @@ function generateSurveyResponse() {
     "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
     "기타",
   ]
-  const supportNeedsRank = shuffle(c2Options).slice(0, 8) // 최대 8개 선택
+  const supportNeedsRank = randomElements(c2Options, 1, 8) // 1~8개 랜덤 선택
 
   const desiredSupport = randomElement([
     "진출 기관 및 예정 기관 간의 네트워크 구축",

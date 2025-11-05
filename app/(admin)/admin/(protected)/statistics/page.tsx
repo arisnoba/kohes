@@ -210,13 +210,29 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
           <div className="text-sm text-muted-foreground">아직 응답이 없습니다.</div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold">
-                {NUMBER_FORMATTER.format(stats.answeredCount)}건
-              </span>
-              <span className="text-sm text-muted-foreground">
-                / {NUMBER_FORMATTER.format(totalResponses)}건
-              </span>
+            <div className="flex items-baseline justify-between gap-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold">
+                  {NUMBER_FORMATTER.format(stats.answeredCount)}건
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  / {NUMBER_FORMATTER.format(totalResponses)}건
+                </span>
+              </div>
+              {/* 전체보기 버튼 */}
+              {(question.questionId === "A2_org_name" ||
+                question.questionId === "A3_company_name" ||
+                question.questionId === "B2" ||
+                question.questionId === "B5_1_1" ||
+                question.questionId === "C3" ||
+                question.questionId === "C5") && (
+                <QuestionDataDrawer
+                  entries={entries}
+                  questionId={question.questionId}
+                  questionLabel={question.questionLabel}
+                  totalCount={totalCount}
+                />
+              )}
             </div>
 
             {/* Choice questions: show bar chart (B2는 text지만 choice처럼 표시) */}
@@ -226,25 +242,10 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
               question.questionId === "B2") &&
               stats.optionStats.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    {/* B2 문항인 경우 안내 텍스트 표시 */}
-                    {question.questionId === "B2" && (
-                      <p className="text-xs font-medium text-muted-foreground">최다 국가 상위 5개</p>
-                    )}
-                    {/* 특정 문항에 drawer 버튼 표시 */}
-                    {(question.questionId === "A2_org_name" ||
-                      question.questionId === "A3_company_name" ||
-                      question.questionId === "B2" ||
-                      question.questionId === "B5_1_1" ||
-                      question.questionId === "C5") && (
-                      <QuestionDataDrawer
-                        entries={entries}
-                        questionId={question.questionId}
-                        questionLabel={question.questionLabel}
-                        totalCount={totalCount}
-                      />
-                    )}
-                  </div>
+                  {/* B2 문항인 경우 안내 텍스트 표시 */}
+                  {question.questionId === "B2" && (
+                    <p className="text-xs font-medium text-muted-foreground">최다 국가 상위 5개</p>
+                  )}
                   {/* B2 문항인 경우 상위 5개만 표시 */}
                   {(question.questionId === "B2"
                     ? stats.optionStats.slice(0, 5)
@@ -260,23 +261,6 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
               question.questionId !== "B2" &&
               stats.sampleValues.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    {/* <p className="text-xs font-medium text-muted-foreground">응답 예시</p> */}
-                    {/* 특정 문항에 drawer 버튼 표시 */}
-                    {(question.questionId === "A2_org_name" ||
-                      question.questionId === "A3_company_name" ||
-                      question.questionId === "B2" ||
-                      question.questionId === "B5_1_1" ||
-                      question.questionId === "C3" ||
-                      question.questionId === "C5") && (
-                      <QuestionDataDrawer
-                        entries={entries}
-                        questionId={question.questionId}
-                        questionLabel={question.questionLabel}
-                        totalCount={totalCount}
-                      />
-                    )}
-                  </div>
                   <div className="space-y-1 rounded-md bg-muted/40 p-3">
                     {stats.sampleValues.map((sample, index) => (
                       <div key={`${sample}-${index}`} className="text-xs text-muted-foreground">

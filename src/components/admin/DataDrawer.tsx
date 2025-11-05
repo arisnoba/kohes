@@ -25,6 +25,7 @@ interface QuestionDataDrawerProps {
   questionId: string
   questionLabel: string
   triggerLabel?: string
+  totalCount?: number
 }
 
 /**
@@ -35,8 +36,10 @@ export function QuestionDataDrawer({
   questionId,
   questionLabel,
   triggerLabel = "전체 보기",
+  totalCount,
 }: QuestionDataDrawerProps) {
   const [open, setOpen] = React.useState(false)
+  const responseCount = totalCount ?? entries.length
 
   // 특정 문항의 데이터 추출
   const { dataItems, countryStats } = React.useMemo(() => {
@@ -193,7 +196,7 @@ export function QuestionDataDrawer({
                   <div key={item.index} className="rounded-lg border bg-background p-3 space-y-1">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-muted-foreground">
-                        {item.index + 1}번 응답
+                        {responseCount - item.index}번 응답
                       </span>
                     </div>
                     <div className="text-sm text-foreground whitespace-pre-wrap break-words">

@@ -111,6 +111,7 @@ export default async function StatisticsPage() {
                   stats={stats}
                   totalResponses={totalCount}
                   entries={entries}
+                  totalCount={totalCount}
                 />
               )
             })}
@@ -154,9 +155,10 @@ interface QuestionStatCardProps {
   stats?: AggregatedQuestionStats
   totalResponses: number
   entries: Awaited<ReturnType<typeof fetchSurveyResponsePayloads>>["entries"]
+  totalCount: number
 }
 
-function QuestionStatCard({ question, stats, totalResponses, entries }: QuestionStatCardProps) {
+function QuestionStatCard({ question, stats, totalResponses, entries, totalCount }: QuestionStatCardProps) {
   const typeLabel = QUESTION_TYPE_LABELS[question.questionType] ?? question.questionType
   const hasStats = stats && stats.answeredCount > 0
   const isRankChoice = question.questionType === "rank_choice"
@@ -234,6 +236,7 @@ function QuestionStatCard({ question, stats, totalResponses, entries }: Question
                         entries={entries}
                         questionId={question.questionId}
                         questionLabel={question.questionLabel}
+                        totalCount={totalCount}
                       />
                     )}
                   </div>
@@ -260,6 +263,7 @@ function QuestionStatCard({ question, stats, totalResponses, entries }: Question
                         entries={entries}
                         questionId={question.questionId}
                         questionLabel={question.questionLabel}
+                        totalCount={totalCount}
                       />
                     )}
                   </div>

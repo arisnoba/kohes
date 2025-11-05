@@ -219,13 +219,18 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
               </span>
             </div>
 
-            {/* Choice questions: show bar chart */}
+            {/* Choice questions: show bar chart (B2는 text지만 choice처럼 표시) */}
             {(question.questionType === "single_choice" ||
               question.questionType === "multi_choice" ||
-              question.questionType === "rank_choice") &&
+              question.questionType === "rank_choice" ||
+              question.questionId === "B2") &&
               stats.optionStats.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-end">
+                  <div className="flex items-center justify-between">
+                    {/* B2 문항인 경우 안내 텍스트 표시 */}
+                    {question.questionId === "B2" && (
+                      <p className="text-xs font-medium text-muted-foreground">최다 국가 상위 5개</p>
+                    )}
                     {/* 특정 문항에 drawer 버튼 표시 */}
                     {(question.questionId === "A2_org_name" ||
                       question.questionId === "A3_company_name" ||
@@ -240,14 +245,19 @@ function QuestionStatCard({ question, stats, totalResponses, entries, totalCount
                       />
                     )}
                   </div>
-                  {stats.optionStats.map((option) => (
+                  {/* B2 문항인 경우 상위 5개만 표시 */}
+                  {(question.questionId === "B2"
+                    ? stats.optionStats.slice(0, 5)
+                    : stats.optionStats
+                  ).map((option) => (
                     <OptionBar key={option.value} option={option} question={question} />
                   ))}
                 </div>
               )}
 
-            {/* Text/Textarea questions: show samples */}
+            {/* Text/Textarea questions: show samples (B2 제외 - 위에서 그래프로 표시) */}
             {(question.questionType === "text" || question.questionType === "textarea") &&
+              question.questionId !== "B2" &&
               stats.sampleValues.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { AdminResponseSummary } from "@/lib/supabase/responses"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { ChevronDown, ChevronRight } from "lucide-react"
@@ -19,14 +19,34 @@ const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 interface ResponseRowProps {
   response: AdminResponseSummary
   order: number
+  highlightId?: string
 }
 
-export function ResponseRow({ response, order }: ResponseRowProps) {
+export function ResponseRow({ response, order, highlightId }: ResponseRowProps) {
   const [expanded, setExpanded] = useState(false)
+  const rowRef = useRef<HTMLTableRowElement>(null)
+  const isHighlighted = highlightId === response.id
+
+  // 하이라이트된 응답이면 자동으로 펼치고 스크롤
+  useEffect(() => {
+    if (isHighlighted) {
+      setExpanded(true)
+      // 약간의 지연 후 스크롤 (DOM 렌더링 대기)
+      setTimeout(() => {
+        rowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 100)
+    }
+  }, [isHighlighted])
 
   return (
     <>
-      <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => setExpanded(!expanded)}>
+      <TableRow
+        ref={rowRef}
+        className={`cursor-pointer hover:bg-muted/50 transition-colors ${
+          isHighlighted ? "bg-blue-50" : ""
+        }`}
+        onClick={() => setExpanded(!expanded)}
+      >
         <TableCell className="text-center text-xs text-muted-foreground">
           {NUMBER_FORMATTER.format(order)}
         </TableCell>

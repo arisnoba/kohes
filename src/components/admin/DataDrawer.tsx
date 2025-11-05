@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -43,7 +44,7 @@ export function QuestionDataDrawer({
 
   // 특정 문항의 데이터 추출
   const { dataItems, countryStats } = React.useMemo(() => {
-    const items: Array<{ index: number; value: string }> = []
+    const items: Array<{ index: number; value: string; id: string }> = []
     const countryCounts = new Map<string, number>()
 
     entries.forEach((entry, index) => {
@@ -116,7 +117,7 @@ export function QuestionDataDrawer({
       if (typeof value === "string") {
         const trimmed = value.trim()
         if (trimmed) {
-          items.push({ index, value: trimmed })
+          items.push({ index, value: trimmed, id: entry.id })
         }
       }
     })
@@ -193,16 +194,21 @@ export function QuestionDataDrawer({
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">전체 응답 목록</h3>
                 {dataItems.map((item) => (
-                  <div key={item.index} className="rounded-lg border bg-background p-3 space-y-1">
+                  <Link
+                    key={item.index}
+                    href={`/admin/responses?highlight=${item.id}`}
+                    className="block rounded-lg border bg-background p-3 space-y-1 transition-colors hover:bg-muted/50 hover:border-primary/50"
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-muted-foreground">
                         {responseCount - item.index}번 응답
                       </span>
+                      <span className="text-xs text-primary">→ 상세보기</span>
                     </div>
                     <div className="text-sm text-foreground whitespace-pre-wrap break-words">
                       {item.value}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

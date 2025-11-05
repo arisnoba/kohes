@@ -142,8 +142,11 @@ function accumulateQuestionStats(
   mapping: FieldMapping
 ): AggregatedQuestionStats {
   let answeredCount = 0
+  // B2(해외진출 대상국)는 텍스트지만 choice처럼 집계
   const isChoiceQuestion =
-    question.questionType === "multi_choice" || question.questionType === "rank_choice"
+    question.questionType === "multi_choice" ||
+    question.questionType === "rank_choice" ||
+    question.questionId === "B2"
   const counts = new Map<
     string,
     { count: number; display: string; totalScore?: number; rankSum?: number; rankDist?: number[] }
@@ -168,8 +171,25 @@ function accumulateQuestionStats(
     }
 
     if (isChoiceQuestion) {
-      const values = normalizeToArray(raw)
-      if (!values.length) continue
+      // B2는 배열 또는 쉼표로 구분된 문자열로 저장될 수 있음
+      let values: string[] = []
+      if (question.questionId === "B2") {
+        // DEBUG: B2 raw 값 확인
+        console.log("[B2 DEBUG] raw:", raw, "type:", typeof raw)
+        if (Array.isArray(raw)) {
+          values = raw.filter((v): v is string => typeof v === "string" && v.trim().length > 0)
+        } else if (typeof raw === "string" && raw.trim().length > 0) {
+          values = raw
+            .split(",")
+            .map((v) => v.trim())
+            .filter((v) => v.length > 0)
+        }
+        console.log("[B2 DEBUG] parsed values:", values)
+      } else {
+        values = normalizeToArray(raw)
+      }
+
+      if (!values || !values.length) continue
 
       answeredCount += 1
 

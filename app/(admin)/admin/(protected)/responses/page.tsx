@@ -31,6 +31,7 @@ interface ResponsesPageProps {
 
 export default async function ResponsesPage({ searchParams }: ResponsesPageProps) {
   const currentPage = parsePage(searchParams?.page)
+  const highlightId = typeof searchParams?.highlight === 'string' ? searchParams.highlight : undefined
   const { responses, totalCount, page, pageSize, error } = await fetchSurveyResponsesPage({
     page: currentPage,
     pageSize: PAGE_SIZE,
@@ -104,6 +105,7 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
                   key={response.id}
                   response={response}
                   order={Math.max(baseNumber - index, 1)}
+                  highlightId={highlightId}
                 />
               ))
             ) : (

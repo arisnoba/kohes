@@ -255,7 +255,7 @@ export default function PolicyNeedsPage() {
 
         <QuestionSingleChoice
           id="awareness"
-          label="KOHES(한국보건산업진흥원) 인지도를 선택해주세요."
+          label="정부는 의료 해외진출에 대한 정보 등을 공유하기 위해 의료해외진출 종합정보포털(KOHES)을 운영하고 있습니다. KOHES를 방문하거나 들어본 적이 있으십니까?"
           required={true}
           options={[
             { value: "방문한 적 있다.", label: "방문한 적 있다." },
@@ -271,7 +271,7 @@ export default function PolicyNeedsPage() {
 
         <QuestionTextarea
           id="additional-comments"
-          label="추가로 의견을 남겨주세요."
+          label="의료 해외진출을 활성화하기 위해 정부에 원하는 지원사항이 있으면 추가로 의견을 남겨주세요."
           placeholder="자유롭게 의견을 작성해주세요."
           value={policyNeeds.additionalComments}
           onChange={(value) => updateSection("policyNeeds", { additionalComments: value })}

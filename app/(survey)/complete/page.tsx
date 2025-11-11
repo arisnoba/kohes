@@ -120,7 +120,7 @@ export default function CompletePage() {
             </div>
             <p className="text-sm text-gray-600">
               필수 항목을 모두 완료하신 경우, 스타벅스 2만원 상품권이 입력하신{" "}
-              <span className="font-bold text-green-600">연락처(휴대전화 번호)로</span> 발송됩니다.
+              <span className="font-bold text-green-600">연락처(휴대전화 번호)</span>로 발송됩니다.
             </p>
             <p className="mt-2 text-xs text-gray-500">※ 예산 소진 시 조기 마감될 수 있습니다</p>
           </div>
@@ -133,7 +133,7 @@ export default function CompletePage() {
               <h3 className="font-semibold text-gray-900">문의하기</h3>
             </div>
             <p className="text-sm text-gray-600">
-              설문 관련 문의사항이 있으시면 아래로 연락해주세요.
+              설문 관련 문의사항이 있으시면 아래로 연락주시기 바랍니다.
             </p>
             <a
               href="mailto:kohes@example.com"

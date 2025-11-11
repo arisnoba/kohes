@@ -284,7 +284,7 @@ export default function ExpansionInfoPage() {
             {expansionInfo.foundationType === "법인" && (
               <QuestionSingleChoice
                 id="legal-type"
-                label="법인 유형"
+                label="법인 유형을 선택해 주세요."
                 required={true}
                 options={[
                   { value: "학교법인", label: "학교법인" },
@@ -311,7 +311,7 @@ export default function ExpansionInfoPage() {
 
             <QuestionText
               id="company-name"
-              label="회사명"
+              label="회사명을 입력해 주세요."
               placeholder="예: K-MSO"
               required={true}
               value={expansionInfo.companyName}
@@ -324,7 +324,7 @@ export default function ExpansionInfoPage() {
 
             <QuestionSingleChoice
               id="company-category"
-              label="회사 구분"
+              label="회사 유형을 선택해 주세요."
               required={true}
               options={[
                 { value: "MSO(병원경영지원회사)", label: "MSO(병원경영지원회사)" },

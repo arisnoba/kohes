@@ -357,25 +357,31 @@ function OptionBar({ option, question }: OptionBarProps) {
                 </div>
               </div>
 
-              <div className="flex gap-1">
+              <div className="space-y-2">
                 {option.rankDistribution.map((count, index) => {
                   const maxCount = Math.max(...option.rankDistribution!)
-                  const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0
+                  const widthPercent = maxCount > 0 ? (count / maxCount) * 100 : 0
                   return (
-                    <div key={index} className="flex flex-1 flex-col items-center gap-1">
-                      <div className="flex h-12 w-full items-end">
-                        <div
-                          className="w-full rounded-t bg-blue-500 transition-all"
-                          style={{
-                            height: `${heightPercent}%`,
-                            // Height가 높을수록 더 진한 색상이 되도록 opacity는 heightPercent에 직접 비례 (0.3 ~ 1.0)
-                            opacity: `${0.1 + 0.9 * (heightPercent / 100)}`,
-                          }}
-                          title={`${index + 1}위: ${count}건`}
-                        />
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-8 shrink-0 text-xs text-muted-foreground">
+                        {index + 1}위
                       </div>
-                      <div className="text-xs text-muted-foreground">{index + 1}위</div>
-                      <div className="text-xs font-medium">{count}건</div>
+                      <div className="flex flex-1 items-center gap-2">
+                        <div className="flex h-8 flex-1 overflow-hidden rounded bg-muted">
+                          <div
+                            className="h-full rounded-l bg-blue-500 transition-all"
+                            style={{
+                              width: `${widthPercent}%`,
+                              // Width가 높을수록 더 진한 색상이 되도록 opacity는 widthPercent에 직접 비례 (0.1 ~ 1.0)
+                              opacity: `${0.1 + 0.9 * (widthPercent / 100)}`,
+                            }}
+                            title={`${index + 1}위: ${count}건`}
+                          />
+                        </div>
+                        <div className="w-12 shrink-0 text-right text-xs font-medium">
+                          {count}건
+                        </div>
+                      </div>
                     </div>
                   )
                 })}

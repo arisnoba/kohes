@@ -390,7 +390,7 @@ function generateSurveyResponse() {
     "현지 네트워크 부재",
     "기타",
   ]
-  const difficultiesRank = randomElements(c1Options, 1, 9) // 1~9개 랜덤 선택
+  const difficultiesRank = randomElements(c1Options, 1, 3) // 1~3개 랜덤 선택
 
   const c2Options = [
     "현지 문화·법·정책·동향 등 유관 정보 지원",
@@ -403,7 +403,7 @@ function generateSurveyResponse() {
     "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
     "기타",
   ]
-  const supportNeedsRank = randomElements(c2Options, 1, 8) // 1~8개 랜덤 선택
+  const supportNeedsRank = randomElements(c2Options, 1, 3) // 1~3개 랜덤 선택
 
   const desiredSupport = randomElement([
     "진출 기관 및 예정 기관 간의 네트워크 구축",

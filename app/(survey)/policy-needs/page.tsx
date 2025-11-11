@@ -26,8 +26,8 @@ export default function PolicyNeedsPage() {
       return
     }
 
-    if (policyNeeds.difficultiesRank.length === 0) {
-      toast.error("어려움 순위를 하나 이상 선택해주세요")
+    if (policyNeeds.difficultiesRank.length !== 3) {
+      toast.error("어려움 순위를 정확히 3개 선택해주세요")
       setTimeout(() => {
         const element = document.getElementById("difficulties-rank")
         if (element) {
@@ -41,7 +41,7 @@ export default function PolicyNeedsPage() {
 
     // "기타" 선택 시 입력값 필수 체크
     if (policyNeeds.difficultiesRank.includes("기타") && !policyNeeds.difficultiesOther?.trim()) {
-      toast.error("어려움 순서의 '기타' 항목 내용을 입력해주세요")
+      toast.error("어려움 순서의 '기타' 항목 내용을 입력해주세요.")
       setTimeout(() => {
         const element = document.getElementById("difficulties-rank")
         if (element) {
@@ -53,8 +53,8 @@ export default function PolicyNeedsPage() {
       return
     }
 
-    if (policyNeeds.supportNeedsRank.length === 0) {
-      toast.error("지원 필요 순위를 하나 이상 선택해주세요")
+    if (policyNeeds.supportNeedsRank.length !== 3) {
+      toast.error("지원 필요 순위를 3개 선택해주세요.")
       setTimeout(() => {
         const element = document.getElementById("support-needs-rank")
         if (element) {
@@ -68,7 +68,7 @@ export default function PolicyNeedsPage() {
 
     // "기타" 선택 시 입력값 필수 체크
     if (policyNeeds.supportNeedsRank.includes("기타") && !policyNeeds.supportNeedsOther?.trim()) {
-      toast.error("지원 필요 순위의 '기타' 항목 내용을 입력해주세요")
+      toast.error("지원 필요 순위의 '기타' 항목 내용을 입력해주세요.")
       setTimeout(() => {
         const element = document.getElementById("support-needs-rank")
         if (element) {
@@ -95,7 +95,7 @@ export default function PolicyNeedsPage() {
 
     // "기타" 선택 시 입력값 필수 체크
     if (policyNeeds.desiredSupport === "기타" && !policyNeeds.desiredSupportOther?.trim()) {
-      toast.error("희망하는 지원 사업의 '기타' 항목 내용을 입력해주세요")
+      toast.error("희망하는 지원 사업의 '기타' 항목 내용을 입력해주세요.")
       setTimeout(() => {
         const element = document.getElementById("desired-support")
         if (element) {
@@ -140,7 +140,8 @@ export default function PolicyNeedsPage() {
           id="difficulties-rank"
           label="의료 해외진출 사업 추진 시, 가장 큰 걸림돌이 되는 요인을 순서대로 선택해 주세요."
           required={true}
-          maxRanks={9}
+          maxRanks={3}
+          minRequired={3}
           options={[
             { value: "자금 조달의 어려움", label: "자금 조달의 어려움" },
             { value: "수익 예측의 불확실성", label: "수익 예측의 불확실성" },
@@ -178,7 +179,8 @@ export default function PolicyNeedsPage() {
           id="support-needs-rank"
           label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해 주세요."
           required={true}
-          maxRanks={8}
+          maxRanks={3}
+          minRequired={3}
           options={[
             {
               value: "현지 문화, 법, 정책, 동향 등 유관 정보 지원",

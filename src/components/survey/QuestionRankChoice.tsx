@@ -7,7 +7,8 @@ interface QuestionRankChoiceProps {
   label: string
   options: { value: string; label: string }[]
   required?: boolean
-  maxRanks: number // 선택할 순위 개수 (예: 9, 8)
+  maxRanks: number // 최대 선택 가능한 순위 개수
+  minRequired?: number // 필수로 선택해야 하는 최소 개수 (기본값: 3)
   value?: string[]
   onChange?: (value: string[]) => void
   otherValue?: string
@@ -20,6 +21,7 @@ export function QuestionRankChoice({
   options,
   required = false,
   maxRanks,
+  minRequired = 3,
   value = [],
   onChange,
   otherValue = "",
@@ -27,6 +29,9 @@ export function QuestionRankChoice({
 }: QuestionRankChoiceProps) {
   const [rankedItems, setRankedItems] = useState<string[]>(value)
   const [otherText, setOtherText] = useState(otherValue)
+
+  // C1 (어려움) 또는 C2 (지원) 구분
+  const isC1 = id === "difficulties-rank" || label.includes("걸림돌") || label.includes("어려움")
 
   useEffect(() => {
     setRankedItems(value)
@@ -85,19 +90,16 @@ export function QuestionRankChoice({
           {label}
           {required && <sup className="ml-0.5 text-red-500">*</sup>}
         </label>
-        <p className="mt-2 text-sm text-gray-500">
-          <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-400">
-            1순위가 가장 큰 어려움, {maxRanks}순위가 가장 작은 어려움
-          </span>
-          <br />
-          최대 {maxRanks}개 항목을 순서대로 선택 해주세요.
+        <p className="mt-2 text-sm text-red-600">
+          {isC1 ? `1순위가 가장 큰 어려움` : `1순위가 가장 필요한 정부 지원`}
+          <br /> 최대 {maxRanks}개 항목을 순서대로 선택해 주세요.
         </p>
       </div>
 
       {/* 옵션 선택 */}
       <div className="space-y-2">
         <p className="mt-1 text-sm font-bold text-blue-600">
-          현재 {rankedItems.length}/{maxRanks}개 선택됨
+          현재 {rankedItems.length}개 선택됨 ({minRequired}개 필수)
         </p>
         {options.map((option) => {
           const selected = isSelected(option.value)

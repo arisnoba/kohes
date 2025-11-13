@@ -191,6 +191,8 @@ export default function ExportsPage() {
             <CardTitle>PII 데이터 내보내기</CardTitle>
             <CardDescription>
               개인식별정보(성명, 연락처, 이메일, 주소)만 포함합니다. 리워드 발송 시 사용하세요.
+              <br />
+              개인정보 수집에 동의하지 않은 응답은 자동으로 제외됩니다.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 sm:flex-row">

@@ -83,8 +83,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "데이터를 불러올 수 없습니다." }, { status: 500 })
     }
 
+    // PII 데이터 내보내기 시 개인정보 비동의한 응답 제외
+    let filteredEntries = entries
+    if (type === "pii") {
+      filteredEntries = entries.filter((entry) => {
+        const name = entry.piiData?.name
+        return name !== "개인정보 비동의"
+      })
+    }
+
     // 순서대로 정렬된 데이터 생성 (한글 헤더 포함)
-    const exportData = buildOrderedExportData(entries, type)
+    const exportData = buildOrderedExportData(filteredEntries, type)
 
     // 파일 내용 생성
     let fileContent: string

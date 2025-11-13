@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -194,21 +193,19 @@ export function QuestionDataDrawer({
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">전체 응답 목록</h3>
                 {dataItems.map((item) => (
-                  <Link
+                  <div
                     key={item.index}
-                    href={`/admin/responses?highlight=${item.id}`}
-                    className="block rounded-lg border bg-background p-3 space-y-1 transition-colors hover:bg-muted/50 hover:border-primary/50"
+                    className="rounded-lg border bg-background p-3 space-y-1"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-muted-foreground">
                         {responseCount - item.index}번 응답
                       </span>
-                      <span className="text-xs text-primary">→ 상세보기</span>
                     </div>
                     <div className="text-sm text-foreground whitespace-pre-wrap break-words">
                       {item.value}
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}

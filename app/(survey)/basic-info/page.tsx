@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { Info, ChevronDown } from "lucide-react"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
 import { QuestionText } from "@/components/survey/QuestionText"
@@ -27,11 +28,9 @@ export default function BasicInfoPage() {
   const { basicInfo } = data
   const [showErrors, setShowErrors] = useState(false)
 
-  // 개인정보 동의 상태
-  const [consent1, setConsent1] = useState<boolean | null>(null) // 수집·이용 동의
-  const [consent2, setConsent2] = useState<boolean | null>(null) // 제3자 제공 동의
-  const [isConsent1Open, setIsConsent1Open] = useState(false)
-  const [isConsent2Open, setIsConsent2Open] = useState(false)
+  // 개인정보 수집·이용 및 제3자 제공 통합 동의 상태
+  const [consent, setConsent] = useState<boolean | null>(null)
+  const [isConsentOpen, setIsConsentOpen] = useState(true)
 
   const handleChange = (field: keyof typeof basicInfo, value: string) => {
     updateSection("basicInfo", { [field]: value })
@@ -86,16 +85,14 @@ export default function BasicInfoPage() {
       return
     }
 
-    // 개인정보 동의 검증 (두 항목 모두 선택 필수)
-    if (consent1 === null || consent2 === null) {
-      alert(
-        "개인정보 수집 및 이용 동의와 제3자 제공 동의를 모두 선택해주셔야 설문을 진행하실 수 있습니다."
-      )
+    // 개인정보 동의 검증
+    if (consent === null) {
+      toast.error("개인정보 수집·이용 및 제3자 제공 동의를 선택해주세요.")
       return
     }
 
-    // 둘 중 하나라도 비동의 시 개인정보 공란으로 설정
-    if (consent1 === false || consent2 === false) {
+    // 비동의 시 개인정보 공란으로 설정
+    if (consent === false) {
       updateSection("basicInfo", {
         name: "개인정보 비동의",
         position: "",
@@ -171,60 +168,78 @@ export default function BasicInfoPage() {
           <p className="mt-2 text-sm text-gray-500">귀하의 기본 정보를 입력해주세요</p>
         </div>
 
-        {/* 개인정보 수집 및 이용 동의 */}
+        {/* 개인정보 수집·이용 및 제3자 제공 통합 동의 */}
         <div className="space-y-4">
           <p className="text-base leading-relaxed text-gray-700">
             본 조사는 조사 참여자에 대한 답례품 발송, 응답 내용 검증을 위해 아래와 같이 개인정보를
             수집하고자 합니다. 제공하신 개인정보는 목적 외에 사용하지 않으며, 이용 기간 이후 즉시
             파기할 예정입니다.
           </p>
-          <div className="flex items-start gap-2 rounded-lg bg-blue-50 p-4">
+          <div className="flex items-start gap-2">
             <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
             <p className="text-sm text-blue-900">
               입력하신 정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 통계법에 따라 비밀이
               보장됩니다.
             </p>
           </div>
-          {/* 첫 번째 동의: 개인정보 수집 및 이용 */}
+
+          {/* 통합 동의서 */}
           <div className="space-y-3">
             <Collapsible
-              open={isConsent1Open}
-              onOpenChange={setIsConsent1Open}
-              className="bg-gray-50 rounded-lg border border-gray-200"
+              open={isConsentOpen}
+              onOpenChange={setIsConsentOpen}
+              className="rounded-lg border border-gray-200 bg-white"
             >
               <div className="flex items-start justify-between gap-2">
                 <CollapsibleTrigger asChild>
                   <button
                     type="button"
-                    className="flex flex-1 items-start justify-between gap-2 text-left p-4"
-                    aria-label="개인정보 수집 및 이용 동의서 펼치기/접기"
+                    className="flex flex-1 items-start justify-between gap-2 p-4 text-left"
+                    aria-label="개인정보 수집·이용 및 제3자 제공 동의서 펼치기/접기"
                   >
-                    <span className="text-sm text-gray-700 font-semibold">
-                      개인정보 수집 및 이용 동의
+                    <span className="text-base font-semibold text-gray-700">
+                      개인정보 수집·이용 및 제3자 제공 동의
                     </span>
                     <ChevronDown
                       className={`h-5 w-5 text-gray-500 transition-transform ${
-                        isConsent1Open ? "rotate-180" : ""
+                        isConsentOpen ? "rotate-180" : ""
                       }`}
                     />
                   </button>
                 </CollapsibleTrigger>
               </div>
 
-              <CollapsibleContent className="space-y-2 px-4 pb-4 text-sm text-gray-700">
-                <p className="font-semibold">[개인정보 수집 및 이용 동의서]</p>
-                <div className="space-y-1">
-                  <p>① 수집 및 이용하는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
-                  <p>② 수집 및 이용 목적 : 조사 답례품 발송 및 응답 내용 검증</p>
-                  <p>
-                    ③ 수집 및 이용하고자 하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail,
-                    주소, 설문 응답내용
-                  </p>
-                  <p>④ 개인정보 보유 및 이용 기간 : 응답 완료로부터 6개월</p>
+              <CollapsibleContent className="space-y-3 px-4 pb-4 text-sm text-gray-700">
+                <div className="space-y-2">
+                  <p className="font-semibold">개인정보 수집 및 이용 동의서</p>
+                  <div className="space-y-1">
+                    <p>• 수집 및 이용하는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
+                    <p>• 수집 및 이용 목적 : 조사 답례품 발송 및 응답 내용 검증</p>
+                    <p>
+                      • 수집 및 이용하고자 하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail,
+                      주소, 설문 응답내용
+                    </p>
+                    <p>• 개인정보 보유 및 이용 기간 : 응답 완료로부터 6개월</p>
+                  </div>
                 </div>
+
+                <div className="space-y-2">
+                  <p className="font-semibold">개인정보 제3자 제공 동의서</p>
+                  <div className="space-y-1">
+                    <p>• 제공받는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
+                    <p>• 제공받는 자의 이용 목적 : 응답 내용 검증</p>
+                    <p>
+                      • 제공하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail, 주소, 설문
+                      응답내용
+                    </p>
+                    <p>• 개인정보 보유 및 이용 기간 : 제공 받은 후 6개월</p>
+                  </div>
+                </div>
+
                 <p className="mt-3 text-gray-600">
-                  개인정보 수집에 대하여 동의를 거부하실 수 있으며, 동의를 거부하실 경우 답례품
-                  제공에 제약이 있습니다. 개인정보 수집 및 이용에 동의하시겠습니까?
+                  개인정보 수집·이용 및 제3자 제공에 대하여 동의를 거부하실 수 있으며, 동의를
+                  거부하실 경우 답례품 제공에 제약이 있습니다. 개인정보 수집·이용 및 제3자 제공에
+                  동의하시겠습니까?
                 </p>
               </CollapsibleContent>
             </Collapsible>
@@ -232,14 +247,17 @@ export default function BasicInfoPage() {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setConsent1(true)}
+                onClick={() => {
+                  setConsent(true)
+                  setIsConsentOpen(false)
+                }}
                 className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
-                  consent1 === true
+                  consent === true
                     ? "border-blue-600 bg-blue-50 text-blue-900"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {consent1 === true && (
+                {consent === true && (
                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600">
                     <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
                       <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
@@ -251,100 +269,17 @@ export default function BasicInfoPage() {
 
               <button
                 type="button"
-                onClick={() => setConsent1(false)}
+                onClick={() => {
+                  setConsent(false)
+                  setIsConsentOpen(false)
+                }}
                 className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
-                  consent1 === false
+                  consent === false
                     ? "border-gray-600 bg-gray-50 text-gray-900"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                 }`}
               >
-                {consent1 === false && (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-600">
-                    <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
-                      <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
-                    </svg>
-                  </div>
-                )}
-                동의하지 않습니다
-              </button>
-            </div>
-          </div>
-
-          {/* 구분선 */}
-          <div className="border-t border-gray-200" />
-
-          {/* 두 번째 동의: 개인정보 제3자 제공 */}
-          <div className="space-y-3">
-            <Collapsible
-              open={isConsent2Open}
-              onOpenChange={setIsConsent2Open}
-              className="bg-gray-50 rounded-lg border border-gray-200"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <CollapsibleTrigger asChild>
-                  <button
-                    type="button"
-                    className="flex flex-1 items-start justify-between gap-2 text-left p-4"
-                    aria-label="개인정보 제3자 제공 동의서 펼치기/접기"
-                  >
-                    <span className="text-sm text-gray-700 font-semibold">
-                      개인정보 제3자 제공 동의
-                    </span>
-                    <ChevronDown
-                      className={`h-5 w-5 flex-shrink-0 text-gray-500 transition-transform ${
-                        isConsent2Open ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                </CollapsibleTrigger>
-              </div>
-
-              <CollapsibleContent className="mt-3 space-y-2 px-4 pb-4 text-sm text-gray-700">
-                <div className="space-y-1">
-                  <p>① 제공받는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
-                  <p>② 제공받는 자의 이용 목적 : 응답 내용 검증</p>
-                  <p>
-                    ③ 제공하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail, 주소, 설문 응답내용
-                  </p>
-                  <p>④ 개인정보 보유 및 이용 기간 : 제공 받은 후 6개월</p>
-                </div>
-                <p className="mt-3 text-gray-600">
-                  개인정보 수집에 대하여 동의를 거부하실 수 있으며, 동의를 거부하실 경우 답례품
-                  제공에 제약이 있습니다. 개인정보 제3자 제공에 동의하시겠습니까?
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
-
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setConsent2(true)}
-                className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
-                  consent2 === true
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {consent2 === true && (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600">
-                    <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
-                      <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
-                    </svg>
-                  </div>
-                )}
-                동의합니다
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setConsent2(false)}
-                className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
-                  consent2 === false
-                    ? "border-gray-600 bg-gray-50 text-gray-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {consent2 === false && (
+                {consent === false && (
                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-600">
                     <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 12 12">
                       <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
@@ -357,8 +292,8 @@ export default function BasicInfoPage() {
           </div>
         </div>
 
-        {/* 두 동의 항목 모두 동의 시에만 입력창 표시 */}
-        {consent1 === true && consent2 === true && (
+        {/* 동의 시에만 입력창 표시 */}
+        {consent === true && (
           <div className="space-y-6">
             <QuestionText
               id="name"
@@ -436,17 +371,15 @@ export default function BasicInfoPage() {
         )}
 
         {/* 개인정보 비동의 시 안내 메시지 */}
-        {(consent1 === false || consent2 === false) &&
-          consent1 !== null &&
-          consent2 !== null && (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
-              <p className="text-sm text-gray-600">
-                개인정보 수집 및 이용 또는 제3자 제공에 동의하지 않으셨습니다.
-                <br />
-                개인정보 입력 없이 설문에 참여하실 수 있습니다.
-              </p>
-            </div>
-          )}
+        {consent === false && (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
+            <p className="text-sm text-gray-600">
+              개인정보 수집·이용 및 제3자 제공에 동의하지 않으셨습니다.
+              <br />
+              개인정보 입력 없이 설문에 참여하실 수 있습니다.
+            </p>
+          </div>
+        )}
 
         <div className="mt-8">
           <NavigationButton onClick={handleNext}>다음</NavigationButton>

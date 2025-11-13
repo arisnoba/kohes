@@ -213,7 +213,7 @@ export default function BasicInfoPage() {
                 <div className="space-y-2">
                   <p className="font-semibold">개인정보 수집 및 이용 동의서</p>
                   <div className="space-y-1">
-                    <p>• 수집 및 이용하는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
+                    <p>• 수집 및 이용하는 자 : 한국보건산업진흥원, 주식회사 해리</p>
                     <p>• 수집 및 이용 목적 : 조사 답례품 발송 및 응답 내용 검증</p>
                     <p>
                       • 수집 및 이용하고자 하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail,
@@ -226,7 +226,7 @@ export default function BasicInfoPage() {
                 <div className="space-y-2">
                   <p className="font-semibold">개인정보 제3자 제공 동의서</p>
                   <div className="space-y-1">
-                    <p>• 제공받는 자 : 한국보건산업진흥원, 주식회사 헤리</p>
+                    <p>• 제공받는 자 : 한국보건산업진흥원, 주식회사 해리</p>
                     <p>• 제공받는 자의 이용 목적 : 응답 내용 검증</p>
                     <p>
                       • 제공하는 개인정보 항목 : 성명, 소속, 직책, 연락처, E-mail, 주소, 설문

@@ -306,7 +306,7 @@ export default function ExpansionInfoPage() {
           </div>
         )}
 
-        {expansionInfo.orgType === "회사(MSO 등)" && (
+        {expansionInfo.orgType === "회사(의약품, 의료기기 화장품, MSO 등)" && (
           <div className="space-y-6 rounded-lg border-2 border-emerald-200 bg-emerald-50 p-6">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-emerald-900">회사 정보</h3>

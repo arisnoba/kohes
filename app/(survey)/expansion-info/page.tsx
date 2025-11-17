@@ -35,7 +35,7 @@ export default function ExpansionInfoPage() {
         companyCategory: "",
         companyCategoryOther: "",
       })
-    } else if (value === "회사(MSO 등)") {
+    } else if (value === "회사(의약품, 의료기기 화장품, MSO 등)") {
       updateSection("expansionInfo", {
         orgType: value,
         medicalOrgName: "",
@@ -147,7 +147,7 @@ export default function ExpansionInfoPage() {
     }
 
     // 회사 검증
-    if (expansionInfo.orgType === "회사(MSO 등)") {
+    if (expansionInfo.orgType === "회사(의약품, 의료기기 화장품, MSO 등)") {
       const companyNameError = validateCompanyName(expansionInfo.companyName)
 
       if (companyNameError || !expansionInfo.companyCategory) {

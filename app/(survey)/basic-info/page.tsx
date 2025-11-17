@@ -198,7 +198,7 @@ export default function BasicInfoPage() {
                     aria-label="개인정보 수집·이용 및 제3자 제공 동의서 펼치기/접기"
                   >
                     <span className="text-base font-semibold text-gray-700">
-                      개인정보 수집·이용 및 제3자 제공 동의
+                      개인정보 수집 및 이용 동의서
                     </span>
                     <ChevronDown
                       className={`h-5 w-5 text-gray-500 transition-transform ${
@@ -227,9 +227,8 @@ export default function BasicInfoPage() {
                 </div>
 
                 <p className="mt-3 text-gray-600">
-                  개인정보 수집·이용 및 제3자 제공에 대하여 동의를 거부하실 수 있으며, 동의를
-                  거부하실 경우 답례품 제공에 제약이 있습니다. 개인정보 수집·이용 및 제3자 제공에
-                  동의하시겠습니까?
+                  개인정보 수집에 대하여 동의를 거부하실 수 있으며, 동의를 거부하실 경우 답례품
+                  제공에 제약이 있습니다. 개인정보 수집 및 이용에 동의하시겠습니까?
                 </p>
               </CollapsibleContent>
             </Collapsible>

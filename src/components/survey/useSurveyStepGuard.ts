@@ -79,6 +79,12 @@ export function useSurveyStepGuard(step: GuardStep) {
 function isBasicInfoComplete(data: SurveyData) {
   const { basicInfo } = data
 
+  // 개인정보 비동의 시 name만 체크
+  if (basicInfo.name === "개인정보 비동의") {
+    return true
+  }
+
+  // 동의 시 모든 필드 체크
   return (
     isNonEmpty(basicInfo.name) &&
     isNonEmpty(basicInfo.position) &&

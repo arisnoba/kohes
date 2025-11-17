@@ -215,7 +215,10 @@ export default function ExpansionInfoPage() {
           required={true}
           options={[
             { value: "의료기관", label: "의료기관" },
-            { value: "회사(MSO 등)", label: "회사 (MSO 등)" },
+            {
+              value: "회사(의약품, 의료기기 화장품, MSO 등)",
+              label: "회사(의약품, 의료기기 화장품, MSO 등)",
+            },
           ]}
           value={expansionInfo.orgType}
           onChange={handleOrgTypeChange}
@@ -330,6 +333,7 @@ export default function ExpansionInfoPage() {
                 { value: "MSO(병원경영지원회사)", label: "MSO(병원경영지원회사)" },
                 { value: "의료기기", label: "의료기기" },
                 { value: "의약품", label: "의약품" },
+                { value: "화장품", label: "화장품" },
                 { value: "기타", label: "기타" },
               ]}
               value={expansionInfo.companyCategory}

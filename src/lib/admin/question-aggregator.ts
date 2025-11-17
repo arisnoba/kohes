@@ -49,7 +49,7 @@ const ADDITIONAL_TEXT_FIELDS: Record<string, FieldMapping> = {
 
 const VALUE_LABEL_OVERRIDES: Record<string, Record<string, string>> = {
   A1: {
-    회사: "회사 (MSO 등)",
+    회사: "회사(의약품, 의료기기 화장품, MSO 등)",
   },
   A3_company_type: {
     MSO: "MSO (병원경영지원회사)",

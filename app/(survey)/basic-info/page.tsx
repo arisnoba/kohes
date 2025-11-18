@@ -28,7 +28,7 @@ export default function BasicInfoPage() {
   const { basicInfo } = data
   const [showErrors, setShowErrors] = useState(false)
 
-  // 개인정보 수집·이용 및 제3자 제공 통합 동의 상태
+  // 개인정보 수집·이용 통합 동의 상태
   const [consent, setConsent] = useState<boolean | null>(null)
   const [isConsentOpen, setIsConsentOpen] = useState(true)
 
@@ -87,7 +87,7 @@ export default function BasicInfoPage() {
 
     // 개인정보 동의 검증
     if (consent === null) {
-      toast.error("개인정보 수집·이용 및 제3자 제공 동의를 선택해주세요.")
+      toast.error("개인정보 수집·이용 동의를 선택해주세요.")
       return
     }
 
@@ -168,7 +168,7 @@ export default function BasicInfoPage() {
           <p className="mt-2 text-sm text-gray-500">귀하의 기본 정보를 입력해주세요</p>
         </div>
 
-        {/* 개인정보 수집·이용 및 제3자 제공 통합 동의 */}
+        {/* 개인정보 수집·이용 통합 동의 */}
         <div className="space-y-4">
           <p className="text-base leading-relaxed text-gray-700">
             본 조사는 조사 참여자에 대한 답례품 발송, 응답 내용 검증을 위해 아래와 같이 개인정보를
@@ -195,7 +195,7 @@ export default function BasicInfoPage() {
                   <button
                     type="button"
                     className="flex flex-1 items-start justify-between gap-2 p-4 text-left"
-                    aria-label="개인정보 수집·이용 및 제3자 제공 동의서 펼치기/접기"
+                    aria-label="개인정보 수집·이용 동의서 펼치기/접기"
                   >
                     <span className="text-base font-semibold text-gray-700">
                       개인정보 수집 및 이용 동의서
@@ -363,7 +363,7 @@ export default function BasicInfoPage() {
         {consent === false && (
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center">
             <p className="text-sm text-gray-600">
-              개인정보 수집·이용 및 제3자 제공에 동의하지 않으셨습니다.
+              개인정보 수집·이용에 동의하지 않으셨습니다.
               <br />
               개인정보 입력 없이 설문에 참여하실 수 있습니다.
             </p>

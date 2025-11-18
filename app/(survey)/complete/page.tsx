@@ -135,11 +135,19 @@ export default function CompletePage() {
             <p className="text-sm text-gray-600">
               설문 관련 문의사항이 있으시면 아래로 연락주시기 바랍니다.
             </p>
+            <p className="mt-2 text-sm text-gray-600">한국보건산업진흥원 유성현 연구원</p>
+            <a
+              href="tel:043-713-8956"
+              className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
+            >
+              043-713-8956
+            </a>
+            {", "}
             <a
               href="mailto:kohes@example.com"
               className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
             >
-              kohes@example.com
+              ysh5233@khidi.or.kr
             </a>
           </div>
         </div>

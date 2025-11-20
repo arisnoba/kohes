@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { BlobWriter, TextReader, ZipWriter } from "@zip.js/zip.js"
+import { BlobWriter, BlobReader, TextReader, ZipWriter } from "@zip.js/zip.js"
 
 import { createSupabaseServerClient } from "@/lib/supabase/client"
 import type { Database } from "@/lib/supabase/types"
 import { fetchSurveyResponsePayloads } from "@/lib/supabase/responses"
-import { buildOrderedExportData, convertToOrderedCSV } from "@/lib/admin/export-utils"
+import { buildOrderedExportData, convertToOrderedCSV, convertToExcel } from "@/lib/admin/export-utils"
 
 type ExportType = "all" | "response" | "pii"
-type ExportFormat = "csv" | "json"
+type ExportFormat = "csv" | "json" | "xlsx"
 
 interface ExportRequest {
   type: ExportType
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "유효하지 않은 내보내기 타입입니다." }, { status: 400 })
     }
 
-    if (!["csv", "json"].includes(format)) {
+    if (!["csv", "json", "xlsx"].includes(format)) {
       return NextResponse.json({ error: "유효하지 않은 포맷입니다." }, { status: 400 })
     }
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     const exportData = buildOrderedExportData(filteredEntries, type)
 
     // 파일 내용 생성
-    let fileContent: string
+    let fileContent: string | Buffer
     let fileName: string
     const timestamp = new Date().toISOString().split("T")[0]
 
@@ -111,6 +111,9 @@ export async function POST(request: Request) {
         2
       )
       fileName = `survey_${type}_${timestamp}.json`
+    } else if (format === "xlsx") {
+      fileContent = await convertToExcel(exportData)
+      fileName = `survey_${type}_${timestamp}.xlsx`
     } else {
       fileContent = convertToOrderedCSV(exportData)
       fileName = `survey_${type}_${timestamp}.csv`
@@ -123,7 +126,12 @@ export async function POST(request: Request) {
       level: 9,
     })
 
-    await zipWriter.add(fileName, new TextReader(fileContent), {
+    // Buffer 또는 string을 적절한 Reader로 변환
+    const reader = typeof fileContent === "string"
+      ? new TextReader(fileContent)
+      : new BlobReader(new Blob([fileContent]))
+
+    await zipWriter.add(fileName, reader, {
       password,
       encryptionStrength: 3,
     })

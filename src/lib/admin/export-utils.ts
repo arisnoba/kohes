@@ -1,5 +1,6 @@
 import { getSurveyQuestionSummaries } from "@/lib/survey/schema-loader"
 import type { SurveyResponseRecord } from "@/lib/supabase/responses"
+import ExcelJS from "exceljs"
 
 type ExportType = "all" | "response" | "pii"
 
@@ -280,4 +281,83 @@ export function convertToOrderedCSV(data: Record<string, unknown>[]): string {
   })
 
   return [headerRow, ...rows].join("\n")
+}
+
+/**
+ * Excel 파일 생성 (UTF-8 인코딩, 한글 지원)
+ */
+export async function convertToExcel(data: Record<string, unknown>[]): Promise<Buffer> {
+  if (data.length === 0) {
+    throw new Error("내보낼 데이터가 없습니다.")
+  }
+
+  // 워크북 생성
+  const workbook = new ExcelJS.Workbook()
+  workbook.creator = "KOHES Survey System"
+  workbook.created = new Date()
+
+  // 워크시트 생성
+  const worksheet = workbook.addWorksheet("응답 데이터", {
+    properties: { defaultColWidth: 20 },
+  })
+
+  // 헤더 추출
+  const headers = Object.keys(data[0])
+
+  // 헤더 행 추가 (스타일링)
+  const headerRow = worksheet.addRow(headers)
+  headerRow.font = { bold: true, size: 11 }
+  headerRow.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFE0E0E0" },
+  }
+  headerRow.alignment = { vertical: "middle", horizontal: "center" }
+
+  // 데이터 행 추가
+  data.forEach((row) => {
+    const values = headers.map((header) => {
+      const value = row[header]
+
+      // null/undefined 처리
+      if (value === null || value === undefined) {
+        return ""
+      }
+
+      // 날짜 처리
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+        return new Date(value)
+      }
+
+      // 숫자 처리
+      if (typeof value === "number") {
+        return value
+      }
+
+      // 문자열 처리
+      return String(value)
+    })
+
+    worksheet.addRow(values)
+  })
+
+  // 열 너비 자동 조정
+  worksheet.columns.forEach((column, index) => {
+    let maxLength = headers[index].length
+
+    column.eachCell?.({ includeEmpty: false }, (cell) => {
+      const cellValue = cell.value?.toString() || ""
+      maxLength = Math.max(maxLength, cellValue.length)
+    })
+
+    // 최소 10, 최대 50 글자로 제한
+    column.width = Math.min(Math.max(maxLength + 2, 10), 50)
+  })
+
+  // 첫 행 고정 (헤더 고정)
+  worksheet.views = [{ state: "frozen", ySplit: 1 }]
+
+  // 버퍼로 변환
+  const buffer = await workbook.xlsx.writeBuffer()
+  return Buffer.from(buffer)
 }

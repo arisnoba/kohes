@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 type ExportType = "all" | "response" | "pii"
-type ExportFormat = "csv" | "json"
+type ExportFormat = "csv" | "json" | "xlsx"
 
 interface PendingExport {
   type: ExportType
@@ -119,8 +119,21 @@ export default function ExportsPage() {
               주의하세요.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4 sm:flex-row">
+          <CardContent className="flex flex-col gap-2 sm:flex-row">
             <Button
+              className="gap-2"
+              onClick={() => handleExportClick("all", "xlsx")}
+              disabled={loading !== null}
+            >
+              {isLoading("all", "xlsx") ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <FileDown className="h-4 w-4" />
+              )}
+              Excel 다운로드
+            </Button>
+            <Button
+              variant="outline"
               className="gap-2"
               onClick={() => handleExportClick("all", "csv")}
               disabled={loading !== null}
@@ -132,6 +145,7 @@ export default function ExportsPage() {
               )}
               CSV 다운로드
             </Button>
+
             <Button
               variant="outline"
               className="gap-2"
@@ -156,8 +170,21 @@ export default function ExportsPage() {
               개인정보(PII)를 제외한 설문 응답 데이터만 포함합니다. 통계 분석에 적합합니다.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4 sm:flex-row">
+          <CardContent className="flex flex-col gap-2 sm:flex-row">
             <Button
+              className="gap-2"
+              onClick={() => handleExportClick("response", "xlsx")}
+              disabled={loading !== null}
+            >
+              {isLoading("response", "xlsx") ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <FileDown className="h-4 w-4" />
+              )}
+              Excel 다운로드
+            </Button>
+            <Button
+              variant="outline"
               className="gap-2"
               onClick={() => handleExportClick("response", "csv")}
               disabled={loading !== null}
@@ -169,6 +196,7 @@ export default function ExportsPage() {
               )}
               CSV 다운로드
             </Button>
+
             <Button
               variant="outline"
               className="gap-2"
@@ -195,8 +223,21 @@ export default function ExportsPage() {
               개인정보 수집에 동의하지 않은 응답은 자동으로 제외됩니다.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4 sm:flex-row">
+          <CardContent className="flex flex-col gap-2 sm:flex-row">
             <Button
+              className="gap-2"
+              onClick={() => handleExportClick("pii", "xlsx")}
+              disabled={loading !== null}
+            >
+              {isLoading("pii", "xlsx") ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <FileDown className="h-4 w-4" />
+              )}
+              Excel 다운로드
+            </Button>
+            <Button
+              variant="outline"
               className="gap-2"
               onClick={() => handleExportClick("pii", "csv")}
               disabled={loading !== null}
@@ -208,6 +249,7 @@ export default function ExportsPage() {
               )}
               CSV 다운로드
             </Button>
+
             <Button
               variant="outline"
               className="gap-2"

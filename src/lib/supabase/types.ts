@@ -77,7 +77,7 @@ export interface Database {
           id: string
           user_id: string
           export_type: "all" | "response" | "pii"
-          export_format: "csv" | "json"
+          export_format: "csv" | "json" | "xlsx"
           ip_address: string | null
           user_agent: string | null
           created_at: string
@@ -86,7 +86,7 @@ export interface Database {
           id?: string
           user_id: string
           export_type: "all" | "response" | "pii"
-          export_format: "csv" | "json"
+          export_format: "csv" | "json" | "xlsx"
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
@@ -95,7 +95,7 @@ export interface Database {
           id?: string
           user_id?: string
           export_type?: "all" | "response" | "pii"
-          export_format?: "csv" | "json"
+          export_format?: "csv" | "json" | "xlsx"
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
@@ -119,7 +119,7 @@ export interface Database {
         Args: {
           p_user_id: string
           p_export_type: "all" | "response" | "pii"
-          p_export_format: "csv" | "json"
+          p_export_format: "csv" | "json" | "xlsx"
           p_ip_address?: string
           p_user_agent?: string
         }

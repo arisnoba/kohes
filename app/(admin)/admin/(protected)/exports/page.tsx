@@ -105,8 +105,8 @@ export default function ExportsPage() {
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-bold">데이터 내보내기</h2>
           <p className="text-sm text-muted-foreground">
-            CSV 또는 JSON 형식으로 안전하게 데이터를 다운로드합니다. 모든 파일은 AES-256으로
-            암호화된 ZIP 형태로 제공됩니다.
+            각 확장자 형식으로 안전하게 데이터를 다운로드합니다. 모든 파일은 AES-256으로 암호화된
+            ZIP 형태로 제공됩니다.
           </p>
         </div>
 

@@ -148,8 +148,8 @@ export default async function DashboardPage() {
               <TableHead>문항</TableHead>
               <TableHead>유형</TableHead>
               <TableHead>필수</TableHead>
-              <TableHead className="text-right ">응답 수</TableHead>
-              <TableHead>주요 응답 요약</TableHead>
+              <TableHead className="text-right">응답 수</TableHead>
+              <TableHead className="w-[50%]">주요 응답 요약</TableHead>
               {/* <TableHead className="min-w-[220px]">선택지 요약</TableHead> */}
               {/* <TableHead className="min-w-[220px]">출현 조건</TableHead> */}
             </TableRow>
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
                           <span>-</span>
                         )}
                       </TableCell>
-                      <TableCell className="align-top">
+                      <TableCell className="max-w-[300px] align-top">
                         {renderResponseSummary(question, stats)}
                       </TableCell>
                       {/* <TableCell className="align-top text-sm text-muted-foreground">
@@ -296,8 +296,8 @@ function renderResponseSummary(question: SurveyQuestionSummary, stats?: Aggregat
       <div className="space-y-1">
         {topOptions.map((option) => (
           <div key={option.value} className="leading-snug">
-            <span className="font-medium text-foreground">{option.displayValue}</span>
-            <span className="ml-2 text-xs text-muted-foreground">
+            <div className="break-words font-medium text-foreground">{option.displayValue}</div>
+            <div className="text-xs text-muted-foreground">
               {NUMBER_FORMATTER.format(option.count)}건 ({formatPercentage(option.percentage)})
               {option.totalScore !== undefined ? (
                 <>
@@ -311,7 +311,7 @@ function renderResponseSummary(question: SurveyQuestionSummary, stats?: Aggregat
                   ) : null}
                 </>
               ) : null}
-            </span>
+            </div>
           </div>
         ))}
         {remainder > 0 ? (

@@ -5,7 +5,11 @@ import { BlobWriter, BlobReader, TextReader, ZipWriter } from "@zip.js/zip.js"
 import { createSupabaseServerClient } from "@/lib/supabase/client"
 import type { Database } from "@/lib/supabase/types"
 import { fetchSurveyResponsePayloads } from "@/lib/supabase/responses"
-import { buildOrderedExportData, convertToOrderedCSV, convertToExcel } from "@/lib/admin/export-utils"
+import {
+  buildOrderedExportData,
+  convertToOrderedCSV,
+  convertToExcel,
+} from "@/lib/admin/export-utils"
 
 type ExportType = "all" | "response" | "pii"
 type ExportFormat = "csv" | "json" | "xlsx"
@@ -110,13 +114,13 @@ export async function POST(request: Request) {
         null,
         2
       )
-      fileName = `survey_${type}_${timestamp}.json`
+      fileName = `kohes_survey_${type}_${timestamp}.json`
     } else if (format === "xlsx") {
       fileContent = await convertToExcel(exportData)
-      fileName = `survey_${type}_${timestamp}.xlsx`
+      fileName = `kohes_survey_${type}_${timestamp}.xlsx`
     } else {
       fileContent = convertToOrderedCSV(exportData)
-      fileName = `survey_${type}_${timestamp}.csv`
+      fileName = `kohes_survey_${type}_${timestamp}.csv`
     }
 
     // AES-256 암호화 ZIP 생성 (@zip.js/zip.js 사용)
@@ -127,9 +131,10 @@ export async function POST(request: Request) {
     })
 
     // Buffer 또는 string을 적절한 Reader로 변환
-    const reader = typeof fileContent === "string"
-      ? new TextReader(fileContent)
-      : new BlobReader(new Blob([fileContent]))
+    const reader =
+      typeof fileContent === "string"
+        ? new TextReader(fileContent)
+        : new BlobReader(new Blob([fileContent]))
 
     await zipWriter.add(fileName, reader, {
       password,
@@ -140,7 +145,8 @@ export async function POST(request: Request) {
     const zipArrayBuffer = await zipBlob.arrayBuffer()
 
     // 로그 기록
-    const ipAddress = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const ipAddress =
+      request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
     const userAgent = request.headers.get("user-agent") || "unknown"
 
     await supabase.rpc("log_export", {
@@ -156,7 +162,7 @@ export async function POST(request: Request) {
     return new NextResponse(zipBuffer, {
       headers: {
         "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="survey_${type}_${timestamp}.zip"`,
+        "Content-Disposition": `attachment; filename="kohes_survey_${type}_${timestamp}.zip"`,
         "Content-Length": zipBuffer.length.toString(),
       },
     })
@@ -165,5 +171,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "내보내기에 실패했습니다." }, { status: 500 })
   }
 }
-
-

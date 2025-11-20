@@ -77,7 +77,7 @@ export default function ExportsPage() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `survey_${type}_${new Date().toISOString().split("T")[0]}.zip`
+      a.download = `kohes_survey_${type}_${new Date().toISOString().split("T")[0]}.zip`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)

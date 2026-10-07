@@ -97,7 +97,6 @@ export default function ConsentPage() {
                 type="button"
                 onClick={() => {
                   setConsent(true)
-                  setIsConsentOpen(false)
                 }}
                 className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
                   consent === true
@@ -119,7 +118,6 @@ export default function ConsentPage() {
                 type="button"
                 onClick={() => {
                   setConsent(false)
-                  setIsConsentOpen(false)
                 }}
                 className={`relative flex items-center justify-center gap-2 rounded-lg border-2 p-4 text-base font-medium transition-all ${
                   consent === false

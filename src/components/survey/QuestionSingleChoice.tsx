@@ -86,15 +86,18 @@ export function QuestionSingleChoice({
           const isSelected = selectedValue === option.value
 
           return (
-            <div key={option.value}>
+            <div
+              key={option.value}
+              className={`overflow-hidden rounded-lg border-2 transition-colors ${
+                isSelected
+                  ? "border-blue-600 bg-blue-50 text-blue-900"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => handleSelect(option.value)}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
-                  isSelected
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                className="w-full px-4 py-4 text-left text-base transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -110,21 +113,21 @@ export function QuestionSingleChoice({
                   </div>
                   <span className="font-medium">{option.label}</span>
                 </div>
-
-                {/* 기타 입력 필드 - 버튼 내부 */}
-                {isOtherOption && isSelected && !disableOtherInput && (
-                  <div className="mt-4 pt-2 border-blue-300">
-                    <input
-                      type="text"
-                      value={otherText}
-                      onChange={handleOtherChange}
-                      onClick={(e) => e.stopPropagation()}
-                      placeholder="기타 내용을 입력해주세요"
-                      className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
-                    />
-                  </div>
-                )}
               </button>
+
+              {/* Keep the text input outside the selection button. */}
+              {isOtherOption && isSelected && !disableOtherInput && (
+                <div className="px-4 pb-4">
+                  <input
+                    aria-label={`${option.label} 내용`}
+                    type="text"
+                    value={otherText}
+                    onChange={handleOtherChange}
+                    placeholder="기타 내용을 입력해주세요"
+                    className="w-full border-0 border-b-2 border-blue-300 bg-transparent rounded-none px-0 py-2 text-base text-gray-900 placeholder:text-blue-400 focus:border-blue-600 focus:outline-none focus:ring-0"
+                  />
+                </div>
+              )}
             </div>
           )
         })}

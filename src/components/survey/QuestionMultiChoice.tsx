@@ -89,15 +89,18 @@ export function QuestionMultiChoice({
           const isSelected = selectedValues.includes(option.value)
 
           return (
-            <div key={option.value}>
+            <div
+              key={option.value}
+              className={`overflow-hidden rounded-lg border-2 transition-colors ${
+                isSelected
+                  ? "border-blue-600 bg-blue-50 text-blue-900"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => handleToggle(option.value)}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all ${
-                  isSelected
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                className="w-full px-4 py-4 text-left text-base transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -113,8 +116,9 @@ export function QuestionMultiChoice({
 
               {/* 기타 또는 그 외 국제의료사업 입력 필드 - 버튼 외부 */}
               {isOtherOption && isSelected && (
-                <div className="mt-2 rounded-lg border-2 border-blue-300 bg-blue-50 px-4 py-3">
+                <div className="px-4 pb-4">
                   <input
+                    aria-label={`${option.label} 내용`}
                     type="text"
                     value={otherText}
                     onChange={handleOtherChange}

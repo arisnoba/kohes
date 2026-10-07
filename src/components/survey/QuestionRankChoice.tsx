@@ -108,16 +108,19 @@ export function QuestionRankChoice({
           const isOtherOption = option.value === "기타"
 
           return (
-            <div key={option.value}>
+            <div
+              key={option.value}
+              className={`overflow-hidden rounded-lg border-2 transition-colors ${
+                selected
+                  ? "border-blue-600 bg-blue-50 text-blue-900"
+                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => handleSelect(option.value)}
                 disabled={rankedItems.length >= maxRanks && !selected}
-                className={`w-full rounded-lg border-2 px-4 py-4 text-left text-base transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
-                  selected
-                    ? "border-blue-600 bg-blue-50 text-blue-900"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+                className="w-full px-4 py-4 text-left text-base transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   {rankNumbers.length > 0 && (
@@ -138,8 +141,9 @@ export function QuestionRankChoice({
 
               {/* 기타 입력 필드 - 버튼 외부 */}
               {isOtherOption && selected && (
-                <div className="mt-2 rounded-lg border-2 border-blue-300 bg-blue-50 px-4 py-3">
+                <div className="px-4 pb-4">
                   <input
+                    aria-label={`${option.label} 내용`}
                     type="text"
                     value={otherText}
                     onChange={handleOtherChange}

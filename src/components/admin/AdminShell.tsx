@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { getCurrentUser, signOut, onAuthStateChange, type AuthUser } from "@/lib/supabase/auth"
+import { getCurrentUser, signOut, type AuthUser } from "@/lib/auth/client"
 
 interface AdminShellProps {
   children: React.ReactNode
@@ -78,18 +78,6 @@ export function AdminShell({ children }: AdminShellProps) {
         setIsLoading(false)
       })
 
-    // 인증 상태 변화 구독
-    const subscription = onAuthStateChange((authUser) => {
-      if (!authUser) {
-        router.push("/admin/login")
-      } else {
-        setUser(authUser)
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
   }, [router])
 
   const handleLogout = async () => {
@@ -132,7 +120,7 @@ export function AdminShell({ children }: AdminShellProps) {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Kohes Survey 2025
+              Kohes Survey 2026
             </span>
             {/* <h1 className="text-lg font-bold">관리자 콘솔</h1> */}
           </div>

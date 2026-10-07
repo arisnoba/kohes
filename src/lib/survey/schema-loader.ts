@@ -108,7 +108,7 @@ export function getSurveyQuestionSummaries(): SurveyQuestionSummary[] {
           help: question.help,
           rankCount: question.rank_count,
           allowDuplicates: question.allow_duplicates,
-          scoring: question.scoring
+          scoring: question.scoring,
         })
       }
     }
@@ -119,3 +119,14 @@ export function getSurveyQuestionSummaries(): SurveyQuestionSummary[] {
   return summaries
 }
 
+export function getQuestionOptions(
+  sectionId: string,
+  questionId: string
+): { value: string; label: string }[] {
+  const question = getQuestion(sectionId, questionId)
+  return (question?.options ?? []).map((option: string | { value: string; label?: string }) =>
+    typeof option === "string"
+      ? { value: option, label: option }
+      : { value: option.value, label: option.label ?? option.value }
+  )
+}

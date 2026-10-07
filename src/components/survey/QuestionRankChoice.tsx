@@ -21,7 +21,7 @@ export function QuestionRankChoice({
   options,
   required = false,
   maxRanks,
-  minRequired = 3,
+  minRequired = 1,
   value = [],
   onChange,
   otherValue = "",
@@ -54,7 +54,8 @@ export function QuestionRankChoice({
         onOtherChange?.("")
       }
     } else {
-      // 새 항목 추가 (중복 선택 허용)
+      // Append a new distinct option within the maximum rank count.
+      if (rankedItems.length >= maxRanks) return
       newRanked = [...rankedItems, optionValue]
     }
 

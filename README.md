@@ -148,6 +148,7 @@ pnpm supabase:db:push
 
 ## 문서
 
+- [CLOUDFLARE_D1_PREPARATION.md](./CLOUDFLARE_D1_PREPARATION.md) - 2026년 신규 설문을 위한 D1 전환 준비 절차 (구현 전 계획)
 - [PRD.md](./PRD.md) - 제품 요구사항 문서
 - [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) - Supabase 설정 가이드
 - [AUTH_SETUP.md](./AUTH_SETUP.md) - 관리자 인증 설정 가이드
@@ -155,3 +156,7 @@ pnpm supabase:db:push
 ## 라이선스
 
 MIT
+
+## 2026 D1 전환 작업
+
+기존 `kohes` D1에 초기 스키마를 적용하고 테이블 4개와 인덱스 3개를 확인했습니다. 앱의 저장/조회 코드를 D1에 연결하고 서버 환경변수 기반 관리자 로그인으로 교체했습니다. 실제 연결과 운영 검증은 서버 자격 증명 설정 후 진행합니다. 원격 대상과 승인 상태, 로컬 명령은 [D1 작업 안내](d1/README.md)를 확인하세요.

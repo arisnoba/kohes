@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import type { AdminResponseSummary } from "@/lib/supabase/responses"
+import type { AdminResponseSummary } from "@/lib/d1/responses"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
@@ -31,6 +31,13 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
     medicalOrgName: extractValue(responseData, ["expansionInfo", "medicalOrgName"]),
     medicalOrgCategory: extractValue(responseData, ["expansionInfo", "medicalOrgCategory"]),
     foundationType: extractValue(responseData, ["expansionInfo", "foundationType"]),
+    legalName: extractValue(responseData, ["expansionInfo", "legalName"]),
+    medicalOrgCategoryOther: extractValue(responseData, [
+      "expansionInfo",
+      "medicalOrgCategoryOther",
+    ]),
+    foundationTypeOther: extractValue(responseData, ["expansionInfo", "foundationTypeOther"]),
+    legalTypeOther: extractValue(responseData, ["expansionInfo", "legalTypeOther"]),
     legalType: extractValue(responseData, ["expansionInfo", "legalType"]),
     companyName: extractValue(responseData, ["expansionInfo", "companyName"]),
     companyCategory: extractValue(responseData, ["expansionInfo", "companyCategory"]),
@@ -125,6 +132,14 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       </DetailSection> */}
 
       <DetailSection title="기본 정보" description="민감 정보는 잠금 아이콘으로 표시됩니다.">
+        <DetailItem
+          label="응답 대상 여부"
+          value={extractValue(responseData, ["basicInfo", "eligible"])}
+        />
+        <DetailItem
+          label="개인정보 동의"
+          value={extractValue(responseData, ["basicInfo", "privacyConsent"])}
+        />
         <DetailItem label="성명" value={basicInfo.name} />
         <DetailItem label="직책" value={basicInfo.position} />
         <DetailItem label="전화번호" value={basicInfo.tel} sensitive />
@@ -136,7 +151,9 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
       {hasExpansionInfo ? (
         <DetailSection title="A. 기관 유형">
           <DetailItem label="기관 유형" value={expansionInfo.orgType} />
-          {expansionInfo.orgType === "회사(MSO 등)" || expansionInfo.orgType === "회사" ? (
+          {expansionInfo.orgType === "회사(MSO 등)" ||
+          expansionInfo.orgType === "회사" ||
+          expansionInfo.orgType === "회사(의약품, 의료기기 화장품, MSO 등)" ? (
             <>
               <DetailItem label="회사명" value={expansionInfo.companyName} />
               <DetailItem label="회사 구분" value={companyCategoryDisplay} />
@@ -146,9 +163,18 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
             <>
               <DetailItem label="의료기관명" value={expansionInfo.medicalOrgName} />
               <DetailItem label="의료기관 구분" value={expansionInfo.medicalOrgCategory} />
+              <DetailItem
+                label="의료기관 유형 기타"
+                value={expansionInfo.medicalOrgCategoryOther}
+              />
+              <DetailItem label="설립 유형 기타" value={expansionInfo.foundationTypeOther} />
               <DetailItem label="설립 구분" value={expansionInfo.foundationType} />
               {expansionInfo.foundationType === "법인" ? (
-                <DetailItem label="법인 유형" value={expansionInfo.legalType} />
+                <>
+                  <DetailItem label="법인 유형" value={expansionInfo.legalType} />
+                  <DetailItem label="법인 유형 기타" value={expansionInfo.legalTypeOther} />
+                  <DetailItem label="법인명" value={expansionInfo.legalName} />
+                </>
               ) : null}
             </>
           ) : null}
@@ -169,15 +195,21 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
             values={servicesDisplay}
             span={servicesDisplay.length > 2}
           />
-          <DetailItem label="프로젝트명" value={projectDetails.projectName} span />
-          <DetailItem label="신고 의무 인지 (B1=①②③)" value={projectDetails.reportingAwareness1} />
-          <DetailItem label="신고 의무 인지 (B1=④⑤)" value={projectDetails.reportingAwareness2} />
+          {responseData?.surveyYear !== 2026 && (
+            <DetailItem label="프로젝트명" value={projectDetails.projectName} span />
+          )}
+          <DetailItem label="신고 의무 인지" value={projectDetails.reportingAwareness1} />
+          {responseData?.surveyYear !== 2026 && (
+            <DetailItem label="신고 의무 인지 (B1=④⑤)" value={projectDetails.reportingAwareness2} />
+          )}
           <DetailItem
             label="진출 진료과"
             values={departmentsDisplay}
             span={departmentsDisplay.length > 2}
           />
-          <DetailItem label="증빙 자료 보유" value={projectDetails.hasEvidence} />
+          {responseData?.surveyYear !== 2026 && (
+            <DetailItem label="증빙 자료 보유" value={projectDetails.hasEvidence} />
+          )}
         </DetailSection>
       ) : null}
 
@@ -185,7 +217,9 @@ export function ResponseDetailView({ response }: ResponseDetailViewProps) {
         <DetailSection title="C. 정책 수요">
           <DetailItem label="어려움 순위" values={difficultiesRankDisplay} span />
           <DetailItem label="지원 필요 순위" values={supportNeedsDisplay} span />
-          <DetailItem label="희망 지원 사업" value={desiredSupportDisplay} />
+          {responseData?.surveyYear !== 2026 && (
+            <DetailItem label="희망 지원 사업" value={desiredSupportDisplay} />
+          )}
           <DetailItem label="KOHES 인지" value={policyNeeds.awareness} />
           <DetailItem label="추가 의견" value={policyNeeds.additionalComments} span />
         </DetailSection>

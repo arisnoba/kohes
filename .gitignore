@@ -47,3 +47,18 @@ supabase/.temp
 !package.json
 !tsconfig.json
 
+
+# D1 local databases and confidential backups
+/.local/
+/.wrangler/
+.dev.vars*
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+/backups/
+*.xlsx
+*.zip
+
+# Safe server configuration template
+!.env.example

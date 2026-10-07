@@ -1,5 +1,6 @@
 "use client"
 
+import { getQuestionOptions } from "@/lib/survey/schema-loader"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
@@ -26,8 +27,8 @@ export default function PolicyNeedsPage() {
       return
     }
 
-    if (policyNeeds.difficultiesRank.length !== 3) {
-      toast.error("어려움 순위를 정확히 3개 선택해주세요")
+    if (policyNeeds.difficultiesRank.length < 1 || policyNeeds.difficultiesRank.length > 3) {
+      toast.error("어려움 순위를 1~3개 선택해주세요")
       setTimeout(() => {
         const element = document.getElementById("difficulties-rank")
         if (element) {
@@ -53,8 +54,8 @@ export default function PolicyNeedsPage() {
       return
     }
 
-    if (policyNeeds.supportNeedsRank.length !== 3) {
-      toast.error("지원 필요 순위를 3개 선택해주세요.")
+    if (policyNeeds.supportNeedsRank.length < 1 || policyNeeds.supportNeedsRank.length > 3) {
+      toast.error("지원 필요 순위를 1~3개 선택해주세요.")
       setTimeout(() => {
         const element = document.getElementById("support-needs-rank")
         if (element) {
@@ -71,33 +72,6 @@ export default function PolicyNeedsPage() {
       toast.error("지원 필요 순위의 '기타' 항목 내용을 입력해주세요.")
       setTimeout(() => {
         const element = document.getElementById("support-needs-rank")
-        if (element) {
-          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-          const offsetPosition = elementPosition - 100
-          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
-        }
-      }, 100)
-      return
-    }
-
-    if (!policyNeeds.desiredSupport) {
-      toast.error("희망하는 지원 사업을 선택해주세요.")
-      setTimeout(() => {
-        const element = document.getElementById("desired-support")
-        if (element) {
-          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
-          const offsetPosition = elementPosition - 100
-          window.scrollTo({ top: offsetPosition, behavior: "smooth" })
-        }
-      }, 100)
-      return
-    }
-
-    // "기타" 선택 시 입력값 필수 체크
-    if (policyNeeds.desiredSupport === "기타" && !policyNeeds.desiredSupportOther?.trim()) {
-      toast.error("희망하는 지원 사업의 '기타' 항목 내용을 입력해주세요.")
-      setTimeout(() => {
-        const element = document.getElementById("desired-support")
         if (element) {
           const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
           const offsetPosition = elementPosition - 100
@@ -138,37 +112,11 @@ export default function PolicyNeedsPage() {
 
         <QuestionRankChoice
           id="difficulties-rank"
-          label="의료 해외진출 사업 추진 시, 가장 큰 걸림돌이 되는 요인을 순서대로 선택해 주세요."
+          label="의료 해외진출 사업을 추진하면서 겪었거나 현재 겪고 있는 주요 어려움은 무엇입니까?"
           required={true}
           maxRanks={3}
-          minRequired={3}
-          options={[
-            { value: "자금 조달의 어려움", label: "자금 조달의 어려움" },
-            { value: "수익 예측의 불확실성", label: "수익 예측의 불확실성" },
-            { value: "현지(해외) 정보 부족", label: "현지(해외) 정보 부족" },
-            {
-              value: "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치",
-              label: "현지(해외) 파트너 신뢰의 어려움 혹은 의견 불일치",
-            },
-            {
-              value: "정권에 따라 변화하는 등 불안정한 현지(해외) 정치·법·제도",
-              label: "정권에 따라 변화하는 등 불안정한 현지(해외) 정치·법·제도",
-            },
-            {
-              value: "의료 해외진출 관련 전문인력 부족",
-              label: "의료 해외진출 관련 전문인력 부족",
-            },
-            {
-              value: "현지(해외) 전문인력 고용의 어려움",
-              label: "현지(해외) 전문인력 고용의 어려움",
-            },
-            {
-              value: "인허가, 면허 등 현지(해외) 법·제도 규제",
-              label: "인허가, 면허 등 현지(해외) 법·제도 규제",
-            },
-            { value: "현지 네트워크 부재", label: "현지 네트워크 부재" },
-            { value: "기타", label: "기타" },
-          ]}
+          minRequired={1}
+          options={getQuestionOptions("C", "C1")}
           value={policyNeeds.difficultiesRank}
           onChange={(values) => updateSection("policyNeeds", { difficultiesRank: values })}
           otherValue={policyNeeds.difficultiesOther}
@@ -180,39 +128,8 @@ export default function PolicyNeedsPage() {
           label="의료 해외진출 활성화를 위해서 가장 필요한 정부 지원을 순서대로 선택해 주세요."
           required={true}
           maxRanks={3}
-          minRequired={3}
-          options={[
-            {
-              value: "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
-              label: "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
-            },
-            {
-              value: "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
-              label: "의료 해외진출 사업을 위한 대출 등 정책자금 지원",
-            },
-            {
-              value: "현지 파트너 발굴 및 검증 지원",
-              label: "현지 파트너 발굴 및 검증 지원",
-            },
-            {
-              value: "의료 해외진출 관련 전문인력 역량강화를 위한 교육",
-              label: "의료 해외진출 관련 전문인력 역량강화를 위한 교육",
-            },
-            { value: "컨설팅 지원", label: "의료 해외진출 사업 수행을 위한 컨설팅 지원" },
-            {
-              value: "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
-              label: "의료 해외진출을 위한 파트너링 행사 개최(수출상담회, 비즈니스 미팅 등)",
-            },
-            {
-              value: "기 진출 의료기관 선도사례 및 진출 전략 공유",
-              label: "기 진출 의료기관 선도사례 및 진출 전략 공유",
-            },
-            {
-              value: "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
-              label: "한국의료 브랜드(Medical Korea) 및 우수기술 홍보",
-            },
-            { value: "기타", label: "기타" },
-          ]}
+          minRequired={1}
+          options={getQuestionOptions("C", "C2")}
           value={policyNeeds.supportNeedsRank}
           onChange={(values) => updateSection("policyNeeds", { supportNeedsRank: values })}
           otherValue={policyNeeds.supportNeedsOther}
@@ -220,53 +137,10 @@ export default function PolicyNeedsPage() {
         />
 
         <QuestionSingleChoice
-          id="desired-support"
-          label="의료 해외진출 활성화를 위해 정부 지원 외에 가장 중요하다고 생각하는 과제는 무엇입니까?"
-          required={true}
-          options={[
-            {
-              value: "진출 기관 및 예정 기관 간의 네트워크 구축",
-              label: "진출 기관 및 예정 기관 간의 네트워크 구축",
-            },
-            {
-              value: "성공 및 실패 사례 공유",
-              label: "성공 및 실패 사례 공유",
-            },
-            {
-              value: "선진국 진출사례 공유",
-              label: "선진국 진출사례 공유",
-            },
-            {
-              value: "의료 해외진출 및 신고제도 홍보",
-              label: "의료 해외진출 및 신고제도 홍보",
-            },
-            {
-              value: "인력 매칭을 위한 플랫폼 운영",
-              label: "인력 매칭을 위한 플랫폼 운영",
-            },
-            {
-              value: "기타",
-              label: "기타",
-            },
-          ]}
-          value={policyNeeds.desiredSupport}
-          onChange={(value) => updateSection("policyNeeds", { desiredSupport: value })}
-          otherValue={policyNeeds.desiredSupportOther}
-          onOtherChange={(value) => updateSection("policyNeeds", { desiredSupportOther: value })}
-        />
-
-        <QuestionSingleChoice
           id="awareness"
           label="정부는 의료 해외진출에 대한 정보 등을 공유하기 위해 의료해외진출 종합정보포털(KOHES)을 운영하고 있습니다. KOHES를 방문하거나 들어본 적이 있으십니까?"
           required={true}
-          options={[
-            { value: "방문한 적 있다.", label: "방문한 적 있다." },
-            {
-              value: "방문한 적은 없지만, 들어본 적 있다.",
-              label: "방문한 적은 없지만, 들어본 적 있다.",
-            },
-            { value: "들어본 적 없다.", label: "들어본 적 없다." },
-          ]}
+          options={getQuestionOptions("C", "C4")}
           value={policyNeeds.awareness}
           onChange={(value) => updateSection("policyNeeds", { awareness: value })}
         />

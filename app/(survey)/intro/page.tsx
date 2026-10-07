@@ -3,15 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { NavigationButton } from "@/components/survey/NavigationButton"
-import { Shield, Gift, Clock, ChevronDown } from "lucide-react"
+import { Gift, Clock, ChevronDown } from "lucide-react"
 import Image from "next/image"
 export default function IntroPage() {
   const router = useRouter()
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
 
-  const handleStart = () => {
-    router.push("/basic-info")
-  }
+  const handleStart = () => router.push("/eligibility")
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
@@ -28,7 +26,7 @@ export default function IntroPage() {
             />
           </a>
           <h1 className="mb-1 md:mb-2 text-2xl md:text-4xl font-bold text-gray-900">
-            2025년 의료해외진출 현황조사
+            2026년 의료해외진출 현황조사
           </h1>
           <p className="text-base md:text-lg font-medium text-gray-600">
             귀하의 소중한 의견을 듣고자 합니다.
@@ -50,6 +48,11 @@ export default function IntroPage() {
             <p className="font-semibold text-gray-900 leading-relaxed mb-4">
               응답해주신 내용은 통계적 분석으로만 사용될 뿐이며, 통계법 제33조, 제34조에 의해 철저히
               비밀이 보장되오니, 잠시만 협조해 주시면 감사하겠습니다.
+            </p>
+            <p className="text-right text-sm text-gray-600">
+              2026년 10월
+              <br />
+              주관연구기관: 한국보건산업진흥원
             </p>
             <div className="mt-4 pt-4 border-t border-gray-200">
               <button
@@ -90,7 +93,7 @@ export default function IntroPage() {
               </div>
               <div className="pt-1.5 space-y-2">
                 <h3 className="font-semibold text-gray-900">
-                  필수 항목을 모두 완료하신 분께{" "}
+                  필수 항목을 모두 완료하신 분 중 추첨을 통해 100명에게{" "}
                   <span className="text-green-600">스타벅스 2만원 상품권</span> 지급 예정입니다.
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -107,7 +110,7 @@ export default function IntroPage() {
               <div className="rounded-lg bg-amber-100 p-2">
                 <Clock className="h-5 w-5 text-amber-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-0">약 10-15분 정도 소요됩니다.</h3>
+              <h3 className="font-semibold text-gray-900 mb-0">약 5~10분 정도 소요됩니다.</h3>
             </div>
           </div>
         </div>

@@ -1,7 +1,8 @@
+import { validateSurveyData } from "@/lib/validation/survey-data"
 import { NextResponse } from "next/server"
 
-import { createSupabaseServerClient } from "@/lib/supabase/client"
-import { separatePIIData } from "@/lib/supabase/responses"
+import { saveSurveyResponse } from "@/lib/d1/responses"
+
 import type { SurveyData } from "@/components/survey/SurveyProvider"
 
 export const dynamic = "force-dynamic"
@@ -15,36 +16,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 })
     }
 
-    const supabase = createSupabaseServerClient()
-    const { piiData, responseData } = separatePIIData(surveyData)
-
-    const respondentName = surveyData.basicInfo.name || null
-    const organizationName =
-      surveyData.expansionInfo.medicalOrgName || surveyData.expansionInfo.companyName || null
-
-    const { data, error } = await supabase
-      .from("survey_responses")
-      .insert({
-        respondent_name: respondentName,
-        organization_name: organizationName,
-        response_data: JSON.parse(JSON.stringify(responseData)),
-        pii_data: JSON.parse(JSON.stringify(piiData)),
-        is_completed: true,
-      })
-      .select("id")
-      .single()
-
-    if (error) {
-      console.error("설문 제출 실패:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    const validation = validateSurveyData(surveyData)
+    if (!validation.isValid) {
+      return NextResponse.json(
+        { error: "설문 응답을 확인해주세요.", errors: validation.errors },
+        { status: 400 }
+      )
     }
 
-    return NextResponse.json({ success: true, id: data?.id ?? null })
+    const key = body.submissionKey
+    if (typeof key !== "string" || !/^[a-zA-Z0-9-]{16,100}$/.test(key)) {
+      return NextResponse.json({ error: "제출 식별자가 필요합니다." }, { status: 400 })
+    }
+    const id = await saveSurveyResponse(surveyData, key)
+    return NextResponse.json({ success: true, id })
   } catch (error) {
     console.error("설문 제출 처리 중 오류:", error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다" },
-      { status: 500 }
+      { error: "설문 저장에 실패했습니다. 다시 시도해주세요." },
+      { status: error instanceof Error && error.message === "SUBMISSION_CONFLICT" ? 409 : 500 }
     )
   }
 }

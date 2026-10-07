@@ -1,5 +1,6 @@
 "use client"
 
+import { validateSurveyData } from "@/lib/validation/survey-data"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -12,29 +13,52 @@ type StepConfig = {
   isComplete: (data: SurveyData) => boolean
 }
 
-type SurveyStepId = "basic-info" | "expansion-info" | "project-details" | "policy-needs" | "complete"
-export type GuardStep = Exclude<SurveyStepId, "basic-info">
+type SurveyStepId =
+  | "intro"
+  | "eligibility"
+  | "consent"
+  | "basic-info"
+  | "expansion-info"
+  | "project-details"
+  | "policy-needs"
+  | "complete"
+export type GuardStep = Exclude<SurveyStepId, "intro">
 
 const STEP_SEQUENCE: StepConfig[] = [
   {
+    id: "intro",
+    path: "/intro",
+    isComplete: () => true,
+  },
+  {
+    id: "eligibility",
+    path: "/eligibility",
+    isComplete: (data) => validateSurveyData(data, "eligibility").isValid,
+  },
+  {
+    id: "consent",
+    path: "/consent",
+    isComplete: (data) => data.basicInfo.privacyConsent === "동의합니다",
+  },
+  {
     id: "basic-info",
     path: "/basic-info",
-    isComplete: (data) => isBasicInfoComplete(data),
+    isComplete: (data) => validateSurveyData(data, "intro").isValid,
   },
   {
     id: "expansion-info",
     path: "/expansion-info",
-    isComplete: (data) => isExpansionInfoComplete(data),
+    isComplete: (data) => validateSurveyData(data, "A").isValid,
   },
   {
     id: "project-details",
     path: "/project-details",
-    isComplete: (data) => isProjectDetailsComplete(data),
+    isComplete: (data) => validateSurveyData(data, "B").isValid,
   },
   {
     id: "policy-needs",
     path: "/policy-needs",
-    isComplete: (data) => isPolicyNeedsComplete(data),
+    isComplete: (data) => validateSurveyData(data, "C").isValid,
   },
   {
     id: "complete",
@@ -49,7 +73,11 @@ export function useSurveyStepGuard(step: GuardStep) {
   const [isAccessible, setIsAccessible] = useState(false)
 
   useEffect(() => {
-    if (skipValidation) {
+    if (
+      skipValidation &&
+      data.basicInfo.eligible === "예" &&
+      data.basicInfo.privacyConsent === "동의합니다"
+    ) {
       setIsAccessible(true)
       return
     }
@@ -74,101 +102,4 @@ export function useSurveyStepGuard(step: GuardStep) {
   }, [data, router, skipValidation, step])
 
   return isAccessible
-}
-
-function isBasicInfoComplete(data: SurveyData) {
-  const { basicInfo } = data
-
-  // 개인정보 비동의 시 name만 체크
-  if (basicInfo.name === "개인정보 비동의") {
-    return true
-  }
-
-  // 동의 시 모든 필드 체크
-  return (
-    isNonEmpty(basicInfo.name) &&
-    isNonEmpty(basicInfo.position) &&
-    isNonEmpty(basicInfo.tel) &&
-    isNonEmpty(basicInfo.mobile) &&
-    isNonEmpty(basicInfo.email)
-  )
-}
-
-function isExpansionInfoComplete(data: SurveyData) {
-  const { expansionInfo } = data
-
-  if (!expansionInfo.orgType) {
-    return false
-  }
-
-  if (expansionInfo.orgType === "의료기관") {
-    return (
-      isNonEmpty(expansionInfo.medicalOrgName) &&
-      Boolean(expansionInfo.medicalOrgCategory) &&
-      Boolean(expansionInfo.foundationType) &&
-      (expansionInfo.foundationType !== "법인" || Boolean(expansionInfo.legalType))
-    )
-  }
-
-  if (expansionInfo.orgType === "회사(MSO 등)") {
-    const hasBasicFields = isNonEmpty(expansionInfo.companyName) && Boolean(expansionInfo.companyCategory)
-    // "기타" 선택 시 상세 입력 필수
-    if (expansionInfo.companyCategory === "기타") {
-      return hasBasicFields && isNonEmpty(expansionInfo.companyCategoryOther)
-    }
-    return hasBasicFields
-  }
-
-  return false
-}
-
-function isProjectDetailsComplete(data: SurveyData) {
-  const { projectDetails } = data
-
-  if (!projectDetails.expansionTiming) return false
-  if (!isNonEmpty(projectDetails.targetCountries)) return false
-  if (!projectDetails.expansionReason) return false
-  if (projectDetails.services.length === 0) return false
-
-  const needsProjectInfo =
-    projectDetails.expansionTiming === "2016.6 이전 진출" ||
-    projectDetails.expansionTiming === "2016.6 이후 진출" ||
-    projectDetails.expansionTiming === "진출 진행 중(법인 설립/현지 공사/인허가 진행 등)"
-
-  const needsReportingAwareness2 =
-    projectDetails.expansionTiming === "진출 기획/발굴 단계(시장조사 등)" ||
-    projectDetails.expansionTiming === "기타"
-
-  if (needsProjectInfo) {
-    if (!isNonEmpty(projectDetails.projectName) || !projectDetails.reportingAwareness1) {
-      return false
-    }
-  }
-
-  if (needsReportingAwareness2) {
-    if (!projectDetails.reportingAwareness2) {
-      return false
-    }
-  }
-
-  if (!projectDetails.hasEvidence) {
-    return false
-  }
-
-  return true
-}
-
-function isPolicyNeedsComplete(data: SurveyData) {
-  const { policyNeeds } = data
-
-  if (policyNeeds.difficultiesRank.length === 0) return false
-  if (policyNeeds.supportNeedsRank.length === 0) return false
-  if (!policyNeeds.desiredSupport) return false
-  if (!policyNeeds.awareness) return false
-
-  return true
-}
-
-function isNonEmpty(value: string) {
-  return value.trim().length > 0
 }

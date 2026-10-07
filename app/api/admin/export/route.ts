@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { randomUUID } from "node:crypto"
+import { currentAdmin, sameOrigin } from "@/lib/auth/server"
+import { queryD1 } from "@/lib/d1/client"
+import { verifyExportPassword } from "@/lib/d1/export-security"
 import { BlobWriter, BlobReader, TextReader, ZipWriter } from "@zip.js/zip.js"
 
-import { createSupabaseServerClient } from "@/lib/supabase/client"
-import type { Database } from "@/lib/supabase/types"
-import { fetchSurveyResponsePayloads } from "@/lib/supabase/responses"
+import { fetchSurveyResponsePayloads } from "@/lib/d1/responses"
 import {
   buildOrderedExportData,
   convertToOrderedCSV,
@@ -22,39 +23,10 @@ interface ExportRequest {
 
 export async function POST(request: Request) {
   try {
-    // Authorization 헤더에서 액세스 토큰 가져오기
-    const authHeader = request.headers.get("authorization")
-    const token = authHeader?.replace("Bearer ", "")
-
-    if (!token) {
-      return NextResponse.json({ error: "인증 토큰이 없습니다." }, { status: 401 })
-    }
-
-    // 토큰으로 사용자 확인
-    const authClient = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      }
-    )
-
-    const {
-      data: { user },
-      error: authError,
-    } = await authClient.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "인증되지 않은 사용자입니다." }, { status: 401 })
-    }
-
-    // 데이터 조회는 Service Role Key 사용
-    const supabase = createSupabaseServerClient()
-
+    const user = currentAdmin()
+    if (!user) return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 })
+    if (!sameOrigin(request))
+      return NextResponse.json({ error: "허용되지 않은 요청입니다." }, { status: 403 })
     const body = (await request.json()) as ExportRequest
     const { type, format, password } = body
 
@@ -70,17 +42,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "비밀번호를 입력해주세요." }, { status: 400 })
     }
 
-    // 비밀번호 검증
-    const { data: isValid, error: verifyError } = await supabase.rpc("verify_export_password", {
-      input_password: password,
-    })
-
-    if (verifyError || !isValid) {
+    if (
+      typeof password !== "string" ||
+      password.length > 256 ||
+      !(await verifyExportPassword(password))
+    ) {
       return NextResponse.json({ error: "비밀번호가 올바르지 않습니다." }, { status: 403 })
     }
 
     // 데이터 가져오기
-    const { entries, error } = await fetchSurveyResponsePayloads()
+    const { entries, error } = await fetchSurveyResponsePayloads(type !== "response")
 
     if (error) {
       console.error("데이터 조회 오류:", error)
@@ -92,7 +63,7 @@ export async function POST(request: Request) {
     if (type === "pii") {
       filteredEntries = entries.filter((entry) => {
         const name = entry.piiData?.name
-        return name !== "개인정보 비동의"
+        return !!entry.piiData && name !== "개인정보 비동의"
       })
     }
 
@@ -144,18 +115,19 @@ export async function POST(request: Request) {
     const zipBlob = await zipWriter.close()
     const zipArrayBuffer = await zipBlob.arrayBuffer()
 
-    // 로그 기록
-    const ipAddress =
-      request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
-    const userAgent = request.headers.get("user-agent") || "unknown"
-
-    await supabase.rpc("log_export", {
-      p_user_id: user.id,
-      p_export_type: type,
-      p_export_format: format,
-      p_ip_address: ipAddress,
-      p_user_agent: userAgent,
-    })
+    await queryD1([
+      {
+        sql: "INSERT INTO export_logs (id,user_id,export_type,export_format,response_count,created_at) VALUES (?,?,?,?,?,?)",
+        params: [
+          randomUUID(),
+          user.id,
+          type,
+          format,
+          filteredEntries.length,
+          new Date().toISOString(),
+        ],
+      },
+    ])
 
     // ZIP 파일 반환
     const zipBuffer = Buffer.from(zipArrayBuffer)

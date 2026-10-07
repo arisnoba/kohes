@@ -1,9 +1,11 @@
+import surveySchema from "../../../survey_schema.json"
 import type { PostgrestError } from "@supabase/supabase-js"
 
 import { createSupabaseServerClient } from "@/lib/supabase/client"
 import type { SurveyData } from "@/components/survey/SurveyProvider"
 
-const ADMIN_SELECT_COLUMNS = "id, respondent_name, organization_name, submitted_at, response_data, pii_data"
+const ADMIN_SELECT_COLUMNS =
+  "id, respondent_name, organization_name, submitted_at, response_data, pii_data"
 
 export interface AdminResponseSummary {
   id: string
@@ -42,7 +44,8 @@ export async function fetchSurveyResponsesPage({
   pageSize?: number
 } = {}): Promise<PaginatedAdminResponseResult> {
   const normalizedPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1
-  const normalizedPageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.min(Math.floor(pageSize), PAGE_SIZE) : 20
+  const normalizedPageSize =
+    Number.isFinite(pageSize) && pageSize > 0 ? Math.min(Math.floor(pageSize), PAGE_SIZE) : 20
   const from = (normalizedPage - 1) * normalizedPageSize
   const to = from + normalizedPageSize - 1
 
@@ -179,7 +182,11 @@ interface AdminPageRangeResult {
   error: PostgrestError | null
 }
 
-async function fetchAdminPageRange(selectColumns: string, from: number, to: number): Promise<AdminPageRangeResult> {
+async function fetchAdminPageRange(
+  selectColumns: string,
+  from: number,
+  to: number
+): Promise<AdminPageRangeResult> {
   const supabase = createSupabaseServerClient()
   const { data, error, count } = await supabase
     .from("survey_responses")
@@ -212,7 +219,9 @@ function buildPaginatedResult(
   }
 }
 
-async function resolvePaginatedResult(result: PaginatedAdminResponseResult): Promise<PaginatedAdminResponseResult> {
+async function resolvePaginatedResult(
+  result: PaginatedAdminResponseResult
+): Promise<PaginatedAdminResponseResult> {
   if (result.totalCount > 0) {
     const maxPage = Math.max(1, Math.ceil(result.totalCount / result.pageSize))
     if (result.page > maxPage) {
@@ -229,22 +238,52 @@ async function resolvePaginatedResult(result: PaginatedAdminResponseResult): Pro
  */
 export function separatePIIData(data: SurveyData) {
   // PII: 성명, 연락처(Tel, Mobile, Email), 주소
-  const piiData = {
-    name: data.basicInfo.name,
-    tel: data.basicInfo.tel,
-    mobile: data.basicInfo.mobile,
-    email: data.basicInfo.email,
-    address: data.basicInfo.address,
+  const piiData =
+    data.basicInfo.privacyConsent === "동의하지 않습니다"
+      ? null
+      : {
+          name: data.basicInfo.name,
+          tel: data.basicInfo.tel,
+          mobile: data.basicInfo.mobile,
+          email: data.basicInfo.email,
+          address: data.basicInfo.address,
+        }
+  const { projectName, reportingAwareness2, hasEvidence, ...projectDetails } = data.projectDetails
+  const { desiredSupport, desiredSupportOther, ...policyNeeds } = data.policyNeeds
+  const expansionInfo = { ...data.expansionInfo }
+  if (expansionInfo.orgType === "의료기관") {
+    expansionInfo.companyName = ""
+    expansionInfo.companyCategory = ""
+    expansionInfo.companyCategoryOther = ""
+    if (expansionInfo.foundationType !== "법인") {
+      expansionInfo.legalType = ""
+      expansionInfo.legalTypeOther = ""
+      expansionInfo.legalName = ""
+    }
+  } else {
+    expansionInfo.medicalOrgName = ""
+    expansionInfo.medicalOrgCategory = ""
+    expansionInfo.medicalOrgCategoryOther = ""
+    expansionInfo.foundationType = ""
+    expansionInfo.foundationTypeOther = ""
+    expansionInfo.legalType = ""
+    expansionInfo.legalTypeOther = ""
+    expansionInfo.legalName = ""
   }
 
   // 응답 데이터: PII를 제외한 모든 설문 응답
   const responseData = {
+    surveyVersion: surveySchema.metadata.version,
+    surveyYear: 2026,
     basicInfo: {
-      position: data.basicInfo.position,
+      eligible: data.basicInfo.eligible,
+      privacyConsent: data.basicInfo.privacyConsent,
+      position:
+        data.basicInfo.privacyConsent === "동의하지 않습니다" ? "" : data.basicInfo.position,
     },
-    expansionInfo: data.expansionInfo,
-    projectDetails: data.projectDetails,
-    policyNeeds: data.policyNeeds,
+    expansionInfo,
+    projectDetails,
+    policyNeeds,
   }
 
   return { piiData, responseData }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { getQuestionOptions } from "@/lib/survey/schema-loader"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { SurveyLayout } from "@/components/survey/SurveyLayout"
@@ -42,6 +43,10 @@ export default function ExpansionInfoPage() {
         medicalOrgCategory: "",
         foundationType: "",
         legalType: "",
+        legalName: "",
+        legalTypeOther: "",
+        foundationTypeOther: "",
+        medicalOrgCategoryOther: "",
       })
     } else {
       updateSection("expansionInfo", { orgType: value })
@@ -51,7 +56,7 @@ export default function ExpansionInfoPage() {
   const handleFoundationTypeChange = (value: string) => {
     updateSection("expansionInfo", {
       foundationType: value,
-      ...(value === "법인" ? {} : { legalType: "" }),
+      ...(value === "법인" ? {} : { legalType: "", legalName: "", legalTypeOther: "" }),
     })
   }
 
@@ -146,6 +151,25 @@ export default function ExpansionInfoPage() {
       }
     }
 
+    if (expansionInfo.orgType === "의료기관") {
+      const missingOther = [
+        [expansionInfo.medicalOrgCategory, expansionInfo.medicalOrgCategoryOther],
+        [expansionInfo.foundationType, expansionInfo.foundationTypeOther],
+        ...(expansionInfo.foundationType === "법인"
+          ? [[expansionInfo.legalType, expansionInfo.legalTypeOther]]
+          : []),
+      ].some(([choice, other]) => choice === "기타" && !other?.trim())
+      if (
+        missingOther ||
+        (expansionInfo.foundationType === "법인" && !expansionInfo.legalName?.trim())
+      ) {
+        toast.error(
+          missingOther ? "선택한 기타 항목의 내용을 입력해주세요." : "법인명을 입력해주세요."
+        )
+        return
+      }
+    }
+
     // 회사 검증
     if (expansionInfo.orgType === "회사(의약품, 의료기기 화장품, MSO 등)") {
       const companyNameError = validateCompanyName(expansionInfo.companyName)
@@ -213,13 +237,7 @@ export default function ExpansionInfoPage() {
           id="org-type"
           label="귀하의 기관 구분은 무엇입니까?"
           required={true}
-          options={[
-            { value: "의료기관", label: "의료기관" },
-            {
-              value: "회사(의약품, 의료기기 화장품, MSO 등)",
-              label: "회사(의약품, 의료기기 화장품, MSO 등)",
-            },
-          ]}
+          options={getQuestionOptions("A", "A1")}
           value={expansionInfo.orgType}
           onChange={handleOrgTypeChange}
         />
@@ -249,59 +267,50 @@ export default function ExpansionInfoPage() {
               id="medical-org-category"
               label="의료기관의 유형을 선택해 주세요."
               required={true}
-              options={[
-                { value: "의원", label: "의원" },
-                { value: "치과의원", label: "치과의원" },
-                { value: "한의원", label: "한의원" },
-                { value: "조산원", label: "조산원" },
-                { value: "병원", label: "병원" },
-                { value: "치과병원", label: "치과병원" },
-                { value: "한방병원", label: "한방병원" },
-                { value: "요양병원", label: "요양병원" },
-                { value: "종합병원(100~300병상)", label: "종합병원 (100~300병상)" },
-                { value: "종합병원(300병상 초과)", label: "종합병원 (300병상 초과)" },
-                { value: "상급종합병원", label: "상급종합병원" },
-              ]}
+              options={getQuestionOptions("A", "A2_org_type")}
               value={expansionInfo.medicalOrgCategory}
               onChange={(value) => updateSection("expansionInfo", { medicalOrgCategory: value })}
+              otherValue={expansionInfo.medicalOrgCategoryOther}
+              onOtherChange={(value) =>
+                updateSection("expansionInfo", { medicalOrgCategoryOther: value })
+              }
             />
 
             <QuestionSingleChoice
               id="foundation-type"
               label="의료기관의 설립 유형을 선택해 주세요."
               required={true}
-              options={[
-                { value: "국공립", label: "국공립" },
-                { value: "법인", label: "법인" },
-                { value: "소비자생활협동조합", label: "소비자생활협동조합" },
-                { value: "사회적협동조합", label: "사회적협동조합" },
-                { value: "개인", label: "개인" },
-                { value: "군병원", label: "군병원" },
-                { value: "기타", label: "기타" },
-              ]}
+              options={getQuestionOptions("A", "A2_found_type")}
               value={expansionInfo.foundationType}
               onChange={handleFoundationTypeChange}
-              disableOtherInput={true}
+              otherValue={expansionInfo.foundationTypeOther}
+              onOtherChange={(value) =>
+                updateSection("expansionInfo", { foundationTypeOther: value })
+              }
             />
 
             {expansionInfo.foundationType === "법인" && (
-              <QuestionSingleChoice
-                id="legal-type"
-                label="법인 유형을 선택해 주세요."
-                required={true}
-                options={[
-                  { value: "학교법인", label: "학교법인" },
-                  { value: "특수법인", label: "특수법인" },
-                  { value: "종교법인", label: "종교법인" },
-                  { value: "사회복지법인", label: "사회복지법인" },
-                  { value: "사단법인", label: "사단법인" },
-                  { value: "재단법인", label: "재단법인" },
-                  { value: "회사법인", label: "회사법인" },
-                  { value: "의료법인", label: "의료법인" },
-                ]}
-                value={expansionInfo.legalType}
-                onChange={(value) => updateSection("expansionInfo", { legalType: value })}
-              />
+              <>
+                <QuestionSingleChoice
+                  id="legal-type"
+                  label="법인 유형을 선택해 주세요."
+                  required={true}
+                  options={getQuestionOptions("A", "A2_legal_subtype")}
+                  value={expansionInfo.legalType}
+                  onChange={(value) => updateSection("expansionInfo", { legalType: value })}
+                  otherValue={expansionInfo.legalTypeOther}
+                  onOtherChange={(value) =>
+                    updateSection("expansionInfo", { legalTypeOther: value })
+                  }
+                />
+                <QuestionText
+                  id="legal-name"
+                  label="법인명을 입력해 주세요."
+                  required={true}
+                  value={expansionInfo.legalName ?? ""}
+                  onChange={(value) => updateSection("expansionInfo", { legalName: value })}
+                />
+              </>
             )}
           </div>
         )}
@@ -329,13 +338,7 @@ export default function ExpansionInfoPage() {
               id="company-category"
               label="회사 유형을 선택해 주세요."
               required={true}
-              options={[
-                { value: "MSO(병원경영지원회사)", label: "MSO(병원경영지원회사)" },
-                { value: "의료기기", label: "의료기기" },
-                { value: "의약품", label: "의약품" },
-                { value: "화장품", label: "화장품" },
-                { value: "기타", label: "기타" },
-              ]}
+              options={getQuestionOptions("A", "A3_company_type")}
               value={expansionInfo.companyCategory}
               onChange={(value) => updateSection("expansionInfo", { companyCategory: value })}
               otherValue={expansionInfo.companyCategoryOther}

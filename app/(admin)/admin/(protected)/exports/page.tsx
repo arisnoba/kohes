@@ -48,21 +48,10 @@ export default function ExportsPage() {
         throw new Error("비밀번호를 입력해주세요.")
       }
 
-      // Supabase 클라이언트에서 액세스 토큰 가져오기
-      const supabase = (await import("@/lib/supabase/client")).createSupabaseClient()
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (!session?.access_token) {
-        throw new Error("인증 세션이 없습니다. 다시 로그인해주세요.")
-      }
-
       const response = await fetch("/api/admin/export", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ type, format, password }),
       })

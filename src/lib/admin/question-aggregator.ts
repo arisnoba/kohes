@@ -1,5 +1,5 @@
 import type { SurveyQuestionSummary } from "@/lib/survey/schema-loader"
-import type { SurveyResponseRecord } from "@/lib/supabase/responses"
+import type { SurveyResponseRecord } from "@/lib/d1/responses"
 
 type SourceKind = "response" | "pii"
 
@@ -12,6 +12,9 @@ interface FieldMapping {
 const MAX_TEXT_SAMPLES = 3
 
 const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
+  eligible: { source: "response", path: ["basicInfo", "eligible"] },
+  privacyConsent: { source: "response", path: ["basicInfo", "privacyConsent"] },
+  A2_legal_name: { source: "response", path: ["expansionInfo", "legalName"] },
   name: { source: "pii", path: ["name"], sensitive: true },
   position: { source: "response", path: ["basicInfo", "position"] },
   contact_tel: { source: "pii", path: ["tel"], sensitive: true },
@@ -42,6 +45,10 @@ const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
 }
 
 const ADDITIONAL_TEXT_FIELDS: Record<string, FieldMapping> = {
+  A2_org_type: { source: "response", path: ["expansionInfo", "medicalOrgCategoryOther"] },
+  A2_found_type: { source: "response", path: ["expansionInfo", "foundationTypeOther"] },
+  A2_legal_subtype: { source: "response", path: ["expansionInfo", "legalTypeOther"] },
+  A3_company_type: { source: "response", path: ["expansionInfo", "companyCategoryOther"] },
   C1: { source: "response", path: ["policyNeeds", "difficultiesOther"] },
   C2: { source: "response", path: ["policyNeeds", "supportNeedsOther"] },
   C3: { source: "response", path: ["policyNeeds", "desiredSupportOther"] },

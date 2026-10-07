@@ -9,10 +9,12 @@ import {
   useState,
   type ReactNode,
 } from "react"
-import { submitSurveyResponse } from "@/lib/supabase/responses"
+import { submitSurveyResponse } from "@/lib/survey/submission"
 import { DevTools } from "./DevTools"
 
 export interface BasicInfoState {
+  eligible?: string
+  privacyConsent?: string
   name: string
   position: string
   tel: string
@@ -22,6 +24,10 @@ export interface BasicInfoState {
 }
 
 export interface ExpansionInfoState {
+  medicalOrgCategoryOther?: string
+  foundationTypeOther?: string
+  legalTypeOther?: string
+  legalName?: string
   orgType: string
   medicalOrgName: string
   medicalOrgCategory: string
@@ -68,6 +74,8 @@ export interface SurveyData {
 
 const baseSurveyData: SurveyData = {
   basicInfo: {
+    eligible: "",
+    privacyConsent: "",
     name: "",
     position: "",
     tel: "",
@@ -76,6 +84,10 @@ const baseSurveyData: SurveyData = {
     address: "",
   },
   expansionInfo: {
+    medicalOrgCategoryOther: "",
+    foundationTypeOther: "",
+    legalTypeOther: "",
+    legalName: "",
     orgType: "",
     medicalOrgName: "",
     medicalOrgCategory: "",
@@ -125,6 +137,8 @@ const defaultSurveyData = createSurveyData()
 
 const mockSurveyData = createSurveyData({
   basicInfo: {
+    eligible: "예",
+    privacyConsent: "동의합니다",
     name: "관리자 테스트",
     position: "팀장",
     tel: "02-1234-5678",
@@ -138,6 +152,7 @@ const mockSurveyData = createSurveyData({
     medicalOrgCategory: "상급종합병원",
     foundationType: "법인",
     legalType: "의료법인",
+    legalName: "테스트 의료법인",
     companyName: "",
     companyCategory: "",
     companyCategoryOther: "",
@@ -146,21 +161,27 @@ const mockSurveyData = createSurveyData({
     expansionTiming: "2016.6 이후 진출",
     expansionTimingOther: "",
     targetCountries: "미국, 중국",
-    expansionReason: "국내 경쟁 심화",
+    expansionReason: "해외 사업을 통한 매출, 수익 확대",
     expansionReasonOther: "",
-    services: ["개설운영_신설", "정보시스템이전"],
+    services: ["개설운영_신설", "정보시스템 이전"],
     servicesOther: "",
     projectName: "글로벌 클리닉 프로젝트",
     reportingAwareness1: "예",
     reportingAwareness2: "",
-    departments: ["내과", "외과"],
+    departments: ["내과", "일반외과"],
     departmentsOther: "",
     hasEvidence: "네",
   },
   policyNeeds: {
-    difficultiesRank: ["자금 조달의 어려움", "수익 예측의 불확실성"],
+    difficultiesRank: [
+      "사업자금 확보 및 자금관리의 어려움",
+      "현지 시장정보 확보 및 사업성 판단의 어려움",
+    ],
     difficultiesOther: "",
-    supportNeedsRank: ["현지 문화, 법, 정책, 동향 등 유관 정보 지원", "컨설팅 지원"],
+    supportNeedsRank: [
+      "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
+      "의료 해외진출 사업 수행을 위한 컨설팅 지원",
+    ],
     supportNeedsOther: "",
     desiredSupport: "성공 및 실패 사례 공유",
     desiredSupportOther: "",
@@ -215,7 +236,7 @@ const SurveyContext = createContext<SurveyContextValue | undefined>(undefined)
 
 export function SurveyProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(surveyReducer, defaultSurveyData)
-  const [skipValidation, setSkipValidation] = useState(process.env.NODE_ENV !== "production")
+  const [skipValidation, setSkipValidation] = useState(false)
 
   const handleSkipValidationChange = useCallback((skip: boolean) => {
     setSkipValidation(skip)

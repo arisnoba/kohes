@@ -47,7 +47,7 @@ const entries: SurveyResponseRecord[] = [
       tel: "02-123-4567",
       mobile: "010-1111-2222",
       email: "test@example.com",
-      address: "서울특별시", 
+      address: "서울특별시",
     },
   },
   {
@@ -78,10 +78,7 @@ const entries: SurveyResponseRecord[] = [
       policyNeeds: {
         difficultiesRank: ["해외 정보 부족", "자금 조달의 어려움", "기타"],
         difficultiesOther: "현지 법규 파악이 어렵습니다.",
-        supportNeedsRank: [
-          "현지 문화, 법, 정책, 동향 등 유관 정보 지원",
-          "컨설팅 지원"
-        ],
+        supportNeedsRank: ["현지 문화, 법, 정책, 동향 등 유관 정보 지원", "컨설팅 지원"],
         supportNeedsOther: "",
         desiredSupport: "성공/실패 사례 공유",
         awareness: "들어봄",
@@ -124,9 +121,9 @@ describe("aggregateSurveyResponses", () => {
     const capital = rank?.optionStats.find((item) => item.value === "자금 조달의 어려움")
     const info = rank?.optionStats.find((item) => item.value === "해외 정보 부족")
 
-    expect(capital?.totalScore).toBe(17)
-    expect(capital?.averageScore).toBeCloseTo(8.5)
-    expect(info?.totalScore).toBe(17)
+    expect(capital?.totalScore).toBe(5)
+    expect(capital?.averageScore).toBeCloseTo(2.5)
+    expect(info?.totalScore).toBe(5)
     expect(rank?.otherTexts[0]).toContain("자금 조달이 가장 큰 어려움")
   })
 

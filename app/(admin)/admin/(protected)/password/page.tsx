@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { createSupabaseClient } from "@/lib/supabase/client"
+
 
 export default function PasswordManagementPage() {
   const [loading, setLoading] = useState(false)
@@ -76,26 +76,9 @@ export default function PasswordManagementPage() {
     setLoading(true)
 
     try {
-      const supabase = createSupabaseClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        throw new Error("인증되지 않은 사용자입니다.")
-      }
-
-      // 비밀번호 변경 함수 호출
-      const { data: success, error } = await supabase.rpc("update_export_password", {
-        old_password: oldPassword || null,
-        new_password: newPassword,
-        user_id: user.id,
-      })
-
-      if (error) {
-        console.error("비밀번호 변경 오류:", error)
-        throw new Error("비밀번호 변경에 실패했습니다.")
-      }
+      const response = await fetch("/api/admin/password", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({oldPassword,newPassword})})
+      const {success,error} = await response.json()
+      if (error) throw new Error(error)
 
       if (!success) {
         showDialog(

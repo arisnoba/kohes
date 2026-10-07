@@ -15,7 +15,7 @@ import {
   aggregateSurveyResponses,
   type AggregatedQuestionStats,
 } from "@/lib/admin/question-aggregator"
-import { fetchSurveyResponsePayloads, isMissingTableError } from "@/lib/supabase/responses"
+import { fetchSurveyResponsePayloads, isMissingTableError } from "@/lib/d1/responses"
 
 const QUESTION_TYPE_LABELS: Record<string, string> = {
   text: "단답형",
@@ -51,14 +51,14 @@ export default async function DashboardPage() {
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
           <p className="font-semibold">survey_responses 테이블을 찾을 수 없습니다.</p>
           <p className="mt-2">
-            Supabase CLI 로컬 DB 또는 원격 프로젝트에 아래 마이그레이션을 적용해주세요.
+            D1 연결 설정과 초기 스키마를 확인해주세요.
           </p>
           <ol className="mt-3 list-decimal space-y-2 pl-5">
             <li>
-              `supabase/migrations/20240127000000_create_survey_responses.sql` 파일을 확인합니다.
+              `d1/migrations/0001_survey_2026.sql` 파일을 확인합니다.
             </li>
-            <li>`pnpm supabase db push` 명령으로 마이그레이션을 적용합니다.</li>
-            <li>필요 시 `pnpm supabase:start`로 로컬 Supabase를 먼저 실행합니다.</li>
+            <li>원격 스키마 변경은 대상 확인과 승인 후 진행합니다.</li>
+            <li>로컬에서는 `pnpm db:init:local`로 SQLite DB를 준비합니다.</li>
           </ol>
         </div>
       </div>

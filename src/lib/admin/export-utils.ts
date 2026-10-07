@@ -1,5 +1,5 @@
 import { getSurveyQuestionSummaries } from "@/lib/survey/schema-loader"
-import type { SurveyResponseRecord } from "@/lib/supabase/responses"
+import type { SurveyResponseRecord } from "@/lib/d1/responses"
 import ExcelJS from "exceljs"
 
 type ExportType = "all" | "response" | "pii"
@@ -11,6 +11,9 @@ interface FieldMapping {
 
 // question-aggregator.ts의 QUESTION_FIELD_MAP과 동일한 매핑
 const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
+  eligible: { source: "response", path: ["basicInfo", "eligible"] },
+  privacyConsent: { source: "response", path: ["basicInfo", "privacyConsent"] },
+  A2_legal_name: { source: "response", path: ["expansionInfo", "legalName"] },
   name: { source: "pii", path: ["name"] },
   position: { source: "response", path: ["basicInfo", "position"] },
   contact_tel: { source: "pii", path: ["tel"] },
@@ -41,6 +44,10 @@ const QUESTION_FIELD_MAP: Record<string, FieldMapping> = {
 }
 
 const OTHER_FIELD_OVERRIDES: Record<string, string> = {
+  medicalOrgCategory: "medicalOrgCategoryOther",
+  foundationType: "foundationTypeOther",
+  legalType: "legalTypeOther",
+  companyCategory: "companyCategoryOther",
   difficultiesRank: "difficultiesOther",
   supportNeedsRank: "supportNeedsOther",
   services: "servicesOther",

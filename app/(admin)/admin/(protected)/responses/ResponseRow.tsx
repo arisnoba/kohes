@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import type { AdminResponseSummary } from "@/lib/supabase/responses"
+import type { AdminResponseSummary } from "@/lib/d1/responses"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"

@@ -12,7 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import type { SurveyResponseRecord } from "@/lib/supabase/responses"
+import type { SurveyResponseRecord } from "@/lib/d1/responses"
 
 const NUMBER_FORMATTER = new Intl.NumberFormat("ko-KR")
 const PERCENT_FORMATTER = new Intl.NumberFormat("ko-KR", {
@@ -92,6 +92,10 @@ export function QuestionDataDrawer({
           } else {
             value = null
           }
+          break
+        }
+        case "A2_legal_name": {
+          value = (responseData as any).expansionInfo?.legalName || null
           break
         }
         case "B5_1_1": {
@@ -193,10 +197,7 @@ export function QuestionDataDrawer({
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold">전체 응답 목록</h3>
                 {dataItems.map((item) => (
-                  <div
-                    key={item.index}
-                    className="rounded-lg border bg-background p-3 space-y-1"
-                  >
+                  <div key={item.index} className="rounded-lg border bg-background p-3 space-y-1">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-muted-foreground">
                         {responseCount - item.index}번 응답

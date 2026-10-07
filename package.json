@@ -15,7 +15,8 @@
     "supabase:stop": "supabase stop",
     "supabase:db:push": "supabase db push",
     "supabase:check": "tsx scripts/check-supabase.ts",
-    "seed-test-data": "tsx scripts/seed-test-data.ts"
+    "seed-test-data": "tsx scripts/seed-test-data.ts",
+    "db:init:local": "node scripts/init-d1-local.mjs"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",

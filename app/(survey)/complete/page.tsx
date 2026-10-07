@@ -8,7 +8,7 @@ import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function CompletePage() {
   const router = useRouter()
-  const { submitSurvey } = useSurveyForm()
+  const { submitSurvey, data } = useSurveyForm()
   const canAccess = useSurveyStepGuard("complete")
   const [status, setStatus] = useState<"submitting" | "success" | "error">("submitting")
   const [errorMessage, setErrorMessage] = useState("")
@@ -112,17 +112,26 @@ export default function CompletePage() {
         {/* Info Cards */}
         <div className="space-y-4">
           <div className="rounded-xl bg-white p-6 shadow-sm">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="rounded-lg bg-green-100 p-2">
-                <Gift className="h-5 w-5 text-green-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900">보상 안내</h3>
-            </div>
-            <p className="text-sm text-gray-600">
-              필수 항목을 모두 완료하신 경우, 스타벅스 2만원 상품권이 입력하신{" "}
-              <span className="font-bold text-green-600">연락처(휴대전화 번호)</span>로 발송됩니다.
-            </p>
-            <p className="mt-2 text-xs text-gray-500">※ 예산 소진 시 조기 마감될 수 있습니다</p>
+            {data.basicInfo.privacyConsent === "동의하지 않습니다" ? (
+              <p className="text-sm text-gray-600">
+                개인정보 수집 및 이용에 동의하지 않아 경품 추첨 대상에서 제외됩니다.
+              </p>
+            ) : (
+              <>
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="rounded-lg bg-green-100 p-2">
+                    <Gift className="h-5 w-5 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900">보상 안내</h3>
+                </div>
+                <p className="text-sm text-gray-600">
+                  필수 항목을 모두 완료하신 분 중 추첨을 통해 100명에게 스타벅스 2만원 상품권이
+                  입력하신 <span className="font-bold text-green-600">연락처(휴대전화 번호)</span>로
+                  발송됩니다.
+                </p>
+                <p className="mt-2 text-xs text-gray-500">※ 예산 소진 시 조기 마감될 수 있습니다</p>
+              </>
+            )}
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow-sm">
@@ -135,19 +144,12 @@ export default function CompletePage() {
             <p className="text-sm text-gray-600">
               설문 관련 문의사항이 있으시면 아래로 연락주시기 바랍니다.
             </p>
-            <p className="mt-2 text-sm text-gray-600">한국보건산업진흥원 유성현 연구원</p>
+
             <a
-              href="tel:043-713-8956"
+              href="mailto:haeeun1079@khidi.or.kr"
               className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
             >
-              043-713-8956
-            </a>
-            {", "}
-            <a
-              href="mailto:kohes@example.com"
-              className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
-            >
-              ysh5233@khidi.or.kr
+              haeeun1079@khidi.or.kr
             </a>
           </div>
         </div>

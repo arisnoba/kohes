@@ -46,7 +46,7 @@ export default function CompletePage() {
 
   if (isIneligible) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <div className="min-h-screen bg-blue-50">
         <div className="mx-auto max-w-2xl px-4 py-8 md:py-12">
           <div className="mb-8 flex justify-center">
             <div className="rounded-full bg-blue-100 p-6">
@@ -97,7 +97,7 @@ export default function CompletePage() {
   // 제출 중 로딩 화면
   if (status === "submitting") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <div className="min-h-screen bg-blue-50">
         <div className="mx-auto max-w-2xl px-4 py-12">
           <div className="mb-8 flex justify-center">
             <div className="rounded-full bg-blue-100 p-6">
@@ -116,7 +116,7 @@ export default function CompletePage() {
   // 제출 실패 화면
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
+      <div className="min-h-screen bg-blue-50">
         <div className="mx-auto max-w-2xl px-4 py-12">
           <div className="mb-8 flex justify-center">
             <div className="rounded-full bg-red-100 p-6">
@@ -140,7 +140,7 @@ export default function CompletePage() {
 
   // 제출 성공 화면
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-blue-50">
       <div className="mx-auto max-w-2xl px-4 py-8 md:py-12">
         {/* Success Icon */}
         <div className="mb-8 flex justify-center">

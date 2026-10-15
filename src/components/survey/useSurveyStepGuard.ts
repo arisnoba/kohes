@@ -73,6 +73,11 @@ export function useSurveyStepGuard(step: GuardStep) {
   const [isAccessible, setIsAccessible] = useState(false)
 
   useEffect(() => {
+    if (step === "complete" && data.basicInfo.eligible === "아니오") {
+      setIsAccessible(true)
+      return
+    }
+
     if (
       skipValidation &&
       data.basicInfo.eligible === "예" &&

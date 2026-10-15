@@ -2,19 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle, Gift, Mail, Loader2, AlertCircle } from "lucide-react"
+import { CheckCircle, Gift, Mail, Loader2, AlertCircle, Info } from "lucide-react"
 import { useSurveyForm } from "@/components/survey/SurveyProvider"
 import { useSurveyStepGuard } from "@/components/survey/useSurveyStepGuard"
 
 export default function CompletePage() {
   const router = useRouter()
-  const { submitSurvey, data } = useSurveyForm()
+  const { submitSurvey, data, updateSection } = useSurveyForm()
   const canAccess = useSurveyStepGuard("complete")
+  const isIneligible = data.basicInfo.eligible === "아니오"
   const [status, setStatus] = useState<"submitting" | "success" | "error">("submitting")
   const [errorMessage, setErrorMessage] = useState("")
+  const [isRechecking, setIsRechecking] = useState(false)
 
   useEffect(() => {
-    if (!canAccess) {
+    if (!canAccess || isIneligible || isRechecking) {
       return
     }
 
@@ -36,10 +38,60 @@ export default function CompletePage() {
     }
 
     submit()
-  }, [canAccess, submitSurvey])
+  }, [canAccess, isIneligible, isRechecking, submitSurvey])
 
-  if (!canAccess) {
+  if (!canAccess || isRechecking) {
     return null
+  }
+
+  if (isIneligible) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="mx-auto max-w-2xl px-4 py-8 md:py-12">
+          <div className="mb-8 flex justify-center">
+            <div className="rounded-full bg-blue-100 p-6">
+              <Info className="h-12 w-12 text-blue-600" aria-hidden="true" />
+            </div>
+          </div>
+          <div className="mb-8 text-center" role="status">
+            <h1 className="mb-3 text-3xl font-bold text-gray-900 md:text-4xl">
+              설문 대상자가 아닙니다.
+            </h1>
+            <p className="text-lg font-medium text-gray-600">감사합니다.</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 flex items-center gap-3">
+              <div className="rounded-lg bg-blue-100 p-2">
+                <Mail className="h-5 w-5 text-blue-600" aria-hidden="true" />
+              </div>
+              <h3 className="font-semibold text-gray-900">문의하기</h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              설문 관련 문의사항이 있으시면 아래로 연락주시기 바랍니다.
+            </p>
+            <a
+              className="mt-2 inline-block text-sm font-medium text-blue-600 hover:underline"
+              href="mailto:haeeun1079@khidi.or.kr"
+            >
+              haeeun1079@khidi.or.kr
+            </a>
+          </div>
+          <div className="mt-8 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsRechecking(true)
+                updateSection("basicInfo", { eligible: "" })
+                router.push("/eligibility")
+              }}
+              className="text-sm text-gray-600 hover:text-gray-900 hover:underline"
+            >
+              응답 대상 여부 다시 확인하기
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // 제출 중 로딩 화면

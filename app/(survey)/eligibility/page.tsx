@@ -25,17 +25,11 @@ export default function EligibilityPage() {
           required={true}
           options={getQuestionOptions("eligibility", "eligible")}
           value={data.basicInfo.eligible}
-          onChange={(value) => updateSection("basicInfo", { eligible: value })}
+          onChange={(value) => {
+            updateSection("basicInfo", { eligible: value })
+            if (value === "아니오") router.push("/complete")
+          }}
         />
-        {data.basicInfo.eligible === "아니오" && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6" role="status">
-            <p className="font-semibold">설문 대상자가 아닙니다. 감사합니다.</p>
-            <p className="mt-4">설문 관련 문의사항이 있으시면 아래로 연락주시기 바랍니다.</p>
-            <a className="text-blue-600" href="mailto:haeeun1079@khidi.or.kr">
-              haeeun1079@khidi.or.kr
-            </a>
-          </div>
-        )}
       </div>
 
       {data.basicInfo.eligible !== "아니오" && (

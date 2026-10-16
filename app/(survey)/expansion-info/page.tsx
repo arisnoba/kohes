@@ -251,7 +251,7 @@ export default function ExpansionInfoPage() {
             <QuestionText
               id="medical-org-name"
               label="의료기관명을 입력해 주세요."
-              placeholder="예: 서울대학교병원"
+              placeholder="예: 한국대학교병원"
               required={true}
               value={expansionInfo.medicalOrgName}
               onChange={(value) => updateSection("expansionInfo", { medicalOrgName: value })}
@@ -324,7 +324,7 @@ export default function ExpansionInfoPage() {
             <QuestionText
               id="company-name"
               label="회사명을 입력해 주세요."
-              placeholder="예: K-MSO"
+              placeholder="예: 한국보건산업진흥원"
               required={true}
               value={expansionInfo.companyName}
               onChange={(value) => updateSection("expansionInfo", { companyName: value })}

@@ -177,9 +177,9 @@ export default function CompletePage() {
                   <h3 className="font-semibold text-gray-900">보상 안내</h3>
                 </div>
                 <p className="text-sm text-gray-600">
-                  필수 항목을 모두 완료하신 분 중 추첨을 통해 100명에게 스타벅스 2만원 상품권이
-                  입력하신 <span className="font-bold text-green-600">연락처(휴대전화 번호)</span>로
-                  발송됩니다.
+                  필수 항목을 모두 완료하신 분 중 추첨을 통해 100명에게 입력하신{" "}
+                  <span className="font-bold text-green-600">연락처(휴대전화 번호)</span>로 온라인
+                  기프티콘을 보내드릴 예정입니다.
                 </p>
                 <p className="mt-2 text-xs text-gray-500">※ 예산 소진 시 조기 마감될 수 있습니다</p>
               </>

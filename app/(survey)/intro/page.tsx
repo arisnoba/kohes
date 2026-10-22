@@ -50,7 +50,7 @@ export default function IntroPage() {
               비밀이 보장되오니, 잠시만 협조해 주시면 감사하겠습니다.
             </p>
             <p className="text-right text-sm text-gray-600">
-              2026년 10월
+              2026년 11월
               <br />
               주관연구기관: 한국보건산업진흥원
             </p>
@@ -94,7 +94,7 @@ export default function IntroPage() {
               <div className="pt-1.5 space-y-2">
                 <h3 className="font-semibold text-gray-900">
                   필수 항목을 모두 완료하신 분 중 추첨을 통해 100명에게{" "}
-                  <span className="text-green-600">온라인 기프티콘</span>을 보내드릴 예정입니다.
+                  <span className="text-green-600">외식·문화 상품권</span>을 보내드릴 예정입니다.
                 </h3>
                 <p className="text-sm text-gray-600">
                   개인정보는 경품 지급 및 현황 조사를 위해서만 사용되며, 외부로 유출되지 않습니다.
